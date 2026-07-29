@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>模型回答裁判器</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="page-shell">
+      <header class="page-header">
+        <h1>模型回答裁判器</h1>
+        <p>粘贴题目、评分标准和多个回答，逐项查看评测结果。</p>
+      </header>
+
+      <form class="workspace" id="evaluation-form" aria-label="评测工作区" novalidate>
+        <div class="evaluation-layout">
+          <section class="panel input-panel">
+            <div class="panel-heading">
+              <h2>评测输入</h2>
+            </div>
+
+            <div class="form-field">
+              <label for="question">原始问题</label>
+              <p class="field-help" id="question-help">
+                填写待评模型应回答的完整问题。
+              </p>
+              <textarea
+                id="question"
+                name="question"
+                rows="8"
+                aria-describedby="question-help question-error"
+                placeholder="粘贴原始问题"
+              ></textarea>
+              <p class="field-error" id="question-error" role="alert"></p>
+            </div>
+
+            <div class="form-field">
+              <label for="rubric">评分标准</label>
+              <p class="field-help" id="rubric-help">
+                粘贴与原始问题对应的完整评分标准。
+              </p>
+              <textarea
+                id="rubric"
+                name="rubric"
+                rows="12"
+                aria-describedby="rubric-help rubric-error"
+                placeholder="粘贴评分标准"
+              ></textarea>
+              <p class="field-error" id="rubric-error" role="alert"></p>
+            </div>
+          </section>
+
+          <section class="panel candidates-panel" aria-labelledby="candidates-title">
+            <div class="section-heading panel-heading">
+              <div>
+                <h2 id="candidates-title">待评回答</h2>
+                <p>填写模型名称和对应回答，可添加多份。</p>
+              </div>
+              <button class="secondary-button" id="add-candidate" type="button">
+                添加回答
+              </button>
+            </div>
+            <div
+              class="candidate-tabs"
+              id="candidate-tabs"
+              role="tablist"
+              aria-label="待评回答列表"
+            ></div>
+            <div id="candidates-list"></div>
+
+            <div class="form-actions">
+              <button type="submit">开始评测</button>
+              <p class="form-status" id="form-status" aria-live="polite"></p>
+            </div>
+          </section>
+        </div>
+
+        <section class="panel result-panel" aria-live="polite">
+          <div class="panel-heading">
+            <h2>评测结果</h2>
+          </div>
+
+          <div class="empty-state">
+            <h3>还没有评测结果</h3>
+            <p>填写输入并开始评测后，这里会显示逐项判定、得分和排序。</p>
+          </div>
+        </section>
+      </form>
+    </main>
+
+    <script defer src="app.js"></script>
+  </body>
+</html>
