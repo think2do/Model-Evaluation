@@ -670,6 +670,65 @@ function createMetric(label, value) {
   return metric;
 }
 
+function rankJudgeResults(results) {
+  const rankedCandidates = results
+    .map((result, originalIndex) => ({
+      result,
+      originalIndex,
+    }))
+    .filter(
+      ({ result }) =>
+        result.status === "success" &&
+        Number.isFinite(result.parsedResult?.finalScore),
+    )
+    .sort(
+      (left, right) =>
+        right.result.parsedResult.finalScore -
+          left.result.parsedResult.finalScore ||
+        left.originalIndex - right.originalIndex,
+    );
+
+  let previousScore = null;
+  let currentRank = 0;
+  const rankedSuccesses = rankedCandidates.map(
+    ({ result }, sortedIndex) => {
+      const score = result.parsedResult.finalScore;
+      if (score !== previousScore) {
+        currentRank = sortedIndex + 1;
+        previousScore = score;
+      }
+      return {
+        ...result,
+        rank: currentRank,
+      };
+    },
+  );
+
+  const unrankedResults = results
+    .filter(
+      (result) =>
+        result.status !== "success" ||
+        !Number.isFinite(result.parsedResult?.finalScore),
+    )
+    .map((result) =>
+      result.status === "success"
+        ? {
+            ...result,
+            status: "parse-error",
+            rank: null,
+            error:
+              result.error ||
+              "结构化校验失败：最终分缺失或格式错误。",
+          }
+        : {
+            ...result,
+            rank: null,
+          },
+    );
+
+  return [...rankedSuccesses, ...unrankedResults];
+}
+
 function configureResultPanel(card, result) {
   card.dataset.candidateId = result.candidateId;
   card.id = `result-panel-${result.candidateId}`;
@@ -694,7 +753,7 @@ function createSuccessResultCard(result) {
   title.textContent = result.modelName;
   const state = document.createElement("p");
   state.className = "result-state success";
-  state.textContent = "解析成功";
+  state.textContent = `解析成功 · 第 ${result.rank} 名`;
   titleArea.append(title, state);
 
   const finalScore = document.createElement("div");
@@ -843,7 +902,10 @@ function createResultTab(result) {
   tab.setAttribute("aria-controls", `result-panel-${result.candidateId}`);
   tab.setAttribute("aria-selected", "false");
   tab.tabIndex = -1;
-  tab.textContent = result.modelName;
+  tab.textContent =
+    result.status === "success"
+      ? `第 ${result.rank} 名 · ${result.modelName}`
+      : result.modelName;
   return tab;
 }
 
@@ -866,24 +928,64 @@ function setActiveResult(candidateId, shouldFocusTab = false) {
   });
 }
 
+function createRankingSummary(results) {
+  const rankedResults = results.filter(
+    (result) => result.status === "success",
+  );
+  if (rankedResults.length === 0) {
+    return null;
+  }
+
+  const section = document.createElement("section");
+  section.className = "ranking-summary";
+  const heading = document.createElement("h3");
+  heading.textContent = "最终排名";
+  const list = document.createElement("div");
+  list.className = "ranking-list";
+
+  rankedResults.forEach((result) => {
+    const row = document.createElement("div");
+    row.className = "ranking-row";
+
+    const rank = document.createElement("strong");
+    rank.textContent = `第 ${result.rank} 名`;
+    const modelName = document.createElement("span");
+    modelName.className = "ranking-model";
+    modelName.textContent = result.modelName;
+    const score = document.createElement("span");
+    score.className = "ranking-score";
+    score.textContent =
+      `${result.parsedResult.finalScore}/${result.parsedResult.maxScore}`;
+
+    row.append(rank, modelName, score);
+    list.append(row);
+  });
+
+  section.append(heading, list);
+  return section;
+}
+
 function renderJudgeResults(results) {
+  const rankedResults = rankJudgeResults(results);
   resultContent.className = "judge-results";
   resultContent.replaceChildren();
 
-  const successCount = results.filter(
+  const successCount = rankedResults.filter(
     (result) => result.status === "success",
   ).length;
-  const parseErrorCount = results.filter(
+  const parseErrorCount = rankedResults.filter(
     (result) => result.status === "parse-error",
   ).length;
-  const requestErrorCount = results.filter(
+  const requestErrorCount = rankedResults.filter(
     (result) => result.status === "error",
   ).length;
 
   const summary = document.createElement("p");
   summary.className = "results-summary";
   summary.textContent =
-    `共 ${results.length} 份回答：解析成功 ${successCount}，结构化失败 ${parseErrorCount}，请求失败 ${requestErrorCount}。`;
+    `共 ${rankedResults.length} 份回答：解析成功 ${successCount}，结构化失败 ${parseErrorCount}，请求失败 ${requestErrorCount}。`;
+
+  const ranking = createRankingSummary(rankedResults);
 
   const tabs = document.createElement("div");
   tabs.className = "result-tabs";
@@ -892,7 +994,7 @@ function renderJudgeResults(results) {
 
   const list = document.createElement("div");
   list.className = "judge-results-list";
-  results.forEach((result) => {
+  rankedResults.forEach((result) => {
     tabs.append(createResultTab(result));
     list.append(
       result.status === "success"
@@ -901,10 +1003,16 @@ function renderJudgeResults(results) {
     );
   });
 
-  resultContent.append(summary, tabs, list);
-  if (results.length > 0) {
-    setActiveResult(results[0].candidateId);
+  resultContent.append(summary);
+  if (ranking) {
+    resultContent.append(ranking);
   }
+  resultContent.append(tabs, list);
+  if (rankedResults.length > 0) {
+    setActiveResult(rankedResults[0].candidateId);
+  }
+
+  return rankedResults;
 }
 
 async function runJudgeJob(job) {
@@ -967,6 +1075,7 @@ window.judgeResultParser = Object.freeze({
   parseJudgeResponse,
 });
 window.judgeResultView = Object.freeze({
+  rankJudgeResults,
   renderJudgeResults,
   setActiveResult,
 });
@@ -1136,7 +1245,8 @@ form.addEventListener("submit", async (event) => {
   const requestErrorCount = results.filter(
     (result) => result.status === "error",
   ).length;
-  renderJudgeResults(results);
+  const rankedResults = renderJudgeResults(results);
+  window.latestRankedResults = rankedResults;
 
   formStatus.textContent =
     parseErrorCount === 0 && requestErrorCount === 0

@@ -397,6 +397,50 @@ button:focus-visible {
   font-size: 13px;
 }
 
+.ranking-summary {
+  margin-bottom: 16px;
+  padding: 14px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fafafa;
+}
+
+.ranking-summary h3 {
+  margin: 0 0 10px;
+  font-size: 14px;
+}
+
+.ranking-list {
+  display: grid;
+  gap: 6px;
+}
+
+.ranking-row {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 7px 9px;
+  border-radius: 4px;
+  background: #fff;
+  font-size: 13px;
+}
+
+.ranking-row strong {
+  font-size: 12px;
+}
+
+.ranking-model {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ranking-score {
+  font-weight: 600;
+}
+
 .result-tabs {
   display: flex;
   gap: 6px;
@@ -684,6 +728,10 @@ textarea:disabled {
 
   .judge-result-header {
     align-items: flex-start;
+  }
+
+  .ranking-row {
+    grid-template-columns: 64px minmax(0, 1fr) auto;
   }
 }
 
