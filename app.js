@@ -387,14 +387,20 @@ function appendRawResponse(candidateId, rawResponse) {
     return;
   }
 
+  card
+    .querySelector(".request-status-main")
+    .append(createRawResponseDetails(rawResponse));
+}
+
+function createRawResponseDetails(rawResponse) {
   const details = document.createElement("details");
   details.className = "raw-response-details";
   const summary = document.createElement("summary");
-  summary.textContent = "查看原始返回";
+  summary.textContent = "查看裁判原始 JSON";
   const rawText = document.createElement("pre");
   rawText.textContent = rawResponse;
   details.append(summary, rawText);
-  card.querySelector(".request-status-main").append(details);
+  return details;
 }
 
 function getApiErrorMessage(response, responseData, responseText) {
@@ -654,6 +660,199 @@ function parseJudgeResponse(rawResponse, job) {
   };
 }
 
+function createMetric(label, value) {
+  const metric = document.createElement("div");
+  const term = document.createElement("dt");
+  term.textContent = label;
+  const description = document.createElement("dd");
+  description.textContent = value;
+  metric.append(term, description);
+  return metric;
+}
+
+function createSuccessResultCard(result) {
+  const parsed = result.parsedResult;
+  const card = document.createElement("article");
+  card.className = "judge-result-card";
+  card.dataset.resultStatus = "success";
+
+  const header = document.createElement("header");
+  header.className = "judge-result-header";
+  const titleArea = document.createElement("div");
+  const title = document.createElement("h3");
+  title.textContent = result.modelName;
+  const state = document.createElement("p");
+  state.className = "result-state success";
+  state.textContent = "解析成功";
+  titleArea.append(title, state);
+
+  const finalScore = document.createElement("div");
+  finalScore.className = "result-final-score";
+  const finalScoreValue = document.createElement("strong");
+  finalScoreValue.textContent = `${parsed.finalScore}/${parsed.maxScore}`;
+  const finalScoreLabel = document.createElement("span");
+  finalScoreLabel.textContent = "最终分";
+  finalScore.append(finalScoreValue, finalScoreLabel);
+  header.append(titleArea, finalScore);
+
+  const metrics = document.createElement("dl");
+  metrics.className = "result-metrics";
+  metrics.append(
+    createMetric("原始分", `${parsed.rawScore}/${parsed.maxScore}`),
+    createMetric("最终分", `${parsed.finalScore}/${parsed.maxScore}`),
+    createMetric("得分率", `${parsed.scoreRate}%`),
+    createMetric(
+      "红线",
+      parsed.redline.triggered ? "已触发" : "未触发",
+    ),
+  );
+
+  const redline = document.createElement("section");
+  redline.className = `redline-result${parsed.redline.triggered ? " is-triggered" : ""}`;
+  const redlineHeading = document.createElement("h4");
+  redlineHeading.textContent = "红线检查";
+  const redlineDetails = document.createElement("p");
+  redlineDetails.textContent = parsed.redline.details;
+  redline.append(redlineHeading, redlineDetails);
+  if (parsed.redline.appliedRule) {
+    const appliedRule = document.createElement("p");
+    appliedRule.className = "applied-rule";
+    appliedRule.textContent = `适用规则：${parsed.redline.appliedRule}`;
+    redline.append(appliedRule);
+  }
+
+  const itemsSection = document.createElement("section");
+  itemsSection.className = "score-items-section";
+  const itemsHeading = document.createElement("h4");
+  itemsHeading.textContent = "逐项判定";
+  const itemsList = document.createElement("div");
+  itemsList.className = "score-items-list";
+
+  parsed.items.forEach((item) => {
+    const itemCard = document.createElement("article");
+    itemCard.className = "score-item";
+    itemCard.dataset.score = String(item.score);
+
+    const itemHeader = document.createElement("header");
+    const itemId = document.createElement("strong");
+    itemId.textContent = item.id;
+    const itemScore = document.createElement("span");
+    itemScore.className = "score-badge";
+    itemScore.textContent = `${item.score} 分`;
+    itemHeader.append(itemId, itemScore);
+
+    const reasonLabel = document.createElement("p");
+    reasonLabel.className = "result-label";
+    reasonLabel.textContent = "判定理由";
+    const reason = document.createElement("p");
+    reason.className = "result-text";
+    reason.textContent = item.reason;
+
+    const evidenceLabel = document.createElement("p");
+    evidenceLabel.className = "result-label";
+    evidenceLabel.textContent = "直接证据";
+    const evidence = document.createElement("blockquote");
+    evidence.className = "result-evidence";
+    evidence.textContent = item.evidence;
+
+    itemCard.append(
+      itemHeader,
+      reasonLabel,
+      reason,
+      evidenceLabel,
+      evidence,
+    );
+    itemsList.append(itemCard);
+  });
+
+  itemsSection.append(itemsHeading, itemsList);
+
+  const verification = document.createElement("section");
+  verification.className = "verification-result";
+  const verificationHeading = document.createElement("h4");
+  verificationHeading.textContent = "分数核对";
+  const verificationStatement = document.createElement("p");
+  verificationStatement.textContent = parsed.verification.statement;
+  const verificationSum = document.createElement("p");
+  verificationSum.className = "verification-sum";
+  verificationSum.textContent =
+    `评分项合计 ${parsed.verification.itemScoreSum} 分，等于原始分 ${parsed.rawScore} 分。`;
+  verification.append(
+    verificationHeading,
+    verificationStatement,
+    verificationSum,
+  );
+
+  card.append(
+    header,
+    metrics,
+    redline,
+    itemsSection,
+    verification,
+    createRawResponseDetails(result.rawResponse),
+  );
+  return card;
+}
+
+function createFailedResultCard(result) {
+  const card = document.createElement("article");
+  card.className = "judge-result-card failed-result-card";
+  card.dataset.resultStatus = result.status;
+
+  const header = document.createElement("header");
+  header.className = "judge-result-header";
+  const title = document.createElement("h3");
+  title.textContent = result.modelName;
+  const state = document.createElement("span");
+  state.className = "result-state error";
+  state.textContent =
+    result.status === "parse-error" ? "结构化失败" : "请求失败";
+  header.append(title, state);
+
+  const error = document.createElement("p");
+  error.className = "failed-result-message";
+  error.textContent = result.error || "未提供明确错误信息。";
+  card.append(header, error);
+
+  if (result.rawResponse) {
+    card.append(createRawResponseDetails(result.rawResponse));
+  }
+
+  return card;
+}
+
+function renderJudgeResults(results) {
+  resultContent.className = "judge-results";
+  resultContent.replaceChildren();
+
+  const successCount = results.filter(
+    (result) => result.status === "success",
+  ).length;
+  const parseErrorCount = results.filter(
+    (result) => result.status === "parse-error",
+  ).length;
+  const requestErrorCount = results.filter(
+    (result) => result.status === "error",
+  ).length;
+
+  const summary = document.createElement("p");
+  summary.className = "results-summary";
+  summary.textContent =
+    `共 ${results.length} 份回答：解析成功 ${successCount}，结构化失败 ${parseErrorCount}，请求失败 ${requestErrorCount}。`;
+
+  const list = document.createElement("div");
+  list.className = "judge-results-list";
+  results.forEach((result) => {
+    list.append(
+      result.status === "success"
+        ? createSuccessResultCard(result)
+        : createFailedResultCard(result),
+    );
+  });
+
+  resultContent.append(summary, list);
+}
+
 async function runJudgeJob(job) {
   updateRequestStatus(job.candidateId, "loading", "评测中", "请求已发送");
 
@@ -712,6 +911,9 @@ window.deepSeekClient = Object.freeze({
 });
 window.judgeResultParser = Object.freeze({
   parseJudgeResponse,
+});
+window.judgeResultView = Object.freeze({
+  renderJudgeResults,
 });
 
 questionInput.addEventListener("input", () => {
@@ -844,8 +1046,7 @@ form.addEventListener("submit", async (event) => {
   const requestErrorCount = results.filter(
     (result) => result.status === "error",
   ).length;
-  document.querySelector("#request-summary").textContent =
-    `评测完成：解析成功 ${successCount} 份，结构化失败 ${parseErrorCount} 份，请求失败 ${requestErrorCount} 份。`;
+  renderJudgeResults(results);
 
   formStatus.textContent =
     parseErrorCount === 0 && requestErrorCount === 0
