@@ -348,6 +348,45 @@ button:focus-visible {
   color: #b42318;
 }
 
+.request-status-card[data-status="parse-error"] {
+  border-color: #e2c47c;
+  background: #fffbf0;
+}
+
+.request-status-card[data-status="parse-error"] .request-state {
+  color: #8a5a00;
+}
+
+.request-status-main {
+  min-width: 0;
+}
+
+.raw-response-details {
+  margin-top: 10px;
+}
+
+.raw-response-details summary {
+  color: #555;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.raw-response-details pre {
+  max-height: 280px;
+  margin: 8px 0 0;
+  padding: 10px;
+  overflow: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #fff;
+  color: #333;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 button:disabled,
 input:disabled,
 textarea:disabled {

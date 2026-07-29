@@ -347,6 +347,7 @@ function renderRequestProgress(jobs) {
     card.dataset.status = "pending";
 
     const content = document.createElement("div");
+    content.className = "request-status-main";
     const title = document.createElement("h3");
     title.textContent = job.modelName;
     const detail = document.createElement("p");
@@ -376,6 +377,24 @@ function updateRequestStatus(candidateId, status, stateText, detailText) {
   card.dataset.status = status;
   card.querySelector(".request-state").textContent = stateText;
   card.querySelector(".request-detail").textContent = detailText;
+}
+
+function appendRawResponse(candidateId, rawResponse) {
+  const card = resultContent.querySelector(
+    `[data-candidate-id="${candidateId}"]`,
+  );
+  if (!card) {
+    return;
+  }
+
+  const details = document.createElement("details");
+  details.className = "raw-response-details";
+  const summary = document.createElement("summary");
+  summary.textContent = "查看原始返回";
+  const rawText = document.createElement("pre");
+  rawText.textContent = rawResponse;
+  details.append(summary, rawText);
+  card.querySelector(".request-status-main").append(details);
 }
 
 function getApiErrorMessage(response, responseData, responseText) {
@@ -463,18 +482,213 @@ async function requestDeepSeek(job) {
   }
 }
 
+function isRecord(value) {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isNonEmptyString(value) {
+  return typeof value === "string" && value.trim() !== "";
+}
+
+function assertJudgeResult(condition, message) {
+  if (!condition) {
+    throw new Error(`结构化校验失败：${message}`);
+  }
+}
+
+function parseJudgeResponse(rawResponse, job) {
+  assertJudgeResult(
+    typeof rawResponse === "string" && rawResponse.trim() !== "",
+    "裁判返回为空。",
+  );
+
+  let data;
+  try {
+    data = JSON.parse(rawResponse);
+  } catch {
+    throw new Error("结构化校验失败：裁判返回不是合法 JSON。");
+  }
+
+  assertJudgeResult(isRecord(data), "JSON 顶层必须是对象。");
+  assertJudgeResult(
+    data.candidateId === job.candidateId,
+    "候选回答 ID 缺失或与请求不一致。",
+  );
+  assertJudgeResult(
+    isNonEmptyString(data.modelName),
+    "模型名称缺失或格式错误。",
+  );
+  assertJudgeResult(isRecord(data.redline), "红线检查结果缺失。");
+  assertJudgeResult(
+    typeof data.redline.triggered === "boolean",
+    "红线 triggered 必须是布尔值。",
+  );
+  assertJudgeResult(
+    isNonEmptyString(data.redline.details),
+    "红线判定说明缺失。",
+  );
+  assertJudgeResult(
+    data.redline.appliedRule === null ||
+      isNonEmptyString(data.redline.appliedRule),
+    "红线 appliedRule 必须是字符串或 null。",
+  );
+
+  assertJudgeResult(
+    Array.isArray(data.items) && data.items.length > 0,
+    "评分项列表缺失或为空。",
+  );
+
+  const seenItemIds = new Set();
+  const items = data.items.map((item, index) => {
+    assertJudgeResult(
+      isRecord(item),
+      `第 ${index + 1} 个评分项格式错误。`,
+    );
+    assertJudgeResult(
+      isNonEmptyString(item.id) && /^C\d+$/.test(item.id),
+      `第 ${index + 1} 个评分项编号缺失或格式错误。`,
+    );
+    assertJudgeResult(
+      !seenItemIds.has(item.id),
+      `评分项编号 ${item.id} 重复。`,
+    );
+    assertJudgeResult(
+      item.score === 0 || item.score === 1,
+      `评分项 ${item.id} 的得分只能是 0 或 1。`,
+    );
+    assertJudgeResult(
+      isNonEmptyString(item.reason),
+      `评分项 ${item.id} 缺少判定理由。`,
+    );
+    assertJudgeResult(
+      isNonEmptyString(item.evidence),
+      `评分项 ${item.id} 缺少直接证据。`,
+    );
+
+    seenItemIds.add(item.id);
+    return {
+      id: item.id,
+      score: item.score,
+      reason: item.reason,
+      evidence: item.evidence,
+    };
+  });
+
+  const itemScoreSum = items.reduce((sum, item) => sum + item.score, 0);
+  assertJudgeResult(
+    Number.isInteger(data.rawScore) && data.rawScore >= 0,
+    "原始分缺失或不是非负整数。",
+  );
+  assertJudgeResult(
+    Number.isInteger(data.maxScore) && data.maxScore > 0,
+    "原始满分缺失或不是正整数。",
+  );
+  assertJudgeResult(
+    data.maxScore === items.length,
+    "原始满分与评分项数量不一致。",
+  );
+  assertJudgeResult(
+    data.rawScore === itemScoreSum,
+    "评分项得分之和与原始分不一致。",
+  );
+  assertJudgeResult(
+    Number.isInteger(data.finalScore) &&
+      data.finalScore >= 0 &&
+      data.finalScore <= data.rawScore,
+    "最终分缺失、格式错误或高于原始分。",
+  );
+  assertJudgeResult(
+    data.redline.triggered || data.finalScore === data.rawScore,
+    "未触发红线时，最终分必须等于原始分。",
+  );
+
+  const expectedScoreRate = Math.round(
+    (data.finalScore / data.maxScore) * 100,
+  );
+  assertJudgeResult(
+    Number.isInteger(data.scoreRate) &&
+      data.scoreRate >= 0 &&
+      data.scoreRate <= 100,
+    "得分率缺失或不是 0 至 100 的整数。",
+  );
+  assertJudgeResult(
+    data.scoreRate === expectedScoreRate,
+    "得分率与最终分、原始满分不一致。",
+  );
+
+  assertJudgeResult(
+    isRecord(data.verification),
+    "分数核对信息缺失。",
+  );
+  assertJudgeResult(
+    data.verification.itemScoreSum === itemScoreSum,
+    "核对信息中的评分项合计不正确。",
+  );
+  assertJudgeResult(
+    data.verification.matchesRawScore === true,
+    "核对信息未确认评分项合计等于原始分。",
+  );
+  assertJudgeResult(
+    isNonEmptyString(data.verification.statement),
+    "分数核对说明缺失。",
+  );
+
+  return {
+    candidateId: job.candidateId,
+    modelName: job.modelName,
+    redline: {
+      triggered: data.redline.triggered,
+      details: data.redline.details,
+      appliedRule: data.redline.appliedRule,
+    },
+    rawScore: data.rawScore,
+    maxScore: data.maxScore,
+    finalScore: data.finalScore,
+    scoreRate: data.scoreRate,
+    items,
+    verification: {
+      itemScoreSum: data.verification.itemScoreSum,
+      matchesRawScore: data.verification.matchesRawScore,
+      statement: data.verification.statement,
+    },
+  };
+}
+
 async function runJudgeJob(job) {
   updateRequestStatus(job.candidateId, "loading", "评测中", "请求已发送");
 
   try {
     const result = await requestDeepSeek(job);
-    updateRequestStatus(
-      job.candidateId,
-      "success",
-      "已返回",
-      "已收到裁判内容，结构化解析将在 M6 完成。",
-    );
-    return result;
+    try {
+      const parsedResult = parseJudgeResponse(result.rawResponse, job);
+      updateRequestStatus(
+        job.candidateId,
+        "success",
+        "解析成功",
+        `${parsedResult.finalScore}/${parsedResult.maxScore}，得分率 ${parsedResult.scoreRate}%`,
+      );
+      return {
+        ...result,
+        parsedResult,
+      };
+    } catch (parseError) {
+      const message =
+        parseError instanceof Error
+          ? parseError.message
+          : "结构化校验失败：发生未知解析错误。";
+      updateRequestStatus(
+        job.candidateId,
+        "parse-error",
+        "需人工复核",
+        message,
+      );
+      appendRawResponse(job.candidateId, result.rawResponse);
+      return {
+        ...result,
+        status: "parse-error",
+        error: message,
+      };
+    }
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "发生未知请求错误。";
@@ -495,6 +709,9 @@ window.judgeRequestBuilder = Object.freeze({
 });
 window.deepSeekClient = Object.freeze({
   requestDeepSeek,
+});
+window.judgeResultParser = Object.freeze({
+  parseJudgeResponse,
 });
 
 questionInput.addEventListener("input", () => {
@@ -621,15 +838,24 @@ form.addEventListener("submit", async (event) => {
   const successCount = results.filter(
     (result) => result.status === "success",
   ).length;
-  const errorCount = results.length - successCount;
+  const parseErrorCount = results.filter(
+    (result) => result.status === "parse-error",
+  ).length;
+  const requestErrorCount = results.filter(
+    (result) => result.status === "error",
+  ).length;
   document.querySelector("#request-summary").textContent =
-    `请求完成：成功 ${successCount} 份，失败 ${errorCount} 份。`;
+    `评测完成：解析成功 ${successCount} 份，结构化失败 ${parseErrorCount} 份，请求失败 ${requestErrorCount} 份。`;
 
   formStatus.textContent =
-    errorCount === 0
-      ? `已完成 ${successCount} 份评测请求。`
-      : `请求完成：成功 ${successCount} 份，失败 ${errorCount} 份。`;
-  formStatus.classList.add(errorCount === 0 ? "is-success" : "is-error");
+    parseErrorCount === 0 && requestErrorCount === 0
+      ? `已完成并解析 ${successCount} 份评测结果。`
+      : `评测完成：成功 ${successCount}，需复核 ${parseErrorCount}，请求失败 ${requestErrorCount}。`;
+  formStatus.classList.add(
+    parseErrorCount === 0 && requestErrorCount === 0
+      ? "is-success"
+      : "is-error",
+  );
 });
 
 createCandidateCard();
