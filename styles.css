@@ -267,6 +267,10 @@ button:focus-visible {
   color: #28713c;
 }
 
+.form-status.is-error {
+  color: #b42318;
+}
+
 .empty-state {
   padding: 44px 16px;
   text-align: center;
@@ -275,6 +279,80 @@ button:focus-visible {
 .empty-state h3 {
   margin-bottom: 6px;
   font-size: 15px;
+}
+
+.request-progress {
+  padding-top: 16px;
+}
+
+.request-summary {
+  margin-bottom: 12px;
+  color: #555;
+  font-size: 13px;
+}
+
+.request-status-list {
+  display: grid;
+  gap: 8px;
+}
+
+.request-status-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 14px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background: #fafafa;
+}
+
+.request-status-card h3 {
+  margin: 0;
+  font-size: 14px;
+}
+
+.request-status-card p {
+  margin: 4px 0 0;
+  color: #666;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.request-state {
+  flex: 0 0 auto;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.request-status-card[data-status="pending"] .request-state,
+.request-status-card[data-status="loading"] .request-state {
+  color: #555;
+}
+
+.request-status-card[data-status="success"] {
+  border-color: #b8d8c0;
+  background: #f4faf5;
+}
+
+.request-status-card[data-status="success"] .request-state {
+  color: #28713c;
+}
+
+.request-status-card[data-status="error"] {
+  border-color: #e4b8b4;
+  background: #fff7f6;
+}
+
+.request-status-card[data-status="error"] .request-state {
+  color: #b42318;
+}
+
+button:disabled,
+input:disabled,
+textarea:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
 }
 
 @media (max-width: 480px) {
@@ -295,6 +373,12 @@ button:focus-visible {
   .section-heading {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .request-status-card {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
   }
 }
 

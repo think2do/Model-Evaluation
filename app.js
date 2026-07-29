@@ -7,6 +7,16 @@ const formStatus = document.querySelector("#form-status");
 const candidatesList = document.querySelector("#candidates-list");
 const candidateTabs = document.querySelector("#candidate-tabs");
 const addCandidateButton = document.querySelector("#add-candidate");
+const submitButton = document.querySelector("#submit-evaluation");
+const resultContent = document.querySelector("#result-content");
+
+// 按用户要求，第一版直接从前端代码读取 API Key。
+// 请只在本地使用，并将下面的占位文本替换为你自己的 DeepSeek API Key。
+const DEEPSEEK_CONFIG = Object.freeze({
+  apiKey: "sk-de671570240840a699b032eb52cfe28b",
+  endpoint: "https://api.deepseek.com/chat/completions",
+  timeoutMs: 300000,
+});
 
 const JUDGE_SYSTEM_PROMPT = `你是一名严格、稳定、可复核的 AI 裁判。
 
@@ -62,7 +72,7 @@ let nextCandidateId = 1;
 
 function clearFormStatus() {
   formStatus.textContent = "";
-  formStatus.classList.remove("is-success");
+  formStatus.classList.remove("is-success", "is-error");
 }
 
 function getCandidateCards() {
@@ -295,10 +305,196 @@ function buildJudgeJobs(input) {
   }));
 }
 
+function hasConfiguredApiKey() {
+  const apiKey = DEEPSEEK_CONFIG.apiKey.trim();
+  return (
+    apiKey !== "" &&
+    apiKey !== "请在这里填入你的 DeepSeek API Key"
+  );
+}
+
+function setRequestBusy(isBusy) {
+  submitButton.disabled = isBusy;
+  submitButton.textContent = isBusy ? "评测中…" : "开始评测";
+  questionInput.disabled = isBusy;
+  rubricInput.disabled = isBusy;
+  addCandidateButton.disabled = isBusy;
+
+  getCandidateCards().forEach((card) => {
+    card.querySelector(".candidate-name").disabled = isBusy;
+    card.querySelector(".candidate-answer").disabled = isBusy;
+    card.querySelector(".delete-button").disabled =
+      isBusy || getCandidateCards().length === 1;
+  });
+}
+
+function renderRequestProgress(jobs) {
+  resultContent.className = "request-progress";
+  resultContent.replaceChildren();
+
+  const summary = document.createElement("p");
+  summary.className = "request-summary";
+  summary.id = "request-summary";
+  summary.textContent = `准备评测 ${jobs.length} 份回答。`;
+
+  const list = document.createElement("div");
+  list.className = "request-status-list";
+
+  jobs.forEach((job) => {
+    const card = document.createElement("article");
+    card.className = "request-status-card";
+    card.dataset.candidateId = job.candidateId;
+    card.dataset.status = "pending";
+
+    const content = document.createElement("div");
+    const title = document.createElement("h3");
+    title.textContent = job.modelName;
+    const detail = document.createElement("p");
+    detail.className = "request-detail";
+    detail.textContent = "等待发送";
+    content.append(title, detail);
+
+    const state = document.createElement("span");
+    state.className = "request-state";
+    state.textContent = "等待中";
+
+    card.append(content, state);
+    list.append(card);
+  });
+
+  resultContent.append(summary, list);
+}
+
+function updateRequestStatus(candidateId, status, stateText, detailText) {
+  const card = resultContent.querySelector(
+    `[data-candidate-id="${candidateId}"]`,
+  );
+  if (!card) {
+    return;
+  }
+
+  card.dataset.status = status;
+  card.querySelector(".request-state").textContent = stateText;
+  card.querySelector(".request-detail").textContent = detailText;
+}
+
+function getApiErrorMessage(response, responseData, responseText) {
+  const apiMessage = responseData?.error?.message;
+  if (typeof apiMessage === "string" && apiMessage.trim() !== "") {
+    return `请求失败（HTTP ${response.status}）：${apiMessage}`;
+  }
+
+  const shortResponse = responseText.trim().slice(0, 240);
+  if (shortResponse) {
+    return `请求失败（HTTP ${response.status}）：${shortResponse}`;
+  }
+
+  return `请求失败（HTTP ${response.status}）。`;
+}
+
+async function requestDeepSeek(job) {
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(
+    () => controller.abort(),
+    DEEPSEEK_CONFIG.timeoutMs,
+  );
+
+  try {
+    const response = await fetch(DEEPSEEK_CONFIG.endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${DEEPSEEK_CONFIG.apiKey.trim()}`,
+      },
+      body: JSON.stringify(job.request),
+      signal: controller.signal,
+    });
+
+    const responseText = await response.text();
+    let responseData = null;
+
+    if (responseText.trim() !== "") {
+      try {
+        responseData = JSON.parse(responseText);
+      } catch {
+        if (!response.ok) {
+          throw new Error(
+            getApiErrorMessage(response, null, responseText),
+          );
+        }
+        throw new Error("API 返回了无法读取的响应格式。");
+      }
+    }
+
+    if (!response.ok || responseData?.error) {
+      throw new Error(
+        getApiErrorMessage(response, responseData, responseText),
+      );
+    }
+
+    const rawResponse = responseData?.choices?.[0]?.message?.content;
+    if (typeof rawResponse !== "string" || rawResponse.trim() === "") {
+      throw new Error("API 未返回裁判内容。");
+    }
+
+    return {
+      candidateId: job.candidateId,
+      modelName: job.modelName,
+      status: "success",
+      rawResponse,
+      apiResponse: responseData,
+    };
+  } catch (error) {
+    if (error.name === "AbortError") {
+      throw new Error(
+        `请求超过 ${Math.round(DEEPSEEK_CONFIG.timeoutMs / 60000)} 分钟，已停止等待。`,
+      );
+    }
+
+    if (error instanceof TypeError) {
+      throw new Error(
+        "网络请求失败。可能是网络不可用或浏览器阻止了跨域请求。",
+      );
+    }
+
+    throw error;
+  } finally {
+    window.clearTimeout(timeoutId);
+  }
+}
+
+async function runJudgeJob(job) {
+  updateRequestStatus(job.candidateId, "loading", "评测中", "请求已发送");
+
+  try {
+    const result = await requestDeepSeek(job);
+    updateRequestStatus(
+      job.candidateId,
+      "success",
+      "已返回",
+      "已收到裁判内容，结构化解析将在 M6 完成。",
+    );
+    return result;
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "发生未知请求错误。";
+    updateRequestStatus(job.candidateId, "error", "失败", message);
+    return {
+      candidateId: job.candidateId,
+      modelName: job.modelName,
+      status: "error",
+      error: message,
+    };
+  }
+}
+
 window.getEvaluationInput = getEvaluationInput;
 window.judgeRequestBuilder = Object.freeze({
   buildJudgeRequest,
   buildJudgeJobs,
+});
+window.deepSeekClient = Object.freeze({
+  requestDeepSeek,
 });
 
 questionInput.addEventListener("input", () => {
@@ -374,9 +570,9 @@ candidatesList.addEventListener("input", (event) => {
   clearFormStatus();
 });
 
-form.addEventListener("submit", (event) => {
+form.addEventListener("submit", async (event) => {
   event.preventDefault();
-  formStatus.classList.remove("is-success");
+  clearFormStatus();
 
   const validation = validateInput();
   if (!validation.isValid) {
@@ -395,12 +591,45 @@ form.addEventListener("submit", (event) => {
     return;
   }
 
+  if (!hasConfiguredApiKey()) {
+    formStatus.textContent =
+      "请先在 app.js 顶部的 DEEPSEEK_CONFIG 中填写 API Key。";
+    formStatus.classList.add("is-error");
+    return;
+  }
+
   const input = getEvaluationInput();
   const judgeJobs = buildJudgeJobs(input);
   window.latestJudgeJobs = judgeJobs;
 
-  formStatus.textContent = `已为 ${judgeJobs.length} 份回答生成裁判请求，尚未发送。`;
-  formStatus.classList.add("is-success");
+  renderRequestProgress(judgeJobs);
+  setRequestBusy(true);
+  formStatus.textContent = `正在评测 0/${judgeJobs.length}`;
+
+  let completedCount = 0;
+  const resultPromises = judgeJobs.map(async (job) => {
+    const result = await runJudgeJob(job);
+    completedCount += 1;
+    formStatus.textContent = `正在评测 ${completedCount}/${judgeJobs.length}`;
+    return result;
+  });
+
+  const results = await Promise.all(resultPromises);
+  window.latestJudgeResults = results;
+  setRequestBusy(false);
+
+  const successCount = results.filter(
+    (result) => result.status === "success",
+  ).length;
+  const errorCount = results.length - successCount;
+  document.querySelector("#request-summary").textContent =
+    `请求完成：成功 ${successCount} 份，失败 ${errorCount} 份。`;
+
+  formStatus.textContent =
+    errorCount === 0
+      ? `已完成 ${successCount} 份评测请求。`
+      : `请求完成：成功 ${successCount} 份，失败 ${errorCount} 份。`;
+  formStatus.classList.add(errorCount === 0 ? "is-success" : "is-error");
 });
 
 createCandidateCard();
