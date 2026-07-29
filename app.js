@@ -10,10 +10,15 @@ const addCandidateButton = document.querySelector("#add-candidate");
 const submitButton = document.querySelector("#submit-evaluation");
 const resultContent = document.querySelector("#result-content");
 
-// 按用户要求，第一版直接从前端代码读取 API Key。
-// 请只在本地使用，并将下面的占位文本替换为你自己的 DeepSeek API Key。
+// 第一版仍为纯前端：API Key 从本地 config.js 读取。
+// config.js 被 Git 忽略，不得部署或分享。
+const LOCAL_CONFIG = window.MODEL_EVALUATION_CONFIG ?? {};
+
 const DEEPSEEK_CONFIG = Object.freeze({
-  apiKey: "sk-de671570240840a699b032eb52cfe28b",
+  apiKey:
+    typeof LOCAL_CONFIG.deepSeekApiKey === "string"
+      ? LOCAL_CONFIG.deepSeekApiKey
+      : "",
   endpoint: "https://api.deepseek.com/chat/completions",
   timeoutMs: 300000,
 });
@@ -306,11 +311,7 @@ function buildJudgeJobs(input) {
 }
 
 function hasConfiguredApiKey() {
-  const apiKey = DEEPSEEK_CONFIG.apiKey.trim();
-  return (
-    apiKey !== "" &&
-    apiKey !== "请在这里填入你的 DeepSeek API Key"
-  );
+  return DEEPSEEK_CONFIG.apiKey.trim() !== "";
 }
 
 function setRequestBusy(isBusy) {
@@ -1211,7 +1212,7 @@ form.addEventListener("submit", async (event) => {
 
   if (!hasConfiguredApiKey()) {
     formStatus.textContent =
-      "请先在 app.js 顶部的 DEEPSEEK_CONFIG 中填写 API Key。";
+      "请先在本地 config.js 中填写 DeepSeek API Key。";
     formStatus.classList.add("is-error");
     return;
   }
