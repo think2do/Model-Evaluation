@@ -670,6 +670,17 @@ function createMetric(label, value) {
   return metric;
 }
 
+function configureResultPanel(card, result) {
+  card.dataset.candidateId = result.candidateId;
+  card.id = `result-panel-${result.candidateId}`;
+  card.setAttribute("role", "tabpanel");
+  card.setAttribute(
+    "aria-labelledby",
+    `result-tab-${result.candidateId}`,
+  );
+  return card;
+}
+
 function createSuccessResultCard(result) {
   const parsed = result.parsedResult;
   const card = document.createElement("article");
@@ -791,7 +802,7 @@ function createSuccessResultCard(result) {
     verification,
     createRawResponseDetails(result.rawResponse),
   );
-  return card;
+  return configureResultPanel(card, result);
 }
 
 function createFailedResultCard(result) {
@@ -818,7 +829,41 @@ function createFailedResultCard(result) {
     card.append(createRawResponseDetails(result.rawResponse));
   }
 
-  return card;
+  return configureResultPanel(card, result);
+}
+
+function createResultTab(result) {
+  const tab = document.createElement("button");
+  tab.className = "result-tab";
+  tab.id = `result-tab-${result.candidateId}`;
+  tab.type = "button";
+  tab.dataset.candidateId = result.candidateId;
+  tab.dataset.resultStatus = result.status;
+  tab.setAttribute("role", "tab");
+  tab.setAttribute("aria-controls", `result-panel-${result.candidateId}`);
+  tab.setAttribute("aria-selected", "false");
+  tab.tabIndex = -1;
+  tab.textContent = result.modelName;
+  return tab;
+}
+
+function getResultTabs() {
+  return [...resultContent.querySelectorAll(".result-tab")];
+}
+
+function setActiveResult(candidateId, shouldFocusTab = false) {
+  resultContent.querySelectorAll(".judge-result-card").forEach((card) => {
+    card.hidden = card.dataset.candidateId !== candidateId;
+  });
+
+  getResultTabs().forEach((tab) => {
+    const isActive = tab.dataset.candidateId === candidateId;
+    tab.setAttribute("aria-selected", String(isActive));
+    tab.tabIndex = isActive ? 0 : -1;
+    if (isActive && shouldFocusTab) {
+      tab.focus();
+    }
+  });
 }
 
 function renderJudgeResults(results) {
@@ -840,9 +885,15 @@ function renderJudgeResults(results) {
   summary.textContent =
     `共 ${results.length} 份回答：解析成功 ${successCount}，结构化失败 ${parseErrorCount}，请求失败 ${requestErrorCount}。`;
 
+  const tabs = document.createElement("div");
+  tabs.className = "result-tabs";
+  tabs.setAttribute("role", "tablist");
+  tabs.setAttribute("aria-label", "模型评测结果");
+
   const list = document.createElement("div");
   list.className = "judge-results-list";
   results.forEach((result) => {
+    tabs.append(createResultTab(result));
     list.append(
       result.status === "success"
         ? createSuccessResultCard(result)
@@ -850,7 +901,10 @@ function renderJudgeResults(results) {
     );
   });
 
-  resultContent.append(summary, list);
+  resultContent.append(summary, tabs, list);
+  if (results.length > 0) {
+    setActiveResult(results[0].candidateId);
+  }
 }
 
 async function runJudgeJob(job) {
@@ -914,6 +968,7 @@ window.judgeResultParser = Object.freeze({
 });
 window.judgeResultView = Object.freeze({
   renderJudgeResults,
+  setActiveResult,
 });
 
 questionInput.addEventListener("input", () => {
@@ -946,6 +1001,41 @@ candidateTabs.addEventListener("click", (event) => {
 
   setActiveCandidate(tab.dataset.candidateId);
   clearFormStatus();
+});
+
+resultContent.addEventListener("click", (event) => {
+  const tab = event.target.closest(".result-tab");
+  if (!tab) {
+    return;
+  }
+
+  setActiveResult(tab.dataset.candidateId);
+});
+
+resultContent.addEventListener("keydown", (event) => {
+  const currentTab = event.target.closest(".result-tab");
+  if (!currentTab) {
+    return;
+  }
+
+  const tabs = getResultTabs();
+  const currentIndex = tabs.indexOf(currentTab);
+  let nextIndex = currentIndex;
+
+  if (event.key === "ArrowRight") {
+    nextIndex = (currentIndex + 1) % tabs.length;
+  } else if (event.key === "ArrowLeft") {
+    nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+  } else if (event.key === "Home") {
+    nextIndex = 0;
+  } else if (event.key === "End") {
+    nextIndex = tabs.length - 1;
+  } else {
+    return;
+  }
+
+  event.preventDefault();
+  setActiveResult(tabs[nextIndex].dataset.candidateId, true);
 });
 
 candidatesList.addEventListener("click", (event) => {
