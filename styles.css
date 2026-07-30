@@ -85,7 +85,11 @@ h1 {
 
 .version-details {
   display: grid;
-  grid-template-columns: minmax(220px, 1fr) minmax(260px, auto) auto;
+  grid-template-columns:
+    minmax(220px, 1fr)
+    minmax(260px, auto)
+    auto
+    auto;
   gap: 16px;
   align-items: end;
 }

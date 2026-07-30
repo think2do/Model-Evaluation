@@ -39,6 +39,7 @@ const evaluateSelectedUnscoredButton = document.querySelector(
 const reevaluateSelectedAllButton = document.querySelector(
   "#reevaluate-selected-all",
 );
+const exportExcelButton = document.querySelector("#export-excel");
 
 const versionStore = window.ModelEvaluation.state.createStateStore();
 const activeRecordByVersion = new Map();
@@ -255,6 +256,7 @@ function renderActiveVersion(options = {}) {
     addCandidateButton.disabled = true;
     reevaluateVersionButton.disabled = true;
     evaluateMultipleVersionsButton.disabled = true;
+    exportExcelButton.disabled = true;
     renderEmptyResult();
     return;
   }
@@ -264,6 +266,7 @@ function renderActiveVersion(options = {}) {
   addCandidateButton.disabled = false;
   reevaluateVersionButton.disabled = false;
   evaluateMultipleVersionsButton.disabled = false;
+  exportExcelButton.disabled = false;
   versionNameInput.disabled = false;
   questionInput.disabled = false;
   rubricInput.disabled = false;
@@ -506,6 +509,7 @@ function setRequestBusy(isBusy) {
   deleteVersionButton.disabled = isBusy;
   reevaluateVersionButton.disabled = isBusy;
   evaluateMultipleVersionsButton.disabled = isBusy;
+  exportExcelButton.disabled = isBusy;
   stopEvaluationButton.hidden = !isBusy;
   stopEvaluationButton.disabled = false;
 
@@ -1808,6 +1812,29 @@ stopEvaluationButton.addEventListener("click", () => {
   stopEvaluationButton.disabled = true;
   formStatus.textContent = "正在终止评测…";
   activeEvaluationRun.controller.abort();
+});
+
+exportExcelButton.addEventListener("click", () => {
+  if (activeEvaluationRun) {
+    return;
+  }
+  clearFormStatus();
+  exportExcelButton.disabled = true;
+  try {
+    const result =
+      window.ModelEvaluation.excelExporter.exportStore(versionStore);
+    renderVersionTabs();
+    renderActiveVersion();
+    formStatus.textContent =
+      `已生成 ${result.fileName}，共 ${result.rowCount} 条记录。`;
+    formStatus.classList.add("is-success");
+  } catch (error) {
+    formStatus.textContent =
+      error instanceof Error ? error.message : "Excel 导出失败。";
+    formStatus.classList.add("is-error");
+  } finally {
+    exportExcelButton.disabled = false;
+  }
 });
 
 versionStore.createVersion();
