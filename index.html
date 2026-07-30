@@ -53,7 +53,37 @@
             >
               导出全部 Excel
             </button>
+            <button
+              class="secondary-button"
+              id="import-excel"
+              type="button"
+            >
+              导入 Excel
+            </button>
+            <input
+              id="import-excel-file"
+              type="file"
+              accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+              hidden
+            />
           </div>
+        </section>
+
+        <section class="panel import-report" id="import-report" hidden>
+          <div class="section-heading panel-heading">
+            <div>
+              <h2>Excel 导入结果</h2>
+              <p id="import-report-summary"></p>
+            </div>
+            <button
+              class="secondary-button"
+              id="close-import-report"
+              type="button"
+            >
+              关闭
+            </button>
+          </div>
+          <ol class="import-error-list" id="import-error-list"></ol>
         </section>
 
         <div class="evaluation-layout">
@@ -202,6 +232,7 @@
     <script src="src/excel-schema.js"></script>
     <script src="src/excel-row-mapper.js"></script>
     <script src="src/excel-exporter.js"></script>
+    <script src="src/excel-importer.js"></script>
     <script defer src="app.js"></script>
   </body>
 </html>

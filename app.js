@@ -40,6 +40,16 @@ const reevaluateSelectedAllButton = document.querySelector(
   "#reevaluate-selected-all",
 );
 const exportExcelButton = document.querySelector("#export-excel");
+const importExcelButton = document.querySelector("#import-excel");
+const importExcelFileInput = document.querySelector("#import-excel-file");
+const importReport = document.querySelector("#import-report");
+const importReportSummary = document.querySelector(
+  "#import-report-summary",
+);
+const importErrorList = document.querySelector("#import-error-list");
+const closeImportReportButton = document.querySelector(
+  "#close-import-report",
+);
 
 const versionStore = window.ModelEvaluation.state.createStateStore();
 const activeRecordByVersion = new Map();
@@ -257,6 +267,7 @@ function renderActiveVersion(options = {}) {
     reevaluateVersionButton.disabled = true;
     evaluateMultipleVersionsButton.disabled = true;
     exportExcelButton.disabled = true;
+    importExcelButton.disabled = true;
     renderEmptyResult();
     return;
   }
@@ -267,6 +278,7 @@ function renderActiveVersion(options = {}) {
   reevaluateVersionButton.disabled = false;
   evaluateMultipleVersionsButton.disabled = false;
   exportExcelButton.disabled = false;
+  importExcelButton.disabled = false;
   versionNameInput.disabled = false;
   questionInput.disabled = false;
   rubricInput.disabled = false;
@@ -510,6 +522,7 @@ function setRequestBusy(isBusy) {
   reevaluateVersionButton.disabled = isBusy;
   evaluateMultipleVersionsButton.disabled = isBusy;
   exportExcelButton.disabled = isBusy;
+  importExcelButton.disabled = isBusy;
   stopEvaluationButton.hidden = !isBusy;
   stopEvaluationButton.disabled = false;
 
@@ -1835,6 +1848,78 @@ exportExcelButton.addEventListener("click", () => {
   } finally {
     exportExcelButton.disabled = false;
   }
+});
+
+function renderImportReport(report, message) {
+  importReport.hidden = false;
+  importReportSummary.textContent = message;
+  importErrorList.replaceChildren();
+
+  (report?.errors ?? []).forEach((error) => {
+    const item = document.createElement("li");
+    item.textContent =
+      `第 ${error.rowNumber} 行 · ${error.code}：${error.message}`;
+    importErrorList.append(item);
+  });
+}
+
+importExcelButton.addEventListener("click", () => {
+  if (activeEvaluationRun) {
+    return;
+  }
+  importExcelFileInput.click();
+});
+
+importExcelFileInput.addEventListener("change", async () => {
+  const [file] = importExcelFileInput.files;
+  importExcelFileInput.value = "";
+  if (!file) {
+    return;
+  }
+
+  clearFormStatus();
+  importExcelButton.disabled = true;
+  exportExcelButton.disabled = true;
+
+  try {
+    const imported =
+      await window.ModelEvaluation.excelImporter.importFile(file, {
+        validateResult(result, row) {
+          return parseJudgeResponse(JSON.stringify(result), {
+            candidateId: row.recordId,
+            modelName: row.modelName,
+          });
+        },
+      });
+    versionStore.replaceState(imported.state);
+    activeRecordByVersion.clear();
+    renderVersionTabs();
+    renderActiveVersion();
+    renderImportReport(
+      imported.report,
+      `已导入 ${imported.report.importedRowCount} 行，` +
+        `跳过 ${imported.report.skippedRowCount} 行。`,
+    );
+    formStatus.textContent = "Excel 数据已替换当前网页数据。";
+    formStatus.classList.add("is-success");
+  } catch (error) {
+    const report = error?.report ?? null;
+    renderImportReport(
+      report,
+      error instanceof Error ? error.message : "Excel 导入失败。",
+    );
+    formStatus.textContent =
+      "Excel 导入失败，网页当前数据已保留。";
+    formStatus.classList.add("is-error");
+  } finally {
+    importExcelButton.disabled = false;
+    exportExcelButton.disabled =
+      versionStore.getState().versions.length === 0;
+  }
+});
+
+closeImportReportButton.addEventListener("click", () => {
+  importReport.hidden = true;
 });
 
 versionStore.createVersion();

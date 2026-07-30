@@ -89,6 +89,7 @@ h1 {
     minmax(220px, 1fr)
     minmax(260px, auto)
     auto
+    auto
     auto;
   gap: 16px;
   align-items: end;
@@ -335,6 +336,26 @@ textarea[aria-invalid="true"] {
 
 .multi-version-actions {
   flex-wrap: wrap;
+}
+
+.import-report {
+  border-color: #c8d8c8;
+}
+
+.import-error-list {
+  display: grid;
+  gap: 8px;
+  max-height: 280px;
+  margin: 16px 0 0;
+  padding-left: 24px;
+  overflow-y: auto;
+  color: #8c2d26;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.import-error-list:empty {
+  display: none;
 }
 
 button {
