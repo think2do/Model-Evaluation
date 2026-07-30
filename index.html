@@ -8,230 +8,160 @@
   </head>
   <body>
     <main class="page-shell">
+      <!-- ===== ZONE 1 · 全局控制 ===== -->
       <header class="page-header">
-        <h1>模型回答裁判器</h1>
+        <h1>🏠 模型回答裁判器</h1>
         <p>粘贴题目、评分标准和多个回答，逐项查看评测结果。</p>
       </header>
 
       <form class="workspace" id="evaluation-form" aria-label="评测工作区" novalidate>
-        <section class="panel version-panel" aria-labelledby="versions-title">
-          <div class="section-heading panel-heading">
-            <div>
-              <h2 id="versions-title">评测版本</h2>
-              <p>每个版本独立保存问题、评分标准和模型回答。</p>
-            </div>
-            <button class="secondary-button" id="add-version" type="button">
-              新建版本
-            </button>
+
+        <section class="zone zone-1">
+          <div class="zone-label-bar">
+            <span class="zone-tag" style="background:#4285f4;">Zone 1</span>
+            <span class="zone-name">全局控制</span>
+            <span class="zone-desc">版本管理 · 数据导入导出</span>
           </div>
 
-          <div
-            class="version-tabs"
-            id="version-tabs"
-            role="tablist"
-            aria-label="评测版本列表"
-          ></div>
-
-          <div class="version-details">
-            <div class="form-field version-name-field">
-              <label for="version-name">版本名称（可选）</label>
-              <input
-                id="version-name"
-                type="text"
-                autocomplete="off"
-                placeholder="例如：2026 年 7 月基准测试"
-              />
+          <div class="global-bar">
+            <div class="global-bar-left">
+              <div class="global-actions">
+                <button class="g-btn" id="add-version" type="button">➕ 新建版本</button>
+                <button class="g-btn danger" id="delete-version" type="button">🗑 删除</button>
+                <button class="g-btn" id="export-excel" type="button">📤 导出</button>
+                <button class="g-btn-tiny" id="import-excel" type="button">📥 导入</button>
+              </div>
             </div>
             <div class="version-meta" id="version-meta"></div>
-            <button class="delete-button" id="delete-version" type="button">
-              删除当前版本
-            </button>
-            <button
-              class="secondary-button"
-              id="export-excel"
-              type="button"
-            >
-              导出全部 Excel
-            </button>
-            <button
-              class="secondary-button"
-              id="import-excel"
-              type="button"
-            >
-              导入 Excel
-            </button>
-            <input
-              id="import-excel-file"
-              type="file"
-              accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-              hidden
-            />
           </div>
+
+          <div class="sub-tabs-bar">
+            <div class="version-tabs" id="version-tabs" role="tablist" aria-label="评测版本列表"></div>
+            <div class="version-name-wrap">
+              <input id="version-name" type="text" autocomplete="off" placeholder="版本名称（可选）" />
+            </div>
+          </div>
+
+          <input id="import-excel-file" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden />
         </section>
 
-        <section
-          class="panel import-report"
-          id="import-report"
-          hidden
-        >
-          <div class="section-heading panel-heading">
-            <div>
-              <h2>Excel 导入结果</h2>
-              <p
-                id="import-report-summary"
-                role="status"
-                aria-live="polite"
-                aria-atomic="true"
-              ></p>
-            </div>
-            <button
-              class="secondary-button"
-              id="close-import-report"
-              type="button"
-            >
-              关闭
-            </button>
-          </div>
+        <!-- Import Report (minimal inline) -->
+        <div id="import-report" hidden>
+          <p id="import-report-summary" role="status" aria-live="polite" aria-atomic="true"></p>
           <ol class="import-error-list" id="import-error-list"></ol>
-        </section>
-
-        <div class="evaluation-layout">
-          <section class="panel input-panel">
-            <div class="panel-heading">
-              <h2>评测输入</h2>
-            </div>
-
-            <div class="form-field">
-              <label for="question">原始问题</label>
-              <p class="field-help" id="question-help">
-                填写待评模型应回答的完整问题。
-              </p>
-              <textarea
-                id="question"
-                name="question"
-                rows="8"
-                aria-describedby="question-help question-error"
-                placeholder="粘贴原始问题"
-              ></textarea>
-              <p class="field-error" id="question-error" role="alert"></p>
-            </div>
-
-            <div class="form-field">
-              <label for="rubric">评分标准</label>
-              <p class="field-help" id="rubric-help">
-                粘贴与原始问题对应的完整评分标准。
-              </p>
-              <textarea
-                id="rubric"
-                name="rubric"
-                rows="12"
-                aria-describedby="rubric-help rubric-error"
-                placeholder="粘贴评分标准"
-              ></textarea>
-              <p class="field-error" id="rubric-error" role="alert"></p>
-            </div>
-          </section>
-
-          <section class="panel candidates-panel" aria-labelledby="candidates-title">
-            <div class="section-heading panel-heading">
-              <div>
-                <h2 id="candidates-title">待评回答</h2>
-                <p>填写模型名称和对应回答，可添加多份。</p>
-              </div>
-              <button class="secondary-button" id="add-candidate" type="button">
-                添加回答
-              </button>
-            </div>
-            <div
-              class="candidate-tabs"
-              id="candidate-tabs"
-              role="tablist"
-              aria-label="待评回答列表"
-            ></div>
-            <div id="candidates-list"></div>
-
-            <div class="form-actions">
-              <button id="submit-evaluation" type="submit">
-                评测当前版本未评测记录
-              </button>
-              <button
-                class="secondary-button"
-                id="reevaluate-version"
-                type="button"
-              >
-                重新评测当前版本全部记录
-              </button>
-              <button
-                class="secondary-button"
-                id="evaluate-multiple-versions"
-                type="button"
-              >
-                评测多个版本
-              </button>
-              <button
-                class="danger-button"
-                id="stop-evaluation"
-                type="button"
-                hidden
-              >
-                终止评测
-              </button>
-              <p class="form-status" id="form-status" aria-live="polite"></p>
-            </div>
-          </section>
+          <button class="secondary-button" id="close-import-report" type="button" style="display:none;">关闭</button>
         </div>
 
-        <section class="panel result-panel" aria-live="polite">
-          <div class="panel-heading">
-            <h2>评测结果</h2>
+        <!-- ===== ZONE 2 · 评测准备 ===== -->
+        <section class="zone zone-2">
+          <div class="zone-label-bar">
+            <span class="zone-tag" style="background:#34a853;">Zone 2</span>
+            <span class="zone-name">评测准备</span>
+            <span class="zone-desc">原始问题 · 评分标准 · 模型回答</span>
           </div>
 
-          <div class="empty-state" id="result-content">
-            <h3>还没有评测结果</h3>
-            <p>填写输入并开始评测后，这里会显示逐项判定、得分和排序。</p>
+          <div class="prep-grid">
+            <!-- Column 1: 原始问题 -->
+            <div class="prep-card">
+              <div class="card-head">
+                <span class="card-emoji">📝</span>
+                <span class="card-title">原始问题</span>
+                <span class="card-extra">必填</span>
+              </div>
+              <div class="form-field">
+                <p class="field-help" id="question-help">填写待评模型应回答的完整问题。</p>
+                <textarea id="question" name="question" rows="8" aria-describedby="question-help question-error" placeholder="粘贴原始问题"></textarea>
+                <p class="field-error" id="question-error" role="alert"></p>
+              </div>
+            </div>
+
+            <!-- Column 2: 评分标准 -->
+            <div class="prep-card">
+              <div class="card-head">
+                <span class="card-emoji">📋</span>
+                <span class="card-title">评分标准</span>
+                <span class="card-extra">必填</span>
+              </div>
+              <div class="form-field">
+                <p class="field-help" id="rubric-help">粘贴与原始问题对应的完整评分标准。</p>
+                <textarea id="rubric" name="rubric" rows="12" aria-describedby="rubric-help rubric-error" placeholder="粘贴评分标准"></textarea>
+                <p class="field-error" id="rubric-error" role="alert"></p>
+              </div>
+            </div>
+
+            <!-- Column 3: 模型回答 -->
+            <div class="prep-card">
+              <div class="card-head">
+                <span class="card-emoji">🤖</span>
+                <span class="card-title">模型回答</span>
+                <span class="card-extra" id="candidate-count">0 个模型</span>
+              </div>
+              <div class="candidate-tabs" id="candidate-tabs" role="tablist" aria-label="待评回答列表"></div>
+              <div id="candidates-list"></div>
+              <button class="add-model-btn" id="add-candidate" type="button">➕ 添加模型回答</button>
+            </div>
           </div>
         </section>
+
+        <!-- ===== ZONE 3 · 评测执行 ===== -->
+        <section class="zone zone-3">
+          <div class="zone-label-bar">
+            <span class="zone-tag" style="background:#fbbc04;">Zone 3</span>
+            <span class="zone-name">评测执行</span>
+            <span class="zone-desc">重新评测 · 终止 · 进度状态</span>
+          </div>
+
+          <div class="action-bar">
+            <div class="action-buttons-group">
+              <button id="submit-evaluation" type="submit" class="a-btn primary" hidden>▶ 评测未评测记录</button>
+              <button id="reevaluate-version" type="button" class="a-btn secondary">🔄 重新评测全部</button>
+              <button id="evaluate-multiple-versions" type="button" class="a-btn secondary" hidden>📚 评测多个版本</button>
+              <button id="stop-evaluation" type="button" class="a-btn danger" hidden>⏹ 终止评测</button>
+            </div>
+            <p class="form-status" id="form-status" aria-live="polite"></p>
+          </div>
+        </section>
+
+        <!-- ===== ZONE 4 · 评测结果 ===== -->
+        <section class="zone zone-4">
+          <div class="zone-label-bar">
+            <span class="zone-tag" style="background:#a855f7;">Zone 4</span>
+            <span class="zone-name">评测结果</span>
+            <span class="zone-desc">逐项评分 · 排名 · 校验</span>
+          </div>
+
+          <div class="result-body" id="result-content">
+            <div class="empty-state">
+              <h3>还没有评测结果</h3>
+              <p>填写输入并开始评测后，这里会显示逐项判定、得分和排序。</p>
+            </div>
+          </div>
+        </section>
+
       </form>
 
+      <!-- ===== Dialogs ===== -->
       <dialog class="confirm-dialog" id="delete-version-dialog">
         <form method="dialog">
-          <h2>删除当前评测版本？</h2>
-          <p id="delete-version-message">
-            该版本下的问题、评分标准、模型回答和评测结果都将一起删除。
-          </p>
+          <h2>🗑 删除当前评测版本？</h2>
+          <p id="delete-version-message">该版本下的问题、评分标准、模型回答和评测结果都将一起删除。</p>
           <div class="dialog-actions">
-            <button
-              class="secondary-button"
-              id="cancel-delete-version"
-              value="cancel"
-            >
-              取消
-            </button>
-            <button class="danger-button" id="confirm-delete-version" value="confirm">
-              确认删除
-            </button>
+            <button class="secondary-button" id="cancel-delete-version" value="cancel">取消</button>
+            <button class="danger-button" id="confirm-delete-version" value="confirm">确认删除</button>
           </div>
         </form>
       </dialog>
 
       <dialog class="confirm-dialog multi-version-dialog" id="multi-version-dialog">
         <form method="dialog">
-          <h2>选择要评测的版本</h2>
+          <h2>📋 选择要评测的版本</h2>
           <p>选择一个或多个版本，然后决定只评测未评测记录，或重新评测全部记录。</p>
           <div class="multi-version-list" id="multi-version-list"></div>
           <p class="field-error" id="multi-version-error" role="alert"></p>
           <div class="dialog-actions multi-version-actions">
             <button class="secondary-button" value="cancel">取消</button>
-            <button
-              class="secondary-button"
-              id="evaluate-selected-unscored"
-              type="button"
-            >
-              评测未评测记录
-            </button>
-            <button id="reevaluate-selected-all" type="button">
-              重新评测全部记录
-            </button>
+            <button class="secondary-button" id="evaluate-selected-unscored" type="button">评测未评测记录</button>
+            <button id="reevaluate-selected-all" type="button">重新评测全部记录</button>
           </div>
         </form>
       </dialog>

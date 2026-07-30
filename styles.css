@@ -158,6 +158,26 @@ h1 {
   background: #fff7f6;
 }
 
+.g-btn-tiny {
+  flex: 0 0 auto;
+  padding: 4px 10px;
+  font-size: 11px;
+  border-radius: 6px;
+  border: 1px solid #e5e5ea;
+  background: #fff;
+  color: #86868b;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  min-height: auto;
+  line-height: 1.4;
+}
+
+.g-btn-tiny:hover {
+  background: #f5f5f7;
+  color: #222;
+}
+
 .sub-tabs-bar {
   display: flex;
   align-items: center;
@@ -454,6 +474,11 @@ textarea {
 textarea {
   min-height: 140px;
   resize: vertical;
+}
+
+input[hidden],
+textarea[hidden] {
+  display: none !important;
 }
 
 input:focus,
