@@ -16,6 +16,18 @@ Model Evaluation/
 ├── index.html
 ├── styles.css
 ├── app.js
+├── src/
+│   ├── namespace.js
+│   ├── constants.js
+│   ├── state-store.js
+│   ├── evaluation-orchestrator.js
+│   ├── evaluation-result-policy.js
+│   ├── excel-schema.js
+│   ├── excel-row-mapper.js
+│   ├── excel-exporter.js
+│   └── excel-importer.js
+├── tests/
+├── vendor/sheetjs/
 ├── config.example.js
 ├── config.js                 # 本地文件，已被 Git 忽略
 ├── .gitignore
@@ -42,13 +54,13 @@ Model Evaluation/
 ## 3. 主应用数据流
 
 ```text
-用户填写问题、标准、模型名和回答
+用户创建版本并填写问题、标准、模型名和回答
               │
               ▼
       读取并校验页面输入
               │
               ▼
-   为每个候选回答创建独立 Job
+   为选定记录创建独立 Job
               │
               ▼
   并发调用 DeepSeek Chat Completions
@@ -69,11 +81,43 @@ Model Evaluation/
               │
               ▼
  渲染排名、模型标签与结果详情
+              │
+              ▼
+    状态写回所属版本和记录
 ```
+
+Excel 导出从 Store 生成只含一个工作表的快照；Excel 导入先做文件级和逐行校验，再用全部合法行替换 Store。评测运行期间，导入和导出入口保持禁用。
 
 ## 4. 运行时数据
 
-项目没有持久化表结构。以下对象只存在于浏览器内存中。
+项目没有数据库。页面状态存在浏览器内存中，用户可以主动导出 Excel 作为完整快照。
+
+### 版本级状态
+
+```js
+{
+  schemaVersion: "A2.1",
+  activeVersionId: String,
+  versions: [{
+    id: String,
+    name: String,
+    question: String,
+    rubric: String,
+    firstExportedAt: String | null,
+    updatedAt: String,
+    records: [{
+      id: String,
+      modelName: String,
+      answer: String,
+      status: "unscored" | "evaluating" | "success" |
+        "request-error" | "parse-error" | "terminated",
+      result: Object | null,
+      error: Object | null,
+      rawResponse: String
+    }]
+  }]
+}
+```
 
 ### 评测输入
 
@@ -157,6 +201,16 @@ Model Evaluation/
 - 暴露少量调试入口到 `window`，便于浏览器手动验证。
 - 使用 `fetch` 调用外部模型服务。
 
+### A2 领域模块：`src/`
+
+- `state-store.js` 管理版本、记录和时间字段。
+- `evaluation-orchestrator.js` 以最大并发 99 调度任务并支持终止。
+- `evaluation-result-policy.js` 决定最新结果覆盖和旧成功结果保留规则。
+- `excel-schema.js` 固定一个工作表和 18 列。
+- `excel-row-mapper.js` 负责内部记录与 Excel 行互转。
+- `excel-exporter.js` 生成工作簿并同步第一次导出时间。
+- `excel-importer.js` 校验文件与行，拒绝公式/宏，并生成错误报告。
+
 ### 本地配置：`config.example.js` / `config.js`
 
 - 模板文件提供配置对象结构。
@@ -171,14 +225,14 @@ Model Evaluation/
 
 ## 6. 外部依赖与边界
 
-唯一运行时外部服务是 DeepSeek API。请求由浏览器直接发出，因此：
+运行时外部服务是 DeepSeek API；本地内置的 SheetJS CE 0.20.3 负责 Excel 读写。请求由浏览器直接发出，因此：
 
 - 网络、API 可用性和浏览器跨域策略会影响运行。
 - Key 会出现在浏览器请求上下文中。
 - 没有后端可以代替客户端隐藏凭据、限流或审计。
-- 同时评测多个回答会产生多个并发请求。
+- 同时评测多个回答会产生多个并发请求，当前上限为 99。
 
-支持的浏览器版本、API 费用控制和最大并发数量：**待确认**。
+支持的浏览器版本和 API 费用控制：**待确认**。
 
 ## 7. 失败处理
 
@@ -193,4 +247,7 @@ Model Evaluation/
 | 裁判内容为空 | 标记错误 |
 | 裁判 JSON 不合规 | 标记 `parse-error`，保留原文 |
 | 部分候选失败 | 其他候选仍可完成并展示 |
-
+| 用户终止 | 未完成且没有旧成功结果的记录标记为 `terminated` |
+| 导入文件整体无效 | 保留网页数据并显示原因 |
+| 导入部分行无效 | 导入合法行，跳过并列出错误行 |
+| Excel 含公式或宏 | 拒绝整个文件，不执行或信任其内容 |
