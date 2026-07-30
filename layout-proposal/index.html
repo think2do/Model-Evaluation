@@ -1,0 +1,1018 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>布局方案讨论 — 模型回答裁判器</title>
+  <style>
+    /* ===== 配色方案 ===== */
+    [data-theme="default"] {
+      --bg: #f5f5f7;
+      --card: #ffffff;
+      --border: #e5e5ea;
+      --border-light: #f0f0f2;
+      --text: #1d1d1f;
+      --text-secondary: #86868b;
+      --accent: #0071e3;
+      --success: #30b94e;
+      --danger: #d32f2f;
+      --zone1: #4285f4;
+      --zone2: #34a853;
+      --zone3: #fbbc04;
+      --zone3-bg: #fef7e0;
+      --zone4: #a855f7;
+      --zone1-bg: #f0f6ff;
+      --zone2-bg: #f0faf3;
+      --zone4-bg: #f8f3ff;
+    }
+
+    /* 方案 2: 暖橙色系 */
+    [data-theme="warm"] {
+      --bg: #fdf6f0;
+      --card: #fffcf8;
+      --border: #f0dccb;
+      --border-light: #f5ebe0;
+      --text: #2c1f12;
+      --text-secondary: #8a7a6a;
+      --accent: #d97c2b;
+      --success: #2e8b57;
+      --danger: #c44536;
+      --zone1: #d97c2b;
+      --zone2: #5a8f5c;
+      --zone3: #c9a84c;
+      --zone4: #9b6fa0;
+      --zone1-bg: #fef0e0;
+      --zone2-bg: #edf5ea;
+      --zone3-bg: #fcf3d6;
+      --zone4-bg: #f5edf6;
+    }
+
+    /* 方案 3: 冷蓝灰系 */
+    [data-theme="cool"] {
+      --bg: #edf2f7;
+      --card: #ffffff;
+      --border: #d6e0eb;
+      --border-light: #e8eef4;
+      --text: #1a2332;
+      --text-secondary: #6b7a8e;
+      --accent: #2563eb;
+      --success: #0f973d;
+      --danger: #dc2626;
+      --zone1: #2563eb;
+      --zone2: #0f973d;
+      --zone3: #d97706;
+      --zone4: #7c3aed;
+      --zone1-bg: #eff6ff;
+      --zone2-bg: #f0fdf4;
+      --zone3-bg: #fffbeb;
+      --zone4-bg: #f5f3ff;
+    }
+
+    /* 方案 4: 深色高对比系 */
+    [data-theme="dark"] {
+      --bg: #0d1117;
+      --card: #161b22;
+      --border: #30363d;
+      --border-light: #21262d;
+      --text: #e6edf3;
+      --text-secondary: #8b949e;
+      --accent: #58a6ff;
+      --success: #3fb950;
+      --danger: #f85149;
+      --zone1: #58a6ff;
+      --zone2: #3fb950;
+      --zone3: #d29922;
+      --zone4: #bc8cff;
+      --zone1-bg: #0c2d6b;
+      --zone2-bg: #0b3624;
+      --zone3-bg: #3d2e00;
+      --zone4-bg: #2a1466;
+    }
+
+    :root {
+      --font: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', sans-serif;
+    }
+
+    /* ===== 布局样式 ===== */
+    /* 样式 1: 圆润现代 (默认) */
+    [data-style="rounded"] {
+      --page-radius: 16px;
+      --card-radius: 10px;
+      --card-radius-sm: 8px;
+      --tab-radius: 999px;
+      --btn-radius: 8px;
+      --input-radius: 6px;
+      --shadow-page: 0 2px 20px rgba(0,0,0,0.06);
+      --shadow-card: 0 1px 6px rgba(0,0,0,0.04);
+      --spacing-page: 32px;
+      --spacing-zone: 24px;
+      --spacing-card: 16px;
+      --spacing-tight: 8px;
+      --border-thick: 1px;
+      --zone-alpha: 1;
+      --zone-border: solid;
+      --card-bg: #ffffff;
+      --zone-header-weight: 600;
+      --zone-header-size: 13px;
+    }
+
+    /* 样式 2: 简洁商务 */
+    [data-style="corporate"] {
+      --page-radius: 6px;
+      --card-radius: 4px;
+      --card-radius-sm: 3px;
+      --tab-radius: 4px;
+      --btn-radius: 3px;
+      --input-radius: 3px;
+      --shadow-page: none;
+      --shadow-card: none;
+      --spacing-page: 24px;
+      --spacing-zone: 16px;
+      --spacing-card: 12px;
+      --spacing-tight: 6px;
+      --border-thick: 1px;
+      --zone-alpha: 0.4;
+      --zone-border: dashed;
+      --card-bg: transparent;
+      --zone-header-weight: 500;
+      --zone-header-size: 12px;
+    }
+
+    /* 样式 3: 个性卡片 */
+    [data-style="playful"] {
+      --page-radius: 12px;
+      --card-radius: 14px;
+      --card-radius-sm: 10px;
+      --tab-radius: 8px;
+      --btn-radius: 10px;
+      --input-radius: 8px;
+      --shadow-page: 0 4px 24px rgba(0,0,0,0.08);
+      --shadow-card: 0 4px 16px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+      --spacing-page: 36px;
+      --spacing-zone: 28px;
+      --spacing-card: 20px;
+      --spacing-tight: 10px;
+      --border-thick: 2px;
+      --zone-alpha: 0.15;
+      --zone-border: solid;
+      --card-bg: #ffffff;
+      --zone-header-weight: 700;
+      --zone-header-size: 14px;
+    }
+
+    /* 应用布局变量到现有元素 */
+    body { padding: var(--spacing-page); }
+    .demo-page { border-radius: var(--page-radius); box-shadow: var(--shadow-page); }
+    .banner { border-radius: var(--page-radius); }
+    .legend { border-radius: var(--card-radius); }
+    .zone { padding: var(--spacing-zone); }
+    .global-bar { padding: 12px 0 16px; }
+    .sub-tabs { padding: 0 0 12px; }
+    .prep-grid { padding: 12px 0 20px; }
+    .prep-card { border-radius: var(--card-radius); }
+    .prep-card .card-head { margin-bottom: var(--spacing-card); }
+    .result-body { padding: 12px 0 24px; }
+    .ranking-box { border-radius: var(--card-radius); }
+    .m-card { border-radius: var(--card-radius-sm); }
+    .s-item { border-radius: var(--card-radius-sm); }
+    .verify-box { border-radius: var(--card-radius-sm); }
+    .action-area { padding: 16px 0; }
+    .g-btn { border-radius: var(--btn-radius); }
+    .a-btn { border-radius: var(--btn-radius); }
+    .sub-tab { border-radius: var(--tab-radius); }
+    .a-tab { border-radius: var(--tab-radius); }
+    .r-tab { border-radius: var(--tab-radius); }
+    .version-group { border-radius: var(--card-radius-sm); }
+    .prep-card .mock-textarea { border-radius: var(--input-radius); }
+    .prep-card .mock-input { border-radius: var(--input-radius); }
+    .scheme-btn { border-radius: var(--tab-radius); }
+    .style-btn { border-radius: var(--tab-radius); }
+    /* Zone backgrounds */
+    .zone-1 { background: var(--zone1-bg); }
+    .zone-2 { background: var(--zone2-bg); }
+    .zone-3 { background: var(--zone3-bg); }
+    .zone-4 { background: var(--zone4-bg); }
+    .zone { border-bottom: var(--border-thick) var(--zone-border) var(--border-light); }
+    .zone:last-child { border-bottom: none; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      padding: 32px;
+    }
+
+    /* ===== Header Banner ===== */
+    .banner {
+      max-width: 1300px;
+      margin: 0 auto 32px;
+      padding: 24px 32px;
+      background: linear-gradient(135deg, #1d1d1f 0%, #2d2d2f 100%);
+      border-radius: 16px;
+      color: #fff;
+    }
+    .banner h1 {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .banner h1 .badge {
+      font-size: 12px;
+      background: rgba(255,255,255,0.15);
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-weight: 400;
+    }
+    .banner p {
+      color: rgba(255,255,255,0.7);
+      font-size: 14px;
+      line-height: 1.6;
+      max-width: 700px;
+    }
+
+    .scheme-switcher {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      flex-wrap: wrap;
+    }
+    .scheme-btn {
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.25);
+      background: transparent;
+      color: rgba(255,255,255,0.7);
+      font-size: 12px;
+      font-family: var(--font);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .scheme-btn:hover {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+    }
+    .scheme-btn.active {
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+      border-color: rgba(255,255,255,0.5);
+    }
+    .style-btn {
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.25);
+      background: transparent;
+      color: rgba(255,255,255,0.7);
+      font-size: 12px;
+      font-family: var(--font);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .style-btn:hover {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+    }
+    .style-btn.active {
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+      border-color: rgba(255,255,255,0.5);
+    }
+
+    /* ===== Zone Legend ===== */
+    .legend {
+      max-width: 1300px;
+      margin: 0 auto 20px;
+      display: flex;
+      gap: 24px;
+      padding: 12px 20px;
+      background: #fff;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    /* ===== Demo Page ===== */
+    .demo-page {
+      max-width: 1300px;
+      margin: 0 auto 32px;
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+      border: 1px solid var(--border);
+    }
+
+    /* ===== Zone Common ===== */
+    .zone {
+      padding: 0;
+    }
+    .zone-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 28px 0;
+    }
+    .zone-header .zone-tag {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      color: #fff;
+    }
+    .zone-header .zone-desc {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-left: auto;
+    }
+
+    /* ================================================================ */
+    /* ZONE 1: 全局工具栏 */
+    /* ================================================================ */
+    .zone-1 { background: #fff; }
+    .zone-1 .zone-tag { background: var(--zone1); }
+
+    .global-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 28px 16px;
+      gap: 16px;
+    }
+
+    .app-identity {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .app-identity h1 {
+      font-size: 20px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .version-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: var(--bg);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    .version-group .current-v {
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .version-group .v-switch {
+      font-size: 11px;
+      color: var(--text-secondary);
+      padding: 2px 6px;
+      border-radius: 4px;
+      cursor: default;
+    }
+    .version-group .v-switch:hover { background: #e8e8ed; }
+
+    .global-actions {
+      display: flex;
+      gap: 6px;
+    }
+    .g-btn {
+      padding: 6px 12px;
+      font-size: 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text-secondary);
+      cursor: default;
+      white-space: nowrap;
+    }
+    .g-btn:hover { background: var(--bg); }
+    .g-btn.danger { color: var(--danger); border-color: #f5c6c6; }
+
+    .sub-tabs {
+      display: flex;
+      gap: 4px;
+      padding: 0 28px 12px;
+    }
+    .sub-tab {
+      padding: 4px 14px;
+      font-size: 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text-secondary);
+      cursor: default;
+    }
+    .sub-tab.active {
+      background: var(--text);
+      color: #fff;
+      border-color: var(--text);
+    }
+
+    /* ================================================================ */
+    /* ZONE 2: 评测准备 */
+    /* ================================================================ */
+    .zone-2 { background: #fff; border-top: 1px solid var(--border-light); }
+    .zone-2 .zone-tag { background: var(--zone2); }
+
+    .prep-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+      padding: 12px 28px 20px;
+    }
+
+    .prep-card {
+      padding: 16px;
+      background: var(--zone2-bg);
+      border-radius: 10px;
+      border: 1px solid #d4edda;
+    }
+    .prep-card .card-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .prep-card .card-head .emoji { font-size: 16px; }
+    .prep-card .card-head .title {
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .prep-card .card-head .extra {
+      font-size: 11px;
+      color: var(--text-secondary);
+      font-weight: 400;
+      margin-left: auto;
+    }
+
+    .mock-field {
+      margin-bottom: 10px;
+    }
+    .mock-field .label {
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      display: block;
+    }
+    .mock-field .help {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+
+    .mock-textarea {
+      width: 100%;
+      min-height: 72px;
+      background: #fff;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+    .mock-textarea.tall { min-height: 100px; }
+    .mock-textarea.short { min-height: 36px; }
+
+    .answer-tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .a-tab {
+      padding: 4px 10px;
+      font-size: 11px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text-secondary);
+      cursor: default;
+    }
+    .a-tab.active {
+      background: var(--text);
+      color: #fff;
+      border-color: var(--text);
+    }
+
+    .add-model-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 12px;
+      font-size: 12px;
+      border-radius: 6px;
+      border: 1px dashed var(--border);
+      background: #fff;
+      color: var(--text-secondary);
+      cursor: default;
+      margin-top: 8px;
+    }
+    .add-model-btn:hover { background: var(--bg); }
+
+    /* Zone 3 action area */
+    .action-area {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 28px 16px;
+      border-top: 1px solid var(--border-light);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .action-btns {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .a-btn {
+      padding: 9px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      border: none;
+      cursor: default;
+    }
+    .a-btn.primary { background: var(--text); color: #fff; }
+    .a-btn.primary:hover { background: #333; }
+    .a-btn.secondary { background: #fff; color: var(--text); border: 1px solid var(--border); }
+    .a-btn.secondary:hover { background: var(--bg); }
+    .a-btn.danger { background: var(--danger); color: #fff; }
+    .a-btn:disabled { opacity: 0.5; }
+
+    .action-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    .spinner {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+    }
+
+    /* ================================================================ */
+    /* ZONE 4: 评测结果 */
+    /* ================================================================ */
+    .zone-4 { background: #fff; border-top: 1px solid var(--border-light); }
+    .zone-4 .zone-tag { background: var(--zone4); }
+
+    .result-body {
+      padding: 12px 28px 24px;
+    }
+
+    .result-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .result-top h3 {
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .result-top .meta {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .result-tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+    .r-tab {
+      padding: 6px 16px;
+      font-size: 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text-secondary);
+      cursor: default;
+    }
+    .r-tab.active { background: var(--text); color: #fff; border-color: var(--text); }
+
+    /* Ranking */
+    .ranking-box {
+      padding: 16px;
+      background: var(--bg);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      margin-bottom: 20px;
+    }
+    .ranking-box .rank-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .rank-row {
+      display: grid;
+      grid-template-columns: 56px 1fr auto;
+      gap: 10px;
+      padding: 8px 12px;
+      background: #fff;
+      border-radius: 6px;
+      font-size: 13px;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+    .rank-row:last-child { margin-bottom: 0; }
+    .rank-row .pos { font-weight: 600; }
+    .rank-row .score { font-weight: 600; }
+
+    /* Detail area: 2 columns */
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .metrics-row {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+    .m-card {
+      padding: 12px;
+      background: var(--bg);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    .m-card .m-label { font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; }
+    .m-card .m-value { font-size: 18px; font-weight: 700; }
+    .m-card .m-value.green { color: var(--success); }
+
+    .score-col .col-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .s-item {
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      border-left: 4px solid #ccc;
+      margin-bottom: 8px;
+      background: #fff;
+    }
+    .s-item.pass { border-left-color: var(--success); }
+    .s-item.fail { border-left-color: var(--danger); }
+    .s-item .si-hd {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .s-item .si-name { font-size: 13px; font-weight: 600; }
+    .s-item .si-badge {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .s-item.pass .si-badge { background: #e6f4ea; color: var(--success); }
+    .s-item.fail .si-badge { background: #fce8e6; color: var(--danger); }
+    .s-item .si-reason { font-size: 12px; color: var(--text-secondary); }
+
+    .verify-box {
+      grid-column: 1 / -1;
+      padding: 12px 16px;
+      background: #e6f4ea;
+      border-radius: 8px;
+      border: 1px solid #b7e1c1;
+      font-size: 13px;
+    }
+    .verify-box strong { color: var(--success); }
+
+    /* ===== Annotation ===== */
+    .annotation {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 16px 20px;
+      background: #fef7e0;
+      border-radius: 10px;
+      border: 1px solid #fde69c;
+      font-size: 13px;
+      color: #5f4b00;
+      line-height: 1.8;
+    }
+    .annotation strong { color: #332b00; }
+    .annotation code {
+      background: rgba(0,0,0,0.06);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+
+    /* ===== Responsive hint ===== */
+    .resp-note {
+      max-width: 1300px;
+      margin: -24px auto 32px;
+      text-align: right;
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+  </style>
+</head>
+<body data-theme="default" data-style="rounded">
+
+<!-- ===== Banner ===== -->
+<div class="banner">
+  <h1>
+    🎯 功能分区方案 · 建议布局
+    <span class="badge">纯界面 Demo · 无功能逻辑</span>
+  </h1>
+  <p>
+    这个页面展示了重组后的功能分区结构。点击下方按钮切换配色方案。
+  </p>
+  <div class="scheme-switcher">
+    <span style="font-size:12px;color:rgba(255,255,255,0.6);">🎨 配色：</span>
+    <button class="scheme-btn active" data-scheme="default">◉ 默认中性</button>
+    <button class="scheme-btn" data-scheme="warm">◉ 暖橙</button>
+    <button class="scheme-btn" data-scheme="cool">◉ 冷蓝灰</button>
+    <button class="scheme-btn" data-scheme="dark">◉ 深色高对比</button>
+  </div>
+  <div class="scheme-switcher" style="margin-top:8px;">
+    <span style="font-size:12px;color:rgba(255,255,255,0.6);">📐 布局：</span>
+    <button class="style-btn active" data-style="rounded">◉ 圆润现代</button>
+    <button class="style-btn" data-style="corporate">◉ 简洁商务</button>
+    <button class="style-btn" data-style="playful">◉ 个性卡片</button>
+  </div>
+</div>
+
+<!-- ===== Legend ===== -->
+<div class="legend">
+  <div class="legend-item"><span class="legend-dot" style="background:var(--zone1);"></span> Zone 1 · 全局控制</div>
+  <div class="legend-item"><span class="legend-dot" style="background:var(--zone2);"></span> Zone 2 · 评测准备</div>
+  <div class="legend-item"><span class="legend-dot" style="background:var(--zone3);"></span> Zone 3 · 评测执行</div>
+  <div class="legend-item"><span class="legend-dot" style="background:var(--zone4);"></span> Zone 4 · 评测结果</div>
+</div>
+
+<!-- ================================================================ -->
+<!-- DEMO PAGE -->
+<!-- ================================================================ -->
+<div class="demo-page">
+
+  <!-- ===== ZONE 1 · 全局控制 ===== -->
+  <div class="zone zone-1">
+    <div class="zone-header">
+      <span class="zone-tag">Zone 1</span>
+      <span style="font-size:13px;font-weight:600;">全局控制</span>
+      <span class="zone-desc">版本管理 · 数据导入导出 · 全局设置</span>
+    </div>
+
+    <div class="global-bar">
+      <div class="app-identity">
+        <h1>🏠 模型回答裁判器</h1>
+        <div class="version-group">
+          <span class="current-v">📁 基准测试 v1</span>
+          <span class="v-switch">▾ 切换</span>
+        </div>
+      </div>
+      <div class="global-actions">
+        <span class="g-btn">➕ 新建版本</span>
+        <span class="g-btn">✏️ 重命名</span>
+        <span class="g-btn">📤 导出 Excel</span>
+        <span class="g-btn">📥 导入 Excel</span>
+        <span class="g-btn danger">🗑 删除</span>
+      </div>
+    </div>
+
+    <!-- 版本快速切换标签 -->
+    <div class="sub-tabs">
+      <span class="sub-tab active">基准测试 v1</span>
+      <span class="sub-tab">对比测试 v2</span>
+      <span class="sub-tab">回归验证 v3</span>
+    </div>
+  </div>
+
+  <!-- ===== ZONE 2 · 评测准备 ===== -->
+  <div class="zone zone-2">
+    <div class="zone-header">
+      <span class="zone-tag">Zone 2</span>
+      <span style="font-size:13px;font-weight:600;">评测准备</span>
+      <span class="zone-desc">输入原始问题 · 评分标准 · 模型回答</span>
+    </div>
+
+    <!-- 三栏输入 -->
+    <div class="prep-grid">
+      <!-- 原始问题 -->
+      <div class="prep-card">
+        <div class="card-head">
+          <span class="emoji">📝</span>
+          <span class="title">原始问题</span>
+          <span class="extra">必填</span>
+        </div>
+        <div class="mock-field">
+          <span class="help">填写待评模型应回答的完整问题。</span>
+          <div class="mock-textarea"></div>
+        </div>
+      </div>
+
+      <!-- 评分标准 -->
+      <div class="prep-card">
+        <div class="card-head">
+          <span class="emoji">📋</span>
+          <span class="title">评分标准</span>
+          <span class="extra">必填</span>
+        </div>
+        <div class="mock-field">
+          <span class="help">粘贴与原始问题对应的完整评分标准。</span>
+          <div class="mock-textarea tall"></div>
+        </div>
+      </div>
+
+      <!-- 模型回答 -->
+      <div class="prep-card">
+        <div class="card-head">
+          <span class="emoji">🤖</span>
+          <span class="title">模型回答</span>
+          <span class="extra">3 个模型</span>
+        </div>
+        <div class="answer-tabs">
+          <span class="a-tab active">GPT-4o</span>
+          <span class="a-tab">Claude 3</span>
+          <span class="a-tab">Gemini Pro</span>
+          <span class="a-tab" style="border-style:dashed;color:var(--accent);">+ 添加</span>
+        </div>
+        <div class="mock-field">
+          <span class="label">模型名称</span>
+          <div class="mock-textarea short" style="min-height:32px;"></div>
+        </div>
+        <div class="mock-field">
+          <span class="label">回答内容</span>
+          <div class="mock-textarea"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== ZONE 3 · 评测执行 ===== -->
+  <div class="zone zone-3">
+    <div class="zone-header">
+      <span class="zone-tag" style="background:var(--zone3);">Zone 3</span>
+      <span style="font-size:13px;font-weight:600;">评测执行</span>
+      <span class="zone-desc">发起评测 · 重新评测 · 多版本 · 终止 · 进度状态</span>
+    </div>
+
+    <div class="action-area">
+      <div class="action-btns">
+        <span class="a-btn primary">▶ 评测未评测记录</span>
+        <span class="a-btn secondary">🔄 重新评测全部</span>
+        <span class="a-btn secondary">📚 评测多个版本</span>
+        <span class="a-btn danger" disabled style="opacity:0.5;">⏹ 终止评测</span>
+      </div>
+      <div class="action-info">
+        <span>进度：3 / 5 完成</span>
+        <div class="spinner"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ZONE 4 · 评测结果 ===== -->
+  <div class="zone zone-4">
+    <div class="zone-header">
+      <span class="zone-tag">Zone 4</span>
+      <span style="font-size:13px;font-weight:600;">评测结果</span>
+      <span class="zone-desc">逐项评分 · 排名 · 校验</span>
+    </div>
+
+    <div class="result-body">
+      <!-- 头部 -->
+      <div class="result-top">
+        <h3>🏆 评测结果</h3>
+        <div class="meta">评测完成 · 2026-07-30 · 3 个模型</div>
+      </div>
+
+      <!-- 模型标签 -->
+      <div class="result-tabs">
+        <span class="r-tab active">GPT-4o</span>
+        <span class="r-tab">Claude 3</span>
+        <span class="r-tab">Gemini Pro</span>
+      </div>
+
+      <!-- 排名 -->
+      <div class="ranking-box">
+        <div class="rank-title">📊 排名汇总</div>
+        <div class="rank-row">
+          <span class="pos">🥇 1</span>
+          <span>GPT-4o</span>
+          <span class="score">12/13 · 92%</span>
+        </div>
+        <div class="rank-row">
+          <span class="pos">🥇 1</span>
+          <span>Claude 3</span>
+          <span class="score">12/13 · 92%</span>
+        </div>
+        <div class="rank-row">
+          <span class="pos">🥉 3</span>
+          <span>Gemini Pro</span>
+          <span class="score">10/13 · 77%</span>
+        </div>
+      </div>
+
+      <!-- 详细：双栏 -->
+      <div class="detail-grid">
+        <!-- 指标 -->
+        <div class="metrics-row">
+          <div class="m-card"><div class="m-label">原始分</div><div class="m-value">12</div></div>
+          <div class="m-card"><div class="m-label">最终分</div><div class="m-value">12</div></div>
+          <div class="m-card"><div class="m-label">得分率</div><div class="m-value green">92%</div></div>
+          <div class="m-card"><div class="m-label">满分</div><div class="m-value">13</div></div>
+        </div>
+
+        <!-- 通过项 -->
+        <div class="score-col">
+          <div class="col-title" style="color:var(--success);">✅ 通过项</div>
+          <div class="s-item pass">
+            <div class="si-hd"><span class="si-name">C01 — 回答完整性</span><span class="si-badge">1 分</span></div>
+            <div class="si-reason">回答完整覆盖了用户问题中的所有要求点。</div>
+          </div>
+          <div class="s-item pass">
+            <div class="si-hd"><span class="si-name">C02 — 语言表达准确</span><span class="si-badge">1 分</span></div>
+            <div class="si-reason">用词准确，语法正确，表达流畅。</div>
+          </div>
+          <div class="s-item pass">
+            <div class="si-hd"><span class="si-name">C03 — 逻辑清晰连贯</span><span class="si-badge">1 分</span></div>
+            <div class="si-reason">论证结构清晰，各段落衔接自然。</div>
+          </div>
+        </div>
+
+        <!-- 未通过项 -->
+        <div class="score-col">
+          <div class="col-title" style="color:var(--danger);">❌ 未通过项</div>
+          <div class="s-item fail">
+            <div class="si-hd"><span class="si-name">C06 — 格式规范</span><span class="si-badge">0 分</span></div>
+            <div class="si-reason">未按要求使用 Markdown 三级标题层级。</div>
+          </div>
+          <div class="s-item fail">
+            <div class="si-hd"><span class="si-name">C05 — 数据准确性</span><span class="si-badge">0 分</span></div>
+            <div class="si-reason">引用数据与原文不符，存在数值偏差。</div>
+          </div>
+        </div>
+
+        <!-- 校验 -->
+        <div class="verify-box">
+          <strong>✓ 校验通过</strong> — 单项分数之和 12 = rawScore 12，未触发红线，无扣分调整。
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== Annotation ===== -->
+<div class="annotation">
+  <strong>💡 怎么聊：</strong>
+  你可以针对任何一个区域说想法，比如：
+  <br>
+  • <strong>Zone 1</strong> — 顶栏的信息够吗？版本切换的方式好不好？<br>
+  • <strong>Zone 2</strong> — 三栏并列是否合适？操作按钮放底部顺不顺？<br>
+  • <strong>Zone 4</strong> — 结果展示有没有遗漏什么？
+  <br><br>
+  你觉得哪个区域的名字/范围需要调整，直接说就行，我按你说的改。
+</div>
+
+<div class="resp-note">服务器端口 8898 · 纯静态演示</div>
+
+<script>
+  document.querySelectorAll('.scheme-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.scheme-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      document.body.setAttribute('data-theme', this.dataset.scheme);
+    });
+  });
+  document.querySelectorAll('.style-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      document.body.setAttribute('data-style', this.dataset.style);
+    });
+  });
+</script>
+
+</body>
+</html>
