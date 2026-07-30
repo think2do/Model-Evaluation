@@ -113,7 +113,7 @@
 
           <div class="action-bar">
             <div class="action-buttons-group">
-              <button id="submit-evaluation" type="submit" class="a-btn primary" hidden>▶ 评测未评测记录</button>
+              <button id="submit-evaluation" type="submit" class="a-btn primary">▶ 评测未评测记录</button>
               <button id="reevaluate-version" type="button" class="a-btn secondary">🔄 重新评测全部</button>
               <button id="evaluate-multiple-versions" type="button" class="a-btn secondary" hidden>📚 评测多个版本</button>
               <button id="stop-evaluation" type="button" class="a-btn danger" hidden>⏹ 终止评测</button>
@@ -141,6 +141,17 @@
       </form>
 
       <!-- ===== Dialogs ===== -->
+      <dialog class="confirm-dialog" id="copy-version-dialog">
+        <form method="dialog">
+          <h2>📋 拷贝上一个版本的数据？</h2>
+          <p>是否将上一个版本的原始问题、评分标准和模型回答拷贝到新版本中？<br>评测结果不会拷贝，新版本的记录为未评测状态。</p>
+          <div class="dialog-actions">
+            <button class="secondary-button" id="cancel-copy-version" value="cancel" type="button">不拷贝</button>
+            <button id="confirm-copy-version" value="confirm" type="button">拷贝数据</button>
+          </div>
+        </form>
+      </dialog>
+
       <dialog class="confirm-dialog" id="delete-version-dialog">
         <form method="dialog">
           <h2>🗑 删除当前评测版本？</h2>

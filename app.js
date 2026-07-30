@@ -33,6 +33,13 @@ const evaluateMultipleVersionsButton = document.querySelector(
   "#evaluate-multiple-versions",
 );
 const stopEvaluationButton = document.querySelector("#stop-evaluation");
+const copyVersionDialog = document.querySelector("#copy-version-dialog");
+const confirmCopyVersionButton = document.querySelector(
+  "#confirm-copy-version",
+);
+const cancelCopyVersionButton = document.querySelector(
+  "#cancel-copy-version",
+);
 const multiVersionDialog = document.querySelector("#multi-version-dialog");
 const multiVersionList = document.querySelector("#multi-version-list");
 const multiVersionError = document.querySelector("#multi-version-error");
@@ -1683,6 +1690,38 @@ versionNameInput.addEventListener("input", () => {
 });
 
 addVersionButton.addEventListener("click", () => {
+  const prevVersion = getActiveVersion();
+  
+  // If there's a previous version with data, ask about copying
+  if (prevVersion && (prevVersion.question || prevVersion.rubric || prevVersion.records.length > 0)) {
+    copyVersionDialog.showModal();
+  } else {
+    versionStore.createVersion();
+    renderVersionTabs(true);
+    renderActiveVersion();
+    versionNameInput.focus();
+  }
+});
+
+confirmCopyVersionButton.addEventListener("click", () => {
+  const prevVersion = getActiveVersion();
+  const records = prevVersion.records.map((r) => ({
+    modelName: r.modelName,
+    answer: r.answer,
+  }));
+  versionStore.createVersion({
+    question: prevVersion.question,
+    rubric: prevVersion.rubric,
+    records: records.length > 0 ? records : undefined,
+  });
+  copyVersionDialog.close();
+  renderVersionTabs(true);
+  renderActiveVersion();
+  versionNameInput.focus();
+});
+
+cancelCopyVersionButton.addEventListener("click", () => {
+  copyVersionDialog.close();
   versionStore.createVersion();
   renderVersionTabs(true);
   renderActiveVersion();
