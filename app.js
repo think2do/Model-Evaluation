@@ -1,3 +1,4 @@
+const apiKeyInput = document.querySelector("#api-key");
 const form = document.querySelector("#evaluation-form");
 const questionInput = document.querySelector("#question");
 const rubricInput = document.querySelector("#rubric");
@@ -515,8 +516,14 @@ function buildJudgeJobs(input, versionId = null) {
   }));
 }
 
+function getEffectiveApiKey() {
+  const inputKey = apiKeyInput ? apiKeyInput.value.trim() : "";
+  if (inputKey) return inputKey;
+  return DEEPSEEK_CONFIG.apiKey;
+}
+
 function hasConfiguredApiKey() {
-  return DEEPSEEK_CONFIG.apiKey.trim() !== "";
+  return getEffectiveApiKey().trim() !== "";
 }
 
 function setRequestBusy(isBusy) {
@@ -696,7 +703,7 @@ async function requestDeepSeek(job, externalSignal) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${DEEPSEEK_CONFIG.apiKey.trim()}`,
+        Authorization: `Bearer ${getEffectiveApiKey().trim()}`,
       },
       body: JSON.stringify(job.request),
       signal: controller.signal,
@@ -1454,7 +1461,7 @@ async function startEvaluation(selection) {
   }
   if (!hasConfiguredApiKey()) {
     formStatus.textContent =
-      "请先在本地 config.js 中填写 DeepSeek API Key。";
+      "请填写 DeepSeek API Key（全局控制栏或 config.js）。";
     formStatus.classList.add("is-error");
     return;
   }
