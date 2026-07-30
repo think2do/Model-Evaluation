@@ -9,6 +9,23 @@ const candidateTabs = document.querySelector("#candidate-tabs");
 const addCandidateButton = document.querySelector("#add-candidate");
 const submitButton = document.querySelector("#submit-evaluation");
 const resultContent = document.querySelector("#result-content");
+const versionTabs = document.querySelector("#version-tabs");
+const addVersionButton = document.querySelector("#add-version");
+const deleteVersionButton = document.querySelector("#delete-version");
+const versionNameInput = document.querySelector("#version-name");
+const versionMeta = document.querySelector("#version-meta");
+const deleteVersionDialog = document.querySelector(
+  "#delete-version-dialog",
+);
+const deleteVersionMessage = document.querySelector(
+  "#delete-version-message",
+);
+const confirmDeleteVersionButton = document.querySelector(
+  "#confirm-delete-version",
+);
+
+const versionStore = window.ModelEvaluation.state.createStateStore();
+const activeRecordByVersion = new Map();
 
 // 第一版仍为纯前端：API Key 从本地 config.js 读取。
 // config.js 被 Git 忽略，不得部署或分享。
@@ -73,8 +90,6 @@ const evaluationInput = {
   candidates: [],
 };
 
-let nextCandidateId = 1;
-
 function clearFormStatus() {
   formStatus.textContent = "";
   formStatus.classList.remove("is-success", "is-error");
@@ -119,9 +134,114 @@ function updateCandidateLabels() {
   });
 }
 
-function createCandidateCard() {
-  const candidateId = `candidate-${nextCandidateId}`;
-  nextCandidateId += 1;
+function getActiveVersion() {
+  const state = versionStore.getState();
+  return (
+    state.versions.find(
+      (version) => version.id === state.activeVersionId,
+    ) ?? null
+  );
+}
+
+function formatVersionTime(value) {
+  if (!value) {
+    return "尚未导出";
+  }
+  return new Intl.DateTimeFormat("zh-CN", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(new Date(value));
+}
+
+function getVersionLabel(version, index) {
+  return version.name.trim() || `未命名版本 ${index + 1}`;
+}
+
+function renderVersionTabs(shouldFocus = false) {
+  const state = versionStore.getState();
+  versionTabs.replaceChildren();
+
+  state.versions.forEach((version, index) => {
+    const isActive = version.id === state.activeVersionId;
+    const tab = document.createElement("button");
+    tab.className = "version-tab";
+    tab.type = "button";
+    tab.dataset.versionId = version.id;
+    tab.setAttribute("role", "tab");
+    tab.setAttribute("aria-selected", String(isActive));
+    tab.tabIndex = isActive ? 0 : -1;
+    tab.textContent = getVersionLabel(version, index);
+    versionTabs.append(tab);
+
+    if (isActive && shouldFocus) {
+      tab.focus();
+    }
+  });
+}
+
+function renderEmptyResult() {
+  resultContent.className = "empty-state";
+  const heading = document.createElement("h3");
+  heading.textContent = "还没有评测结果";
+  const copy = document.createElement("p");
+  copy.textContent =
+    "填写输入并开始评测后，这里会显示逐项判定、得分和排序。";
+  resultContent.replaceChildren(heading, copy);
+}
+
+function renderActiveVersion(options = {}) {
+  const version = getActiveVersion();
+  if (!version) {
+    versionNameInput.value = "";
+    versionNameInput.disabled = true;
+    questionInput.value = "";
+    questionInput.disabled = true;
+    rubricInput.value = "";
+    rubricInput.disabled = true;
+    candidateTabs.replaceChildren();
+    candidatesList.replaceChildren();
+    versionMeta.textContent = "";
+    deleteVersionButton.disabled = true;
+    submitButton.disabled = true;
+    addCandidateButton.disabled = true;
+    renderEmptyResult();
+    return;
+  }
+
+  deleteVersionButton.disabled = false;
+  submitButton.disabled = false;
+  addCandidateButton.disabled = false;
+  versionNameInput.disabled = false;
+  questionInput.disabled = false;
+  rubricInput.disabled = false;
+  versionNameInput.value = version.name;
+  questionInput.value = version.question;
+  rubricInput.value = version.rubric;
+  versionMeta.textContent =
+    `最后更新：${formatVersionTime(version.updatedAt)} · ` +
+    `第一次导出：${formatVersionTime(version.firstExportedAt)}`;
+
+  candidateTabs.replaceChildren();
+  candidatesList.replaceChildren();
+  version.records.forEach((record) => createCandidateCard(record));
+
+  const preferredRecordId =
+    activeRecordByVersion.get(version.id) ?? version.records[0].id;
+  const activeRecord = version.records.some(
+    (record) => record.id === preferredRecordId,
+  )
+    ? preferredRecordId
+    : version.records[0].id;
+  activeRecordByVersion.set(version.id, activeRecord);
+  setActiveCandidate(activeRecord, options.focusRecordTab);
+  updateCandidateLabels();
+  updateInputState();
+  clearFormStatus();
+  renderEmptyResult();
+}
+
+function createCandidateCard(record) {
+  const candidateId = record.id;
 
   const card = document.createElement("article");
   card.className = "candidate-card";
@@ -184,9 +304,8 @@ function createCandidateCard() {
 
   candidateTabs.append(tab);
   candidatesList.append(card);
-  updateCandidateLabels();
-  setActiveCandidate(candidateId);
-  updateInputState();
+  card.querySelector(".candidate-name").value = record.modelName;
+  card.querySelector(".candidate-answer").value = record.answer;
   return card;
 }
 
@@ -1082,6 +1201,12 @@ window.judgeResultView = Object.freeze({
 });
 
 questionInput.addEventListener("input", () => {
+  const version = getActiveVersion();
+  if (version) {
+    versionStore.updateVersion(version.id, {
+      question: questionInput.value,
+    });
+  }
   updateInputState();
   if (questionInput.getAttribute("aria-invalid") === "true") {
     setFieldError(questionInput, questionError, "");
@@ -1090,6 +1215,12 @@ questionInput.addEventListener("input", () => {
 });
 
 rubricInput.addEventListener("input", () => {
+  const version = getActiveVersion();
+  if (version) {
+    versionStore.updateVersion(version.id, {
+      rubric: rubricInput.value,
+    });
+  }
   updateInputState();
   if (rubricInput.getAttribute("aria-invalid") === "true") {
     setFieldError(rubricInput, rubricError, "");
@@ -1098,8 +1229,19 @@ rubricInput.addEventListener("input", () => {
 });
 
 addCandidateButton.addEventListener("click", () => {
-  const card = createCandidateCard();
-  card.querySelector(".candidate-name").focus();
+  const version = getActiveVersion();
+  if (!version) {
+    return;
+  }
+  versionStore.addRecord(version.id);
+  const updatedVersion = getActiveVersion();
+  const newRecord = updatedVersion.records.at(-1);
+  activeRecordByVersion.set(version.id, newRecord.id);
+  renderVersionTabs();
+  renderActiveVersion();
+  candidatesList
+    .querySelector(`[data-candidate-id="${newRecord.id}"] .candidate-name`)
+    .focus();
   clearFormStatus();
 });
 
@@ -1110,7 +1252,94 @@ candidateTabs.addEventListener("click", (event) => {
   }
 
   setActiveCandidate(tab.dataset.candidateId);
+  const version = getActiveVersion();
+  if (version) {
+    activeRecordByVersion.set(version.id, tab.dataset.candidateId);
+  }
   clearFormStatus();
+});
+
+versionNameInput.addEventListener("input", () => {
+  const version = getActiveVersion();
+  if (!version) {
+    return;
+  }
+  versionStore.updateVersion(version.id, {
+    name: versionNameInput.value,
+  });
+  renderVersionTabs();
+  versionMeta.textContent =
+    `最后更新：${formatVersionTime(getActiveVersion().updatedAt)} · ` +
+    `第一次导出：${formatVersionTime(getActiveVersion().firstExportedAt)}`;
+  clearFormStatus();
+});
+
+addVersionButton.addEventListener("click", () => {
+  versionStore.createVersion();
+  renderVersionTabs(true);
+  renderActiveVersion();
+  versionNameInput.focus();
+});
+
+versionTabs.addEventListener("click", (event) => {
+  const tab = event.target.closest(".version-tab");
+  if (!tab) {
+    return;
+  }
+  versionStore.setActiveVersion(tab.dataset.versionId);
+  renderVersionTabs();
+  renderActiveVersion();
+});
+
+versionTabs.addEventListener("keydown", (event) => {
+  const currentTab = event.target.closest(".version-tab");
+  if (!currentTab) {
+    return;
+  }
+  const tabs = [...versionTabs.querySelectorAll(".version-tab")];
+  const currentIndex = tabs.indexOf(currentTab);
+  let nextIndex = currentIndex;
+
+  if (event.key === "ArrowRight") {
+    nextIndex = (currentIndex + 1) % tabs.length;
+  } else if (event.key === "ArrowLeft") {
+    nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+  } else if (event.key === "Home") {
+    nextIndex = 0;
+  } else if (event.key === "End") {
+    nextIndex = tabs.length - 1;
+  } else {
+    return;
+  }
+
+  event.preventDefault();
+  versionStore.setActiveVersion(tabs[nextIndex].dataset.versionId);
+  renderVersionTabs(true);
+  renderActiveVersion();
+});
+
+deleteVersionButton.addEventListener("click", () => {
+  const version = getActiveVersion();
+  if (!version) {
+    return;
+  }
+  const state = versionStore.getState();
+  const index = state.versions.findIndex((item) => item.id === version.id);
+  deleteVersionMessage.textContent =
+    `“${getVersionLabel(version, index)}”下的问题、评分标准、` +
+    `${version.records.length} 份模型回答和评测结果都将一起删除。`;
+  deleteVersionDialog.showModal();
+});
+
+confirmDeleteVersionButton.addEventListener("click", () => {
+  const version = getActiveVersion();
+  if (!version) {
+    return;
+  }
+  activeRecordByVersion.delete(version.id);
+  versionStore.deleteVersion(version.id);
+  renderVersionTabs(true);
+  renderActiveVersion();
 });
 
 resultContent.addEventListener("click", (event) => {
@@ -1154,19 +1383,17 @@ candidatesList.addEventListener("click", (event) => {
     return;
   }
 
+  const version = getActiveVersion();
   const card = deleteButton.closest(".candidate-card");
-  const cardsBeforeDelete = getCandidateCards();
-  const deletedIndex = cardsBeforeDelete.indexOf(card);
-  const nextActiveCard =
-    cardsBeforeDelete[deletedIndex + 1] || cardsBeforeDelete[deletedIndex - 1];
-
-  candidateTabs
-    .querySelector(`[data-candidate-id="${card.dataset.candidateId}"]`)
-    .remove();
-  card.remove();
-  updateCandidateLabels();
-  setActiveCandidate(nextActiveCard.dataset.candidateId, true);
-  updateInputState();
+  const recordIndex = version.records.findIndex(
+    (record) => record.id === card.dataset.candidateId,
+  );
+  const nextRecord =
+    version.records[recordIndex + 1] || version.records[recordIndex - 1];
+  versionStore.deleteRecord(version.id, card.dataset.candidateId);
+  activeRecordByVersion.set(version.id, nextRecord.id);
+  renderVersionTabs();
+  renderActiveVersion({ focusRecordTab: true });
   clearFormStatus();
 });
 
@@ -1177,8 +1404,18 @@ candidatesList.addEventListener("input", (event) => {
   }
 
   updateInputState();
+  const version = getActiveVersion();
+  const card = input.closest(".candidate-card");
+  if (version && card) {
+    versionStore.updateRecord(version.id, card.dataset.candidateId, {
+      ...(input.classList.contains("candidate-name")
+        ? { modelName: input.value }
+        : { answer: input.value }),
+    });
+  }
   if (input.classList.contains("candidate-name")) {
     updateCandidateLabels();
+    renderVersionTabs();
   }
   if (input.getAttribute("aria-invalid") === "true") {
     const errorElement = input
@@ -1260,4 +1497,8 @@ form.addEventListener("submit", async (event) => {
   );
 });
 
-createCandidateCard();
+versionStore.createVersion();
+renderVersionTabs();
+renderActiveVersion();
+
+window.a2VersionStore = versionStore;
