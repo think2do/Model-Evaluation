@@ -238,3 +238,29 @@ test("读取真实 XLSX 字节并恢复合法行", () => {
   assert.equal(result.report.importedRowCount, 1);
   assert.equal(result.state.versions[0].id, "version-1");
 });
+
+test("拒绝包含公式的工作簿且不信任缓存值", () => {
+  const worksheet = globalThis.XLSX.utils.aoa_to_sheet(
+    rowsToMatrix([createInternalRow()]),
+  );
+  worksheet.H2 = {
+    t: "s",
+    v: "缓存回答",
+    f: "\"公式回答\"",
+  };
+  const workbook = globalThis.XLSX.utils.book_new();
+  globalThis.XLSX.utils.book_append_sheet(
+    workbook,
+    worksheet,
+    schema.SHEET_NAME,
+  );
+  const bytes = globalThis.XLSX.write(workbook, {
+    bookType: "xlsx",
+    type: "buffer",
+  });
+
+  assert.throws(
+    () => readWorkbook(bytes),
+    /检测到公式单元格 H2/,
+  );
+});

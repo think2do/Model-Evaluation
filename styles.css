@@ -95,6 +95,13 @@ h1 {
   align-items: end;
 }
 
+.version-details > *,
+.evaluation-layout > *,
+.candidate-heading > *,
+.section-heading > * {
+  min-width: 0;
+}
+
 .version-name-field {
   margin-top: 0;
 }
@@ -352,6 +359,7 @@ textarea[aria-invalid="true"] {
   color: #8c2d26;
   font-size: 13px;
   line-height: 1.6;
+  overflow-wrap: anywhere;
 }
 
 .import-error-list:empty {
@@ -813,6 +821,7 @@ button:focus-visible {
   color: #333;
   font-size: 13px;
   line-height: 1.6;
+  overflow-wrap: anywhere;
 }
 
 .result-evidence {
@@ -824,6 +833,7 @@ button:focus-visible {
   font-size: 13px;
   line-height: 1.6;
   white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .failed-result-card {
@@ -836,6 +846,7 @@ button:focus-visible {
   color: #8c2d26;
   font-size: 13px;
   line-height: 1.6;
+  overflow-wrap: anywhere;
 }
 
 button:disabled,
@@ -858,6 +869,25 @@ textarea:disabled {
   .form-actions {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .form-actions > button,
+  .dialog-actions > button,
+  .candidate-actions > button,
+  .version-details > button {
+    width: 100%;
+  }
+
+  .candidate-heading,
+  .dialog-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .confirm-dialog {
+    max-height: calc(100vh - 24px);
+    padding: 18px;
+    overflow-y: auto;
   }
 
   .section-heading {

@@ -23,6 +23,9 @@ const deleteVersionMessage = document.querySelector(
 const confirmDeleteVersionButton = document.querySelector(
   "#confirm-delete-version",
 );
+const cancelDeleteVersionButton = document.querySelector(
+  "#cancel-delete-version",
+);
 const reevaluateVersionButton = document.querySelector(
   "#reevaluate-version",
 );
@@ -60,6 +63,7 @@ const {
 const { resolveRecordAfterEvaluation } =
   window.ModelEvaluation.evaluationResultPolicy;
 let activeEvaluationRun = null;
+let activeFileOperation = null;
 
 // 第一版仍为纯前端：API Key 从本地 config.js 读取。
 // config.js 被 Git 忽略，不得部署或分享。
@@ -535,6 +539,36 @@ function setRequestBusy(isBusy) {
   });
 
   versionTabs.querySelectorAll(".version-tab").forEach((tab) => {
+    tab.disabled = isBusy;
+  });
+}
+
+function setFileOperationBusy(operation) {
+  activeFileOperation = operation;
+  const isBusy = operation !== null;
+  submitButton.disabled = isBusy;
+  reevaluateVersionButton.disabled = isBusy;
+  evaluateMultipleVersionsButton.disabled = isBusy;
+  questionInput.disabled = isBusy;
+  rubricInput.disabled = isBusy;
+  versionNameInput.disabled = isBusy;
+  addCandidateButton.disabled = isBusy;
+  addVersionButton.disabled = isBusy;
+  deleteVersionButton.disabled = isBusy;
+  exportExcelButton.disabled = isBusy;
+  importExcelButton.disabled = isBusy;
+
+  getCandidateCards().forEach((card) => {
+    card.querySelector(".candidate-name").disabled = isBusy;
+    card.querySelector(".candidate-answer").disabled = isBusy;
+    card.querySelector(".evaluate-record").disabled = isBusy;
+    card.querySelector(".delete-button").disabled =
+      isBusy || getCandidateCards().length === 1;
+  });
+  versionTabs.querySelectorAll(".version-tab").forEach((tab) => {
+    tab.disabled = isBusy;
+  });
+  candidateTabs.querySelectorAll(".candidate-tab").forEach((tab) => {
     tab.disabled = isBusy;
   });
 }
@@ -1603,6 +1637,36 @@ candidateTabs.addEventListener("click", (event) => {
   clearFormStatus();
 });
 
+candidateTabs.addEventListener("keydown", (event) => {
+  const currentTab = event.target.closest(".candidate-tab");
+  if (!currentTab) {
+    return;
+  }
+  const tabs = [...candidateTabs.querySelectorAll(".candidate-tab")];
+  const currentIndex = tabs.indexOf(currentTab);
+  let nextIndex = currentIndex;
+
+  if (event.key === "ArrowRight") {
+    nextIndex = (currentIndex + 1) % tabs.length;
+  } else if (event.key === "ArrowLeft") {
+    nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+  } else if (event.key === "Home") {
+    nextIndex = 0;
+  } else if (event.key === "End") {
+    nextIndex = tabs.length - 1;
+  } else {
+    return;
+  }
+
+  event.preventDefault();
+  const recordId = tabs[nextIndex].dataset.candidateId;
+  const version = getActiveVersion();
+  if (version) {
+    activeRecordByVersion.set(version.id, recordId);
+  }
+  setActiveCandidate(recordId, true);
+});
+
 versionNameInput.addEventListener("input", () => {
   const version = getActiveVersion();
   if (!version) {
@@ -1673,6 +1737,7 @@ deleteVersionButton.addEventListener("click", () => {
     `“${getVersionLabel(version, index)}”下的问题、评分标准、` +
     `${version.records.length} 份模型回答和评测结果都将一起删除。`;
   deleteVersionDialog.showModal();
+  cancelDeleteVersionButton.focus();
 });
 
 confirmDeleteVersionButton.addEventListener("click", () => {
@@ -1786,6 +1851,9 @@ candidatesList.addEventListener("input", (event) => {
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
+  if (activeFileOperation) {
+    return;
+  }
   const version = getActiveVersion();
   if (version) {
     await startEvaluation({
@@ -1796,6 +1864,9 @@ form.addEventListener("submit", async (event) => {
 });
 
 reevaluateVersionButton.addEventListener("click", () => {
+  if (activeFileOperation) {
+    return;
+  }
   const version = getActiveVersion();
   if (version) {
     void startEvaluation({
@@ -1806,6 +1877,9 @@ reevaluateVersionButton.addEventListener("click", () => {
 });
 
 evaluateMultipleVersionsButton.addEventListener("click", () => {
+  if (activeFileOperation) {
+    return;
+  }
   renderMultiVersionChoices();
   multiVersionDialog.showModal();
 });
@@ -1828,11 +1902,11 @@ stopEvaluationButton.addEventListener("click", () => {
 });
 
 exportExcelButton.addEventListener("click", () => {
-  if (activeEvaluationRun) {
+  if (activeEvaluationRun || activeFileOperation) {
     return;
   }
   clearFormStatus();
-  exportExcelButton.disabled = true;
+  setFileOperationBusy("export");
   try {
     const result =
       window.ModelEvaluation.excelExporter.exportStore(versionStore);
@@ -1846,7 +1920,7 @@ exportExcelButton.addEventListener("click", () => {
       error instanceof Error ? error.message : "Excel 导出失败。";
     formStatus.classList.add("is-error");
   } finally {
-    exportExcelButton.disabled = false;
+    setFileOperationBusy(null);
   }
 });
 
@@ -1864,7 +1938,7 @@ function renderImportReport(report, message) {
 }
 
 importExcelButton.addEventListener("click", () => {
-  if (activeEvaluationRun) {
+  if (activeEvaluationRun || activeFileOperation) {
     return;
   }
   importExcelFileInput.click();
@@ -1876,10 +1950,12 @@ importExcelFileInput.addEventListener("change", async () => {
   if (!file) {
     return;
   }
+  if (activeEvaluationRun || activeFileOperation) {
+    return;
+  }
 
   clearFormStatus();
-  importExcelButton.disabled = true;
-  exportExcelButton.disabled = true;
+  setFileOperationBusy("import");
 
   try {
     const imported =
@@ -1912,9 +1988,7 @@ importExcelFileInput.addEventListener("change", async () => {
       "Excel 导入失败，网页当前数据已保留。";
     formStatus.classList.add("is-error");
   } finally {
-    importExcelButton.disabled = false;
-    exportExcelButton.disabled =
-      versionStore.getState().versions.length === 0;
+    setFileOperationBusy(null);
   }
 });
 

@@ -418,15 +418,34 @@
     }
     const workbook = xlsx.read(data, {
       type: data instanceof ArrayBuffer ? "array" : undefined,
-      cellFormula: false,
+      cellFormula: true,
       cellHTML: false,
       cellNF: false,
       cellStyles: false,
+      bookVBA: true,
     });
     if (workbook.SheetNames.length !== 1) {
       throw new ExcelImportError("Excel 必须且只能包含一个工作表。");
     }
     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+    const formulaCell = Object.entries(worksheet).find(
+      ([address, cell]) =>
+        !address.startsWith("!") &&
+        cell &&
+        typeof cell === "object" &&
+        typeof cell.f === "string" &&
+        cell.f.trim() !== "",
+    );
+    if (formulaCell) {
+      throw new ExcelImportError(
+        `检测到公式单元格 ${formulaCell[0]}。为避免执行或信任公式结果，文件未导入。`,
+      );
+    }
+    if (workbook.vbaraw) {
+      throw new ExcelImportError(
+        "检测到 Excel 宏内容。为保证安全，文件未导入。",
+      );
+    }
     const matrix = xlsx.utils.sheet_to_json(worksheet, {
       header: 1,
       defval: "",

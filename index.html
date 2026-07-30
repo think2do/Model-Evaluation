@@ -69,11 +69,20 @@
           </div>
         </section>
 
-        <section class="panel import-report" id="import-report" hidden>
+        <section
+          class="panel import-report"
+          id="import-report"
+          hidden
+        >
           <div class="section-heading panel-heading">
             <div>
               <h2>Excel 导入结果</h2>
-              <p id="import-report-summary"></p>
+              <p
+                id="import-report-summary"
+                role="status"
+                aria-live="polite"
+                aria-atomic="true"
+              ></p>
             </div>
             <button
               class="secondary-button"
@@ -191,7 +200,13 @@
             该版本下的问题、评分标准、模型回答和评测结果都将一起删除。
           </p>
           <div class="dialog-actions">
-            <button class="secondary-button" value="cancel">取消</button>
+            <button
+              class="secondary-button"
+              id="cancel-delete-version"
+              value="cancel"
+            >
+              取消
+            </button>
             <button class="danger-button" id="confirm-delete-version" value="confirm">
               确认删除
             </button>
