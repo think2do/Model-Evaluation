@@ -23,9 +23,32 @@ const deleteVersionMessage = document.querySelector(
 const confirmDeleteVersionButton = document.querySelector(
   "#confirm-delete-version",
 );
+const reevaluateVersionButton = document.querySelector(
+  "#reevaluate-version",
+);
+const evaluateMultipleVersionsButton = document.querySelector(
+  "#evaluate-multiple-versions",
+);
+const stopEvaluationButton = document.querySelector("#stop-evaluation");
+const multiVersionDialog = document.querySelector("#multi-version-dialog");
+const multiVersionList = document.querySelector("#multi-version-list");
+const multiVersionError = document.querySelector("#multi-version-error");
+const evaluateSelectedUnscoredButton = document.querySelector(
+  "#evaluate-selected-unscored",
+);
+const reevaluateSelectedAllButton = document.querySelector(
+  "#reevaluate-selected-all",
+);
 
 const versionStore = window.ModelEvaluation.state.createStateStore();
 const activeRecordByVersion = new Map();
+const {
+  MAX_CONCURRENT_REQUESTS,
+  runWithConcurrency,
+} = window.ModelEvaluation.evaluationOrchestrator;
+const { resolveRecordAfterEvaluation } =
+  window.ModelEvaluation.evaluationResultPolicy;
+let activeEvaluationRun = null;
 
 // 第一版仍为纯前端：API Key 从本地 config.js 读取。
 // config.js 被 Git 忽略，不得部署或分享。
@@ -189,6 +212,32 @@ function renderEmptyResult() {
   resultContent.replaceChildren(heading, copy);
 }
 
+function getStoredVersionResults(version) {
+  return version.records
+    .filter((record) => record.status !== "unscored")
+    .map((record) => ({
+      versionId: version.id,
+      candidateId: record.id,
+      modelName: record.modelName || "未命名模型",
+      status:
+        record.status === "request-error" ? "error" : record.status,
+      parsedResult: record.result,
+      error:
+        record.error?.message ||
+        (record.status === "terminated" ? "本次评测已由用户终止。" : null),
+      rawResponse: record.rawResponse,
+    }));
+}
+
+function renderStoredVersionResults(version) {
+  const results = getStoredVersionResults(version);
+  if (results.length === 0) {
+    renderEmptyResult();
+    return;
+  }
+  renderJudgeResults(results);
+}
+
 function renderActiveVersion(options = {}) {
   const version = getActiveVersion();
   if (!version) {
@@ -204,6 +253,8 @@ function renderActiveVersion(options = {}) {
     deleteVersionButton.disabled = true;
     submitButton.disabled = true;
     addCandidateButton.disabled = true;
+    reevaluateVersionButton.disabled = true;
+    evaluateMultipleVersionsButton.disabled = true;
     renderEmptyResult();
     return;
   }
@@ -211,6 +262,8 @@ function renderActiveVersion(options = {}) {
   deleteVersionButton.disabled = false;
   submitButton.disabled = false;
   addCandidateButton.disabled = false;
+  reevaluateVersionButton.disabled = false;
+  evaluateMultipleVersionsButton.disabled = false;
   versionNameInput.disabled = false;
   questionInput.disabled = false;
   rubricInput.disabled = false;
@@ -237,7 +290,7 @@ function renderActiveVersion(options = {}) {
   updateCandidateLabels();
   updateInputState();
   clearFormStatus();
-  renderEmptyResult();
+  renderStoredVersionResults(version);
 }
 
 function createCandidateCard(record) {
@@ -252,13 +305,18 @@ function createCandidateCard(record) {
   card.innerHTML = `
     <div class="candidate-heading">
       <h4 class="candidate-title"></h4>
-      <button
-        class="delete-button"
-        type="button"
-        aria-label="删除这份回答"
-      >
-        删除
-      </button>
+      <div class="candidate-actions">
+        <button class="secondary-button evaluate-record" type="button">
+          评测此回答
+        </button>
+        <button
+          class="delete-button"
+          type="button"
+          aria-label="删除这份回答"
+        >
+          删除
+        </button>
+      </div>
     </div>
     <div class="form-field">
       <label for="${candidateId}-name">模型名称</label>
@@ -421,8 +479,10 @@ function buildJudgeRequest(input, candidate) {
   };
 }
 
-function buildJudgeJobs(input) {
+function buildJudgeJobs(input, versionId = null) {
   return input.candidates.map((candidate) => ({
+    versionId,
+    recordId: candidate.id,
     candidateId: candidate.id,
     modelName: candidate.modelName,
     request: buildJudgeRequest(input, candidate),
@@ -435,16 +495,30 @@ function hasConfiguredApiKey() {
 
 function setRequestBusy(isBusy) {
   submitButton.disabled = isBusy;
-  submitButton.textContent = isBusy ? "评测中…" : "开始评测";
+  submitButton.textContent = isBusy
+    ? "评测中…"
+    : "评测当前版本未评测记录";
   questionInput.disabled = isBusy;
   rubricInput.disabled = isBusy;
   addCandidateButton.disabled = isBusy;
+  versionNameInput.disabled = isBusy;
+  addVersionButton.disabled = isBusy;
+  deleteVersionButton.disabled = isBusy;
+  reevaluateVersionButton.disabled = isBusy;
+  evaluateMultipleVersionsButton.disabled = isBusy;
+  stopEvaluationButton.hidden = !isBusy;
+  stopEvaluationButton.disabled = false;
 
   getCandidateCards().forEach((card) => {
     card.querySelector(".candidate-name").disabled = isBusy;
     card.querySelector(".candidate-answer").disabled = isBusy;
+    card.querySelector(".evaluate-record").disabled = isBusy;
     card.querySelector(".delete-button").disabled =
       isBusy || getCandidateCards().length === 1;
+  });
+
+  versionTabs.querySelectorAll(".version-tab").forEach((tab) => {
+    tab.disabled = isBusy;
   });
 }
 
@@ -537,12 +611,27 @@ function getApiErrorMessage(response, responseData, responseText) {
   return `请求失败（HTTP ${response.status}）。`;
 }
 
-async function requestDeepSeek(job) {
+class EvaluationTerminatedError extends Error {
+  constructor() {
+    super("本次评测已由用户终止。");
+    this.name = "EvaluationTerminatedError";
+  }
+}
+
+async function requestDeepSeek(job, externalSignal) {
   const controller = new AbortController();
+  let didTimeout = false;
+  const handleExternalAbort = () => controller.abort();
   const timeoutId = window.setTimeout(
-    () => controller.abort(),
+    () => {
+      didTimeout = true;
+      controller.abort();
+    },
     DEEPSEEK_CONFIG.timeoutMs,
   );
+  externalSignal?.addEventListener("abort", handleExternalAbort, {
+    once: true,
+  });
 
   try {
     const response = await fetch(DEEPSEEK_CONFIG.endpoint, {
@@ -583,6 +672,7 @@ async function requestDeepSeek(job) {
     }
 
     return {
+      versionId: job.versionId,
       candidateId: job.candidateId,
       modelName: job.modelName,
       status: "success",
@@ -591,6 +681,9 @@ async function requestDeepSeek(job) {
     };
   } catch (error) {
     if (error.name === "AbortError") {
+      if (externalSignal?.aborted && !didTimeout) {
+        throw new EvaluationTerminatedError();
+      }
       throw new Error(
         `请求超过 ${Math.round(DEEPSEEK_CONFIG.timeoutMs / 60000)} 分钟，已停止等待。`,
       );
@@ -605,6 +698,7 @@ async function requestDeepSeek(job) {
     throw error;
   } finally {
     window.clearTimeout(timeoutId);
+    externalSignal?.removeEventListener("abort", handleExternalAbort);
   }
 }
 
@@ -996,7 +1090,11 @@ function createFailedResultCard(result) {
   const state = document.createElement("span");
   state.className = "result-state error";
   state.textContent =
-    result.status === "parse-error" ? "结构化失败" : "请求失败";
+    result.status === "parse-error"
+      ? "结构化失败"
+      : result.status === "terminated"
+        ? "已终止"
+        : "请求失败";
   header.append(title, state);
 
   const error = document.createElement("p");
@@ -1135,11 +1233,11 @@ function renderJudgeResults(results) {
   return rankedResults;
 }
 
-async function runJudgeJob(job) {
+async function runJudgeJob(job, signal) {
   updateRequestStatus(job.candidateId, "loading", "评测中", "请求已发送");
 
   try {
-    const result = await requestDeepSeek(job);
+    const result = await requestDeepSeek(job, signal);
     try {
       const parsedResult = parseJudgeResponse(result.rawResponse, job);
       updateRequestStatus(
@@ -1171,16 +1269,245 @@ async function runJudgeJob(job) {
       };
     }
   } catch (error) {
+    if (error instanceof EvaluationTerminatedError) {
+      updateRequestStatus(
+        job.candidateId,
+        "terminated",
+        "已终止",
+        error.message,
+      );
+      return {
+        versionId: job.versionId,
+        candidateId: job.candidateId,
+        modelName: job.modelName,
+        status: "terminated",
+        error: error.message,
+      };
+    }
     const message =
       error instanceof Error ? error.message : "发生未知请求错误。";
     updateRequestStatus(job.candidateId, "error", "失败", message);
     return {
+      versionId: job.versionId,
       candidateId: job.candidateId,
       modelName: job.modelName,
       status: "error",
       error: message,
     };
   }
+}
+
+function getVersionById(versionId) {
+  return (
+    versionStore
+      .getState()
+      .versions.find((version) => version.id === versionId) ?? null
+  );
+}
+
+function validateEvaluationTargets(targets) {
+  for (const target of targets) {
+    const { version, record } = target;
+    if (version.question.trim() === "") {
+      return `版本“${version.name || "未命名版本"}”缺少问题。`;
+    }
+    if (version.rubric.trim() === "") {
+      return `版本“${version.name || "未命名版本"}”缺少评分标准。`;
+    }
+    if (record.modelName.trim() === "") {
+      return `版本“${version.name || "未命名版本"}”中存在未填写模型名的记录。`;
+    }
+    if (record.answer.trim() === "") {
+      return `版本“${version.name || "未命名版本"}”中存在未填写模型回答的记录。`;
+    }
+  }
+  return null;
+}
+
+function buildEvaluationTargets({ versionIds, mode, recordIds = [] }) {
+  const recordIdSet = new Set(recordIds);
+  const state = versionStore.getState();
+  return state.versions
+    .filter((version) => versionIds.includes(version.id))
+    .flatMap((version) =>
+      version.records
+        .filter((record) => {
+          if (mode === "records") {
+            return recordIdSet.has(record.id);
+          }
+          if (mode === "unscored") {
+            return (
+              record.status === "unscored" ||
+              record.status === "terminated"
+            );
+          }
+          return true;
+        })
+        .map((record) => ({ version, record })),
+    );
+}
+
+function buildJobsFromTargets(targets) {
+  return targets.map(({ version, record }) => ({
+    versionId: version.id,
+    recordId: record.id,
+    candidateId: record.id,
+    modelName: record.modelName,
+    previousRecord: record,
+    request: buildJudgeRequest(
+      {
+        question: version.question,
+        rubric: version.rubric,
+      },
+      {
+        id: record.id,
+        modelName: record.modelName,
+        answer: record.answer,
+      },
+    ),
+  }));
+}
+
+function applyEvaluationResult(job, result) {
+  versionStore.updateRecord(
+    job.versionId,
+    job.recordId,
+    resolveRecordAfterEvaluation(job.previousRecord, result),
+  );
+}
+
+async function startEvaluation(selection) {
+  if (activeEvaluationRun) {
+    return;
+  }
+
+  clearFormStatus();
+  const targets = buildEvaluationTargets(selection);
+  if (targets.length === 0) {
+    formStatus.textContent = "当前选择中没有需要评测的记录。";
+    return;
+  }
+
+  const validationError = validateEvaluationTargets(targets);
+  if (validationError) {
+    formStatus.textContent = validationError;
+    formStatus.classList.add("is-error");
+    return;
+  }
+  if (!hasConfiguredApiKey()) {
+    formStatus.textContent =
+      "请先在本地 config.js 中填写 DeepSeek API Key。";
+    formStatus.classList.add("is-error");
+    return;
+  }
+
+  const jobs = buildJobsFromTargets(targets);
+  const controller = new AbortController();
+  activeEvaluationRun = { controller, jobs };
+  window.latestJudgeJobs = jobs;
+
+  jobs.forEach((job) => {
+    versionStore.updateRecord(job.versionId, job.recordId, {
+      status: "evaluating",
+    });
+  });
+
+  renderRequestProgress(jobs);
+  setRequestBusy(true);
+  formStatus.textContent = `正在评测 0/${jobs.length}`;
+
+  const results = await runWithConcurrency(
+    jobs,
+    (job, context) => runJudgeJob(job, context.signal),
+    {
+      limit: MAX_CONCURRENT_REQUESTS,
+      signal: controller.signal,
+      createTerminatedResult: (job) => ({
+        versionId: job.versionId,
+        candidateId: job.candidateId,
+        modelName: job.modelName,
+        status: "terminated",
+        error: "本次评测已由用户终止。",
+      }),
+      onProgress({ completedCount, totalCount, result, index }) {
+        const job = jobs[index];
+        applyEvaluationResult(job, result);
+        if (result.status === "terminated") {
+          updateRequestStatus(
+            job.candidateId,
+            "terminated",
+            "已终止",
+            "本次评测已由用户终止。",
+          );
+        }
+        formStatus.textContent =
+          `正在评测 ${completedCount}/${totalCount}`;
+      },
+    },
+  );
+
+  window.latestJudgeResults = results;
+  activeEvaluationRun = null;
+  setRequestBusy(false);
+  renderVersionTabs();
+  renderActiveVersion();
+
+  const counts = {
+    success: results.filter((result) => result.status === "success").length,
+    parseError: results.filter(
+      (result) => result.status === "parse-error",
+    ).length,
+    requestError: results.filter((result) => result.status === "error").length,
+    terminated: results.filter(
+      (result) => result.status === "terminated",
+    ).length,
+  };
+  formStatus.textContent =
+    `评测结束：成功 ${counts.success}，需复核 ${counts.parseError}，` +
+    `请求失败 ${counts.requestError}，已终止 ${counts.terminated}。`;
+  formStatus.classList.add(
+    counts.parseError === 0 &&
+      counts.requestError === 0 &&
+      counts.terminated === 0
+      ? "is-success"
+      : "is-error",
+  );
+}
+
+function renderMultiVersionChoices() {
+  const state = versionStore.getState();
+  multiVersionList.replaceChildren();
+  multiVersionError.textContent = "";
+
+  state.versions.forEach((version, index) => {
+    const label = document.createElement("label");
+    label.className = "multi-version-option";
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.value = version.id;
+    checkbox.checked = version.id === state.activeVersionId;
+    const text = document.createElement("span");
+    text.textContent =
+      `${getVersionLabel(version, index)} · ${version.records.length} 条记录`;
+    label.append(checkbox, text);
+    multiVersionList.append(label);
+  });
+}
+
+function getSelectedVersionIds() {
+  return [
+    ...multiVersionList.querySelectorAll('input[type="checkbox"]:checked'),
+  ].map((checkbox) => checkbox.value);
+}
+
+function startSelectedVersions(mode) {
+  const versionIds = getSelectedVersionIds();
+  if (versionIds.length === 0) {
+    multiVersionError.textContent = "请至少选择一个评测版本。";
+    return;
+  }
+  multiVersionDialog.close();
+  void startEvaluation({ versionIds, mode });
 }
 
 window.getEvaluationInput = getEvaluationInput;
@@ -1378,6 +1705,20 @@ resultContent.addEventListener("keydown", (event) => {
 });
 
 candidatesList.addEventListener("click", (event) => {
+  const evaluateButton = event.target.closest(".evaluate-record");
+  if (evaluateButton && !evaluateButton.disabled) {
+    const version = getActiveVersion();
+    const card = evaluateButton.closest(".candidate-card");
+    if (version && card) {
+      void startEvaluation({
+        versionIds: [version.id],
+        mode: "records",
+        recordIds: [card.dataset.candidateId],
+      });
+    }
+    return;
+  }
+
   const deleteButton = event.target.closest(".delete-button");
   if (!deleteButton || deleteButton.disabled) {
     return;
@@ -1428,73 +1769,45 @@ candidatesList.addEventListener("input", (event) => {
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
-  clearFormStatus();
+  const version = getActiveVersion();
+  if (version) {
+    await startEvaluation({
+      versionIds: [version.id],
+      mode: "unscored",
+    });
+  }
+});
 
-  const validation = validateInput();
-  if (!validation.isValid) {
-    formStatus.textContent = "请先补全必填内容。";
-    const firstInvalidInput =
-      questionInput.getAttribute("aria-invalid") === "true"
-        ? questionInput
-        : rubricInput.getAttribute("aria-invalid") === "true"
-          ? rubricInput
-          : validation.firstInvalidCandidateInput;
-    const invalidCard = firstInvalidInput.closest(".candidate-card");
-    if (invalidCard) {
-      setActiveCandidate(invalidCard.dataset.candidateId);
-    }
-    firstInvalidInput.focus();
+reevaluateVersionButton.addEventListener("click", () => {
+  const version = getActiveVersion();
+  if (version) {
+    void startEvaluation({
+      versionIds: [version.id],
+      mode: "all",
+    });
+  }
+});
+
+evaluateMultipleVersionsButton.addEventListener("click", () => {
+  renderMultiVersionChoices();
+  multiVersionDialog.showModal();
+});
+
+evaluateSelectedUnscoredButton.addEventListener("click", () => {
+  startSelectedVersions("unscored");
+});
+
+reevaluateSelectedAllButton.addEventListener("click", () => {
+  startSelectedVersions("all");
+});
+
+stopEvaluationButton.addEventListener("click", () => {
+  if (!activeEvaluationRun) {
     return;
   }
-
-  if (!hasConfiguredApiKey()) {
-    formStatus.textContent =
-      "请先在本地 config.js 中填写 DeepSeek API Key。";
-    formStatus.classList.add("is-error");
-    return;
-  }
-
-  const input = getEvaluationInput();
-  const judgeJobs = buildJudgeJobs(input);
-  window.latestJudgeJobs = judgeJobs;
-
-  renderRequestProgress(judgeJobs);
-  setRequestBusy(true);
-  formStatus.textContent = `正在评测 0/${judgeJobs.length}`;
-
-  let completedCount = 0;
-  const resultPromises = judgeJobs.map(async (job) => {
-    const result = await runJudgeJob(job);
-    completedCount += 1;
-    formStatus.textContent = `正在评测 ${completedCount}/${judgeJobs.length}`;
-    return result;
-  });
-
-  const results = await Promise.all(resultPromises);
-  window.latestJudgeResults = results;
-  setRequestBusy(false);
-
-  const successCount = results.filter(
-    (result) => result.status === "success",
-  ).length;
-  const parseErrorCount = results.filter(
-    (result) => result.status === "parse-error",
-  ).length;
-  const requestErrorCount = results.filter(
-    (result) => result.status === "error",
-  ).length;
-  const rankedResults = renderJudgeResults(results);
-  window.latestRankedResults = rankedResults;
-
-  formStatus.textContent =
-    parseErrorCount === 0 && requestErrorCount === 0
-      ? `已完成并解析 ${successCount} 份评测结果。`
-      : `评测完成：成功 ${successCount}，需复核 ${parseErrorCount}，请求失败 ${requestErrorCount}。`;
-  formStatus.classList.add(
-    parseErrorCount === 0 && requestErrorCount === 0
-      ? "is-success"
-      : "is-error",
-  );
+  stopEvaluationButton.disabled = true;
+  formStatus.textContent = "正在终止评测…";
+  activeEvaluationRun.controller.abort();
 });
 
 versionStore.createVersion();

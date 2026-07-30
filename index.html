@@ -105,7 +105,31 @@
             <div id="candidates-list"></div>
 
             <div class="form-actions">
-              <button id="submit-evaluation" type="submit">开始评测</button>
+              <button id="submit-evaluation" type="submit">
+                评测当前版本未评测记录
+              </button>
+              <button
+                class="secondary-button"
+                id="reevaluate-version"
+                type="button"
+              >
+                重新评测当前版本全部记录
+              </button>
+              <button
+                class="secondary-button"
+                id="evaluate-multiple-versions"
+                type="button"
+              >
+                评测多个版本
+              </button>
+              <button
+                class="danger-button"
+                id="stop-evaluation"
+                type="button"
+                hidden
+              >
+                终止评测
+              </button>
               <p class="form-status" id="form-status" aria-live="polite"></p>
             </div>
           </section>
@@ -137,12 +161,36 @@
           </div>
         </form>
       </dialog>
+
+      <dialog class="confirm-dialog multi-version-dialog" id="multi-version-dialog">
+        <form method="dialog">
+          <h2>选择要评测的版本</h2>
+          <p>选择一个或多个版本，然后决定只评测未评测记录，或重新评测全部记录。</p>
+          <div class="multi-version-list" id="multi-version-list"></div>
+          <p class="field-error" id="multi-version-error" role="alert"></p>
+          <div class="dialog-actions multi-version-actions">
+            <button class="secondary-button" value="cancel">取消</button>
+            <button
+              class="secondary-button"
+              id="evaluate-selected-unscored"
+              type="button"
+            >
+              评测未评测记录
+            </button>
+            <button id="reevaluate-selected-all" type="button">
+              重新评测全部记录
+            </button>
+          </div>
+        </form>
+      </dialog>
     </main>
 
     <script src="config.js"></script>
     <script src="src/namespace.js"></script>
     <script src="src/constants.js"></script>
     <script src="src/state-store.js"></script>
+    <script src="src/evaluation-orchestrator.js"></script>
+    <script src="src/evaluation-result-policy.js"></script>
     <script defer src="app.js"></script>
   </body>
 </html>

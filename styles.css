@@ -277,15 +277,60 @@ textarea[aria-invalid="true"] {
   margin-top: 14px;
 }
 
+.candidate-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .candidate-answer {
   min-height: 180px;
 }
 
 .form-actions {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 12px;
   margin-top: 20px;
+}
+
+.form-status {
+  flex-basis: 100%;
+}
+
+.multi-version-dialog {
+  width: min(620px, calc(100% - 32px));
+}
+
+.multi-version-list {
+  display: grid;
+  max-height: 320px;
+  margin: 16px 0;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.multi-version-option {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.multi-version-option:last-child {
+  border-bottom: 0;
+}
+
+.multi-version-option input {
+  width: auto;
+  margin: 0;
+}
+
+.multi-version-actions {
+  flex-wrap: wrap;
 }
 
 button {
