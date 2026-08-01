@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Model Evaluation</title>
+<style>
+:root{
+  --bg:#fafbfc; --panel:#ffffff; --border:#e6e8ec; --text:#24292f; --muted:#6b7280;
+  --accent:#6f42c1; --accent-soft:#f5f1fb; --accent-border:#e4d8f5; --green:#1a7f37;
+  --shadow:0 1px 3px rgba(0,0,0,.05),0 1px 2px rgba(0,0,0,.04);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden}
+a{color:inherit;text-decoration:none}
+/* ── 顶部导航 ── */
+.nav{height:56px;background:var(--panel);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px;padding:0 24px;flex-shrink:0;z-index:10}
+.nav .logo{display:flex;align-items:center;gap:9px;font-weight:700;font-size:15px;cursor:pointer}
+.nav .logo .dot{width:24px;height:24px;border-radius:7px;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:12px}
+.nav .search{flex:1;max-width:440px;margin-left:8px;display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 12px}
+.nav .search input{border:none;outline:none;background:transparent;flex:1;font-size:13px;color:var(--text)}
+.nav .search .k{font-size:10px;color:var(--muted);background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:1px 6px}
+.nav .stats{font-size:12px;color:var(--muted);white-space:nowrap}
+.nav .stats b{color:var(--accent);font-weight:700}
+/* ── 布局 ── */
+.main{flex:1;display:flex;min-height:0}
+/* 左目录 */
+.toc{width:280px;background:var(--panel);border-right:1px solid var(--border);overflow-y:auto;padding:18px 14px;flex-shrink:0;display:block}
+.toc.show{display:block}
+.toc-hd{font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.08em;padding:0 8px 10px}
+.toc-sec{margin-bottom:4px}
+.toc-sec>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:7px;font-size:13px;font-weight:600}
+.toc-sec>summary:hover{background:var(--bg)}
+.toc-sec>summary::-webkit-details-marker{display:none}
+.toc-sec .arrow{font-size:9px;color:var(--muted);transition:transform .15s}
+.toc-sec[open] .arrow{transform:rotate(90deg)}
+.toc-sec .count{margin-left:auto;font-size:10.5px;color:var(--muted);background:var(--bg);padding:1px 8px;border-radius:99px}
+.toc-links{padding:2px 0 8px 18px;display:flex;flex-direction:column;gap:1px}
+.toc-links a{padding:6px 10px;border-radius:7px;font-size:12.5px;color:var(--text);cursor:pointer;line-height:1.45;border-left:3px solid transparent}
+.toc-links a:hover{background:var(--bg)}
+.toc-links a.active{background:var(--accent-soft);border-left-color:var(--accent);color:var(--accent);font-weight:600}
+.toc-links a small{display:block;color:var(--muted);font-size:11px;margin-top:1px;font-weight:400}
+/* ── 内容区 ── */
+.content{flex:1;overflow-y:auto;min-width:0}
+.paper{max-width:740px;margin:0 auto;padding:44px 48px 80px}
+.doc-title{font-size:26px;font-weight:700;line-height:1.5}
+.doc-sub{color:var(--muted);font-size:13.5px;margin-top:8px}
+.hr{height:1px;background:var(--border);margin:24px 0}
+.timeline{position:relative;padding-left:26px}
+.timeline::before{content:"";position:absolute;left:7px;top:6px;bottom:6px;width:2px;background:var(--border)}
+.t-node{position:relative;margin-bottom:26px}
+.t-node::before{content:"";position:absolute;left:-26px;top:8px;width:12px;height:12px;border-radius:50%;background:var(--panel);border:3px solid var(--accent)}
+.t-node.user::before{border-color:#5d7cfa}
+.t-node.tool::before{border-color:#d0d5dd}
+.t-node .who{font-size:12px;color:var(--muted);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.t-node .who .tag{font-size:10px;padding:1px 8px;border-radius:99px;background:var(--bg);border:1px solid var(--border)}
+.t-node.user .who{color:#4a63c7}
+.t-node .body{font-size:14px;line-height:1.85}
+.t-node .body ul{margin:8px 0 0 22px}
+.t-node .body code{background:var(--accent-soft);color:var(--accent);padding:1px 6px;border-radius:4px;font-size:12.5px}
+.t-node .body blockquote{border-left:3px solid var(--border);padding-left:14px;color:var(--muted);margin:8px 0}
+.t-node.user .body{background:#f4f7ff;border:1px solid #e3e9fd;border-radius:10px;padding:14px 16px}
+.t-node.ai .body{background:#f6f3fb;border:1px solid #e8e0f5;border-radius:10px;padding:14px 16px}
+.t-node.ai .who{color:var(--accent)}
+/* ── 长消息两行预览折叠 ── */
+.long-fold{border-radius:10px;overflow:hidden;cursor:pointer}
+.user-fold{background:#f4f7ff;border:1px solid #e3e9fd}
+.ai-fold{background:#f6f3fb;border:1px solid #e8e0f5}
+.long-fold:hover{border-color:#b9c8ef}
+.long-preview{padding:12px 16px;font-size:14px;line-height:1.85;white-space:pre-wrap;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.long-toggle{padding:7px 16px;font-size:11.5px;color:var(--muted)}
+.user-fold .long-toggle{color:#4a63c7}
+.ai-fold .long-toggle{color:var(--accent)}
+.long-toggle::after{content:"▾ 点击展开全文"}
+.long-fold .long-body{display:none;padding:14px 16px;border-top:1px solid transparent;font-size:14px;line-height:1.85}
+.user-fold .long-body{border-top-color:#e3e9fd;white-space:pre-wrap}
+.ai-fold .long-body{border-top-color:#e8e0f5}
+.long-fold.open .long-body{display:block}
+.long-fold.open .long-preview{display:none}
+.long-fold.open .long-toggle::after{content:"▴ 收起"}
+.t-node.tool{font-size:12.5px}
+.t-node.tool .body{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:0;overflow:hidden}
+.t-node.tool .ttl{padding:8px 12px;font-family:ui-monospace,Menlo,monospace;font-size:12px;cursor:pointer;display:flex;gap:8px;align-items:center}
+.t-node.tool .ttl:hover{background:var(--bg)}
+.t-node.tool .ttl .nm{color:var(--green)}
+.t-node.tool .detail{display:none}
+.t-node.tool.open .detail{display:block;border-top:1px solid var(--border)}
+.t-node.tool pre{margin:0;padding:12px 14px;background:#f6f8fa;overflow-x:auto;font-size:11.5px;line-height:1.65;color:#3a4150;white-space:pre-wrap}
+.t-node.tool .lbl{font-size:10.5px;color:var(--muted);padding:8px 14px 0}
+.t-node.reason .body{border:1px dashed var(--border);border-radius:8px;padding:12px 14px;color:var(--muted);font-size:13px}
+/* ── 对话间过程折叠 ── */
+.t-node.proc::before{border-color:#d0d5dd}
+.t-node.proc .who{color:var(--muted)}
+.proc-fold{margin:0;background:var(--panel);border:1px solid var(--border);border-radius:8px;overflow:hidden;cursor:pointer}
+.proc-fold:hover{border-color:#b6bcc6}
+.proc-summary{padding:9px 14px;font-size:12.5px;color:var(--text);background:var(--bg);display:flex;align-items:center;gap:6px}
+.proc-summary .hint{color:var(--muted);font-size:11.5px;margin-left:auto}
+.proc-summary .hint::after{content:"▾ 点击展开"}
+.proc-fold.open .proc-summary .hint::after{content:"▴ 收起"}
+.proc-fold .proc-body{display:none;padding:12px 14px;border-top:1px solid var(--border);flex-direction:column;gap:10px}
+.proc-fold.open .proc-body{display:flex}
+.proc-item{font-size:13px;line-height:1.8}
+.proc-item.proc-reason{background:var(--bg);border:1px dashed var(--border);border-radius:8px;padding:9px 12px;color:var(--muted)}
+.proc-item.proc-ai{background:#f6f3fb;border:1px solid #e8e0f5;border-radius:8px;padding:9px 12px;color:var(--text)}
+.proc-item.proc-ai ul{margin:6px 0 0 20px}
+.proc-tool{background:var(--panel);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.proc-tool .ttl{padding:7px 12px;font-family:ui-monospace,Menlo,monospace;font-size:12px;cursor:pointer;display:flex;gap:8px;align-items:center}
+.proc-tool .ttl:hover{background:var(--bg)}
+.proc-tool .ttl .nm{color:var(--green)}
+.proc-tool .detail{display:none}
+.proc-tool.open .detail{display:block;border-top:1px solid var(--border)}
+.proc-tool pre{margin:0;padding:10px 12px;background:#f6f8fa;overflow-x:auto;font-size:11.5px;line-height:1.65;color:#3a4150;white-space:pre-wrap}
+.proc-tool .lbl{font-size:10.5px;color:var(--muted);padding:8px 12px 0}
+/* 右信息卡 */
+.info{width:290px;padding:24px 20px;flex-shrink:0;display:none}
+.info .card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px;position:sticky;top:24px;box-shadow:var(--shadow)}
+.info h4{font-size:11px;color:var(--muted);letter-spacing:.08em;margin-bottom:14px;font-weight:700}
+.info dl{display:grid;gap:10px;font-size:12.5px}
+.info dt{color:var(--muted);font-size:11px}
+.info dd{font-weight:600;word-break:break-all;line-height:1.5}
+.info dd code{background:var(--bg);padding:1px 5px;border-radius:4px;font-size:11.5px;font-family:ui-monospace,Menlo,monospace}
+@media(min-width:1200px){.info{display:block}}
+@media(max-width:900px){.toc{width:230px}.paper{padding:32px 22px}}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     数据层：示意数据（DEMO）
+     ▸ 正式版：将从此处替换为真实导出的数据源
+       （从 ~/Desktop/Codex对话导出/ 的 .md / .jsonl 解析生成）
+═══════════════════════════════════════════════════════════ -->
+<script src="data.js"></script>
+
+<div class="nav">
+  <div class="logo"><div class="dot">M</div>Model Evaluation</div>
+  <div class="search">🔍<input placeholder="搜索对话内容（正式版功能，暂不可用）"><span class="k">⌘K</span></div>
+  <div class="stats" id="navStats"></div>
+</div>
+<div class="main">
+  <aside class="toc" id="toc">
+    <div class="toc-hd">目录</div>
+  </aside>
+  <section class="content" id="content"></section>
+  <aside class="info" id="info"></aside>
+</div>
+
+<script>
+/* ── 工具 ── */
+const $ = id => document.getElementById(id);
+function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function md(s){
+  let h = esc(s);
+  h = h.replace(/^&gt; (.*)$/gm,'<blockquote>$1</blockquote>');
+  h = h.replace(/`([^`]+)`/g,'<code>$1</code>');
+  h = h.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+  h = h.replace(/\*([^*]+)\*/g,'<em>$1</em>');
+  h = h.replace(/^- (.*)$/gm,'<li>$1</li>');
+  h = h.replace(/(<li>.*<\/li>)/s,'<ul>$1</ul>');
+  h = h.replace(/\n/g,'<br>');
+  return h;
+}
+function allSessions(){
+  const out=[];
+  DATA.projects.forEach((p,pi)=>p.sessions.forEach((s,si)=>out.push({pi,si,p,s})));
+  return out;
+}
+let cur = null; // {pi, si} 或 null=主页
+
+/* ── 顶部统计 ── */
+function renderNavStats(){
+  $('navStats').innerHTML = `<b>${allSessions().length}</b> 个会话`;
+}
+
+/* ── 主页 ── */
+
+/* ── 阅读视图 ── */
+function renderToc(){
+  const toc = $('toc');
+  toc.innerHTML = `<div class="toc-hd">目录</div><div class="toc-links"></div>`;
+  const links = toc.querySelector('.toc-links');
+  allSessions().forEach(({pi,si,s})=>{
+    const a = document.createElement('a');
+    a.innerHTML = s.title + `<small>${s.model} · ${s.time}</small>`;
+    if(cur && cur.pi===pi && cur.si===si) a.classList.add('active');
+    a.onclick = ()=>openSession(pi,si);
+    links.appendChild(a);
+  });
+}
+function openSession(pi, si){
+  cur = {pi, si};
+  const toc = $('toc');
+  toc.classList.add('show');
+  renderToc();
+  const p = DATA.projects[pi], s = p.sessions[si];
+  let html = `<div class="paper">
+    <div class="doc-title">${esc(s.title)}</div>
+    <div class="doc-sub">${p.name} · ${s.time} · 工具输出仅保留参数与摘要，完整内容见原始 jsonl</div>
+    <div class="hr"></div>
+    <div class="timeline">`;
+  const msgs = s.msgs;
+  const isProc = m => m.role==='tool' || m.role==='reasoning' || (m.role==='assistant' && m.phase==='commentary');
+  const procItem = m => {
+    if(m.role==='tool') return `<div class="proc-tool"><div class="ttl" onclick="this.parentElement.classList.toggle('open')"><span>▶</span><span class="nm">${m.name}</span></div><div class="detail"><div class="lbl">参数</div><pre>${esc(m.args)}</pre><div class="lbl">输出摘要</div><pre>${esc(m.output)}</pre></div></div>`;
+    if(m.role==='reasoning') return `<div class="proc-item proc-reason">💭 ${esc(m.text)}</div>`;
+    return `<div class="proc-item proc-ai">${md(m.text)}</div>`;
+  };
+  for(let i=0;i<msgs.length;i++){
+    const m = msgs[i];
+    if(isProc(m)){
+      let j=i; while(j<msgs.length && isProc(msgs[j])) j++;
+      if(j-i>=3){
+        let nTool=0, nThink=0, inner='';
+        for(let k=i;k<j;k++){
+          inner += procItem(msgs[k]);
+          if(msgs[k].role==='tool') nTool++; else nThink++;
+        }
+        html += `<div class="t-node proc"><div class="who"><span class="tag">过程</span></div><div class="proc-fold" onclick="this.classList.toggle('open')"><div class="proc-summary">🔧 ${nTool} 个工具调用 · 💭 ${nThink} 步推理<span class="hint"></span></div><div class="proc-body">${inner}</div></div></div>`;
+        i = j-1;
+        continue;
+      }
+    }
+    if(m.role==='user'){
+      const body = m.text.length > 300
+        ? `<div class="long-fold user-fold" onclick="this.classList.toggle('open')"><div class="long-preview">${esc(m.text)}</div><div class="long-toggle"></div><div class="long-body">${esc(m.text)}</div></div>`
+        : `<div class="body">${esc(m.text)}</div>`;
+      html += `<div class="t-node user"><div class="who"><span class="tag">User</span> 用户消息</div>${body}</div>`;
+    }
+    else if(m.role==='assistant'){
+      const tag = m.phase==='commentary' ? 'Codex · 中间过程' : 'Codex';
+      const body = m.text.length > 300
+        ? `<div class="long-fold ai-fold" onclick="this.classList.toggle('open')"><div class="long-preview">${md(m.text)}</div><div class="long-toggle"></div><div class="long-body ai-body">${md(m.text)}</div></div>`
+        : `<div class="ai-body">${md(m.text)}</div>`;
+      html += `<div class="t-node ai"><div class="who"><span class="tag">${tag}</span> ${s.model}</div>${body}</div>`;
+    }
+    else if(m.role==='reasoning') html += `<div class="t-node reason"><div class="who"><span class="tag">推理</span></div><div class="body">💭 ${esc(m.text)}</div></div>`;
+    else html += `<div class="t-node tool"><div class="who"><span class="tag">工具</span> ${m.name}</div><div class="body"><div class="ttl" onclick="this.parentElement.parentElement.classList.toggle('open')"><span>▶</span><span class="nm">${m.name}</span></div><div class="detail"><div class="lbl">参数</div><pre>${esc(m.args)}</pre><div class="lbl">输出摘要</div><pre>${esc(m.output)}</pre></div></div></div>`;
+  }
+  html += `</div></div>`;
+  $('content').innerHTML = html;
+  $('content').scrollTo(0,0);
+  $('info').innerHTML = `<div class="card">
+    <h4>会话信息</h4>
+    <dl>
+      <dt>模型</dt><dd>${s.model}</dd>
+      <dt>创建时间</dt><dd>${s.time}</dd>
+      <dt>事件数</dt><dd>${s.events}</dd>
+      <dt>工作目录</dt><dd><code>${s.cwd}</code></dd>
+      <dt>来源</dt><dd>user</dd>
+      <dt>原始文件</dt><dd><code>${s.file}</code></dd>
+    </dl>
+  </div>`;
+}
+
+/* ── 初始化 ── */
+cur = {pi:0, si:0};
+renderNavStats();
+renderToc();
+openSession(0,0);
+</script>
+</body>
+</html>
