@@ -602,3 +602,74 @@ main { margin-left: var(--rail); padding-top: var(--header); overflow: hidden; }
   html { scroll-behavior: auto; }
   *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+
+/* ============================================================
+   知识点整理版新增组件
+   ============================================================ */
+
+/* 侧边栏：条目变多，允许内部滚动 */
+.rail { overflow-y: auto; }
+.rail::-webkit-scrollbar { width: 0; }
+.rail-nav a { min-height: 34px; padding-block: 6px; }
+
+/* 十环节概览网格 */
+.phase-overview-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 44px; }
+.phase-overview-grid article { min-height: 128px; padding: 18px; border: 1px solid var(--line); background: var(--white); }
+.phase-overview-grid b { color: var(--blue); font: 650 11px/1 ui-monospace, monospace; }
+.phase-overview-grid span { display: block; margin: 14px 0 7px; font-size: 13px; font-weight: 700; }
+.phase-overview-grid small { color: var(--muted); font-size: 10px; line-height: 1.55; }
+
+/* 环节方法板（产出物 / 动作 / DoD） */
+.method-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; border: 1px solid var(--line); background: var(--line); }
+.method-board article { min-height: 200px; padding: 26px; background: var(--white); }
+.method-board .m-label { color: var(--blue); font: 750 9px/1 ui-monospace, monospace; letter-spacing: .14em; }
+.method-board h4 { margin: 20px 0 12px; font-size: 19px; }
+.method-board p { margin: 20px 0 0; color: var(--muted); font-size: 13px; line-height: 1.75; }
+.method-board ul { margin: 20px 0 0; padding-left: 18px; color: var(--muted); font-size: 13px; line-height: 1.8; }
+.method-board li b { color: var(--ink); }
+
+/* 可直接发给 AI 的 Prompt 面板 */
+.prompt-sheet { margin-top: 20px; border: 1px solid var(--ink); background: #191a17; }
+.prompt-sheet-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 14px 18px; border-bottom: 1px solid #33342f; }
+.prompt-sheet-head span { color: var(--acid); font: 750 9px/1 ui-monospace, monospace; letter-spacing: .13em; }
+.prompt-sheet pre { margin: 0; padding: 20px 22px; overflow-x: auto; color: #c8ccd4; font: 500 12px/1.8 ui-monospace, Menlo, monospace; white-space: pre-wrap; }
+.copy-button.dark { border-color: #4d4f48; color: #d8dacf; }
+.copy-button.dark:hover { background: var(--acid); color: var(--ink); border-color: var(--acid); }
+
+/* 环节 02：看不懂方案怎么办 */
+.understanding-note { margin-top: 60px; padding: 30px; border-left: 5px solid var(--orange); background: #eee7e1; }
+.understanding-note > span { color: var(--orange); font: 750 10px/1 ui-monospace, monospace; letter-spacing: .13em; }
+.understanding-note h3 { margin: 14px 0 10px; font-size: 26px; letter-spacing: -.03em; }
+.understanding-note ol { margin: 0; padding-left: 20px; color: var(--muted); line-height: 1.9; font-size: 13px; }
+.understanding-note li b { color: var(--ink); }
+.understanding-note .u-rule { margin: 18px 0 0; padding-top: 16px; border-top: 1px solid #d9cec3; color: var(--ink); font-weight: 650; line-height: 1.75; }
+
+/* 第二部分：维护项目卡片 */
+.maintain-card { margin-top: 70px; }
+.maintain-card-head { display: grid; grid-template-columns: 90px 1fr; gap: 26px; align-items: start; margin-bottom: 16px; }
+.maintain-card-head > b { color: var(--blue); font: 500 44px/1 ui-monospace, monospace; }
+.maintain-card-head h3 { margin: 4px 0 8px; font-size: 26px; letter-spacing: -.03em; }
+.maintain-card-head p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.7; }
+
+/* 第三部分：课堂主线公式卡 */
+.formula-card { max-width: 840px; margin: 46px auto 0; padding: 28px; background: var(--ink); color: white; }
+.formula-card > span { color: var(--acid); font: 750 9px/1 ui-monospace, monospace; letter-spacing: .13em; }
+.formula-card code { display: block; margin: 18px 0; color: var(--acid); font: 700 14px/1.8 ui-monospace, monospace; }
+.formula-card p { margin: 0 0 18px; color: #b9bbb2; font-size: 13px; line-height: 1.75; }
+
+/* 新增组件响应式 */
+@media (max-width: 980px) {
+  .method-board { grid-template-columns: 1fr; }
+  .method-board article { min-height: 0; }
+  .phase-overview-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 680px) {
+  .phase-overview-grid { grid-template-columns: 1fr 1fr; }
+  .phase-overview-grid article { min-height: 0; }
+  .prompt-sheet-head { align-items: flex-start; flex-direction: column; }
+  .maintain-card-head { grid-template-columns: 1fr; gap: 14px; }
+  .understanding-note { padding: 24px; }
+  .formula-card { padding: 22px; }
+  .formula-card code { font-size: 12px; }
+}

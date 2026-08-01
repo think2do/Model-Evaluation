@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="一次完整的 Web Coding × AI 协作课堂案例：从需求澄清、技术方案、任务拆解，到分模块开发、验证、联调和交付。"
+      content="Web Coding × AI 协作课堂复盘（知识点整理版）：执行清单十个环节的方法与案例证据、维护项目的文档与交接、可重复的 Coding 方法总结。"
     />
-    <title>一个 Web Coding 项目是如何做出来的｜AI 协作课堂复盘</title>
+    <title>一个 Web Coding 项目是如何做出来的｜知识点整理版</title>
     <link
       rel="icon"
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%2310110e'/%3E%3Ctext x='32' y='39' text-anchor='middle' font-family='monospace' font-size='20' font-weight='700' fill='%23caff00'%3EME%3C/text%3E%3C/svg%3E"
@@ -23,21 +23,28 @@
         <span>WEB CODING / AI COLLABORATION LOG</span>
       </a>
       <div class="header-meta">
-        <span>课堂复盘版</span>
-        <span class="status-dot"><i></i> STEP 01—05</span>
+        <span>知识点整理版</span>
+        <span class="status-dot"><i></i> 方法 × 证据 × 复盘</span>
       </div>
     </header>
 
     <aside class="rail" aria-label="章节导航">
-      <div class="rail-label">PROCESS</div>
+      <div class="rail-label">CONTENTS</div>
       <nav class="rail-nav">
         <a href="#overview" data-section="overview"><b>00</b><span>项目总览</span></a>
-        <a href="#step-1" data-section="step-1"><b>01</b><span>准备规则</span></a>
-        <a href="#step-2" data-section="step-2"><b>02</b><span>准备测试</span></a>
-        <a href="#step-3" data-section="step-3"><b>03</b><span>准备回答</span></a>
-        <a href="#step-4" data-section="step-4"><b>04</b><span>稳定性测试</span></a>
-        <a href="#step-5" data-section="step-5"><b>05</b><span>Vibe Coding</span></a>
-        <a href="#synthesis" data-section="synthesis"><b>→</b><span>项目复盘</span></a>
+        <a href="#phase-0" data-section="phase-0"><b>0</b><span>项目启动</span></a>
+        <a href="#phase-1" data-section="phase-1"><b>1</b><span>需求澄清</span></a>
+        <a href="#phase-2" data-section="phase-2"><b>2</b><span>技术方案</span></a>
+        <a href="#phase-3" data-section="phase-3"><b>3</b><span>任务拆解</span></a>
+        <a href="#phase-4" data-section="phase-4"><b>4</b><span>环境搭建</span></a>
+        <a href="#phase-5" data-section="phase-5"><b>5</b><span>分模块开发</span></a>
+        <a href="#phase-6" data-section="phase-6"><b>6</b><span>自测走查</span></a>
+        <a href="#phase-7" data-section="phase-7"><b>7</b><span>集成联调</span></a>
+        <a href="#phase-8" data-section="phase-8"><b>8</b><span>测试验收</span></a>
+        <a href="#phase-9" data-section="phase-9"><b>9</b><span>完成确认</span></a>
+        <a href="#principle" data-section="principle"><b>★</b><span>贯穿原则</span></a>
+        <a href="#maintain" data-section="maintain"><b>Ⅱ</b><span>项目维护</span></a>
+        <a href="#review" data-section="review"><b>Ⅲ</b><span>项目复盘</span></a>
       </nav>
       <div class="rail-progress" aria-hidden="true"><span id="progress-bar"></span></div>
     </aside>
@@ -54,834 +61,152 @@
           <em>是如何做出来的？</em>
         </h1>
         <p class="hero-deck">
-          这是一堂关于“怎样和 AI 一起完成 Coding”的复盘课。
-          前四步只用来解释为什么需要这个工具；真正的主体是怎样澄清需求、选择方案、拆解任务，
-          到逐模块实现、亲自验证、联调验收与交付收尾。
+          这是一堂关于“怎样和 AI 一起完成 Coding”的复盘课。全课围绕一份可重复的执行清单展开：
+          十个环节的方法步骤、每个环节在本项目的真实证据，再加上项目文档维护与复盘收尾。
         </p>
-        <div class="hero-flow hero-flow-five" aria-label="五步流程">
-          <div><strong>01</strong><span>审查规则</span><small>发现冲突</small></div>
+        <div class="hero-flow hero-flow-five" aria-label="全课结构">
+          <div><strong>00</strong><span>收敛想法</span><small>项目启动</small></div>
           <i>→</i>
-          <div><strong>02</strong><span>生成任务</span><small>建立验收</small></div>
+          <div><strong>0–9</strong><span>构建项目</span><small>十环节方法 + 案例证据</small></div>
           <i>→</i>
-          <div><strong>03</strong><span>执行任务</span><small>产出答案</small></div>
+          <div><strong>Ⅱ</strong><span>维护项目</span><small>文档同步与交接</small></div>
           <i>→</i>
-          <div><strong>04</strong><span>重复裁判</span><small>观察漂移</small></div>
-          <i>→</i>
-          <div><strong>05</strong><span>编码工具</span><small>固化流程</small></div>
+          <div><strong>Ⅲ</strong><span>项目复盘</span><small>可重复的 Coding 方法</small></div>
         </div>
         <div class="scroll-cue"><span></span>向下浏览完整过程</div>
       </section>
 
-      <section class="section overview prelude-compact" id="overview">
+      <section class="section" id="overview">
         <header class="section-head">
           <span class="eyebrow">00 / OVERVIEW</span>
-          <h2>先用一分钟理解：<br />为什么要 Coding？</h2>
+          <h2>先看清楚：<br />方法、证据与交付</h2>
           <p>
-            前四步手工跑通了“出题 → 作答 → 重复裁判”，
-            第五步才把重复劳动产品化成网页。课程重点从这里转向 Coding。
+            本课知识点整理成三部分：第一部分是构建项目的执行清单十个环节（每个环节给方法、也给本项目证据），
+            第二部分是开发完成后如何维护项目文档与交接，第三部分是把整个方法压缩成可复用的复盘。
           </p>
         </header>
 
         <div class="metrics" aria-label="项目关键数字">
-          <article><strong>4/4</strong><span>重复裁判核心结论一致</span></article>
-          <article><strong>9</strong><span>个 Web Coding 环节</span></article>
-          <article><strong>9</strong><span>个增量开发任务</span></article>
-          <article><strong>5</strong><span>个最终项目文件</span></article>
+          <article><strong>10</strong><span>个执行环节（0–9）</span></article>
+          <article><strong>9</strong><span>个增量开发任务 M1–M9</span></article>
+          <article><strong>4/4</strong><span>轮裁判核心结论一致</span></article>
+          <article><strong>4</strong><span>组交接 Prompt</span></article>
         </div>
 
-        <div class="overview-compact-flow">
-          <article><b>01—03</b><span>准备测试材料</span><small>提示词、题目、标准、模型回答</small></article>
-          <i>→</i>
-          <article><b>04</b><span>验证手工流程</span><small>同样输入重复裁判四次</small></article>
-          <i>→</i>
-          <article class="is-focus"><b>05</b><span>开始 Web Coding</span><small>把手工工作流变成本地工具</small></article>
+        <div class="subhead">
+          <span>EXECUTION CHECKLIST</span>
+          <h3>十个环节：从一句想法，到一个敢交付的版本</h3>
         </div>
 
-        <div class="pipeline">
-          <article class="pipeline-card">
-            <span class="node-number">01</span>
-            <div>
-              <small>INPUT</small>
-              <h3>初版元提示词</h3>
-              <p>目标正确，但部分规则之间互相拉扯，可能导致 AI 为了满足格式而硬凑内容。</p>
-            </div>
-            <b>审查 + 改写</b>
-          </article>
-          <div class="pipeline-link"><span>产出成为下一步输入</span></div>
-          <article class="pipeline-card">
-            <span class="node-number">02</span>
-            <div>
-              <small>TRANSFORM</small>
-              <h3>题目 + 评分标准</h3>
-              <p>将抽象的“内容网感”转换为可静态检查的任务约束和 13 个二元评分项。</p>
-            </div>
-            <b>实例化模板</b>
-          </article>
-          <div class="pipeline-link"><span>题目成为模型输入</span></div>
-          <article class="pipeline-card">
-            <span class="node-number">03</span>
-            <div>
-              <small>OUTPUT</small>
-              <h3>小红书文案</h3>
-              <p>模型依据明确题目生成答案；答案本身就是之后执行 AI 评分的待评对象。</p>
-            </div>
-            <b>执行任务</b>
-          </article>
-          <div class="pipeline-link"><span>回答与标准一起成为裁判输入</span></div>
-          <article class="pipeline-card">
-            <span class="node-number">04</span>
-            <div>
-              <small>VERIFY</small>
-              <h3>重复裁判结果</h3>
-              <p>重复提交完全相同的题目、标准和回答，观察总分、失分项与理由是否保持一致。</p>
-            </div>
-            <b>验证稳定性</b>
-          </article>
-          <div class="pipeline-link"><span>已验证的手工流程成为产品需求</span></div>
-          <article class="pipeline-card">
-            <span class="node-number">05</span>
-            <div>
-              <small>PRODUCTIZE</small>
-              <h3>模型回答裁判器</h3>
-              <p>把复制粘贴、逐份请求、结构校验、结果复核和排序固化成一个本地网页。</p>
-            </div>
-            <b>Vibe Coding</b>
-          </article>
+        <div class="phase-overview-grid" aria-label="十环节概览">
+          <article><b>0</b><span>项目启动</span><small>把模糊想法收敛成可执行方向</small></article>
+          <article><b>1</b><span>需求澄清</span><small>说清做什么，也明确不做什么</small></article>
+          <article><b>2</b><span>技术方案</span><small>选一个够简单、能落地的方案</small></article>
+          <article><b>3</b><span>任务拆解</span><small>拆成可验证的小任务</small></article>
+          <article><b>4</b><span>环境搭建</span><small>先把项目骨架跑起来</small></article>
+          <article><b>5</b><span>分模块开发</span><small>按小任务逐段实现并及时验证</small></article>
+          <article><b>6</b><span>自测走查</span><small>找出边界情况和潜在问题</small></article>
+          <article><b>7</b><span>集成联调</span><small>把各模块串起来跑通完整流程</small></article>
+          <article><b>8</b><span>测试验收</span><small>对照最初需求确认完成度</small></article>
+          <article><b>9</b><span>完成确认</span><small>整理交付说明与已知限制</small></article>
+        </div>
+
+        <div class="document-chain" aria-label="全课三部分结构">
+          <article><span>01</span><strong>构建项目</strong><small>环节 0–9：方法（执行清单）+ 案例补充（本项目证据）</small></article>
+          <i>→</i>
+          <article><span>02</span><strong>维护项目</strong><small>开发完成后：文档同步、新对话接管、老项目构建</small></article>
+          <i>→</i>
+          <article><span>03</span><strong>项目复盘</strong><small>五层倒序方法 + 核心方法论 + 课堂主线</small></article>
         </div>
 
         <aside class="teaching-note">
-          <span>课堂观察</span>
+          <span>一句话记住</span>
           <p>
-            前三步建立“定义质量 → 制造测试 → 运行被测对象”，
-            第四步验证裁判是否稳定，第五步才把流程写成工具。
             <strong>代码是工作流被理解之后的结果，不是项目的第一步。</strong>
+            先手工跑通流程、验证需求真实存在，再把它产品化成工具——
+            这正是本项目 Step 01–04 与 Step 05 的关系。
           </p>
         </aside>
       </section>
 
-      <section class="section step-section prep-step" id="step-1">
+      <!-- ══════════ 环节 0 项目启动 ══════════ -->
+      <section class="section step-section" id="phase-0">
         <header class="step-header">
-          <div class="step-index"><span>STEP</span><strong>01</strong></div>
+          <div class="step-index"><span>环节</span><strong>00</strong></div>
           <div>
-            <span class="eyebrow">PROMPT REVIEW</span>
-            <h2>准备 01：把规则说清楚</h2>
+            <span class="eyebrow">PHASE 00 / PROJECT KICKOFF</span>
+            <h2>环节 00：项目启动</h2>
             <p>
-              检查用于生成评测题的提示词，删除冲突、隐藏要求和不稳定判断，
-              得到一份可重复使用的评测生成模板。
+              主要和 AI 去聊天，将一个模糊的想法变成一个可执行的项目，
+              而不是直接让 AI 写代码。
             </p>
           </div>
         </header>
 
-        <div class="prep-summary">
-          <span>这一阶段只需记住</span>
-          <strong>在写代码前，先把“什么叫做对”定义清楚。</strong>
-          <p>产出：一份边界清楚、能够被下一步直接使用的提示词模板。</p>
+        <div class="subhead">
+          <span>METHOD / 执行清单</span>
+          <h3>方法：把一个模糊想法聊成一句话定位</h3>
+        </div>
+
+        <div class="method-board">
+          <article>
+            <span class="m-label">关键产出物</span>
+            <p>一段清晰的项目「一句话定位」+ 几点初步想法（功能方向、目标人群、大致形态）。</p>
+          </article>
+          <article>
+            <span class="m-label">具体动作</span>
+            <ul>
+              <li><b>你：</b>把脑子里模糊的想法用自己的话讲出来，不用讲究逻辑和完整性。</li>
+              <li><b>AI：</b>通过提问帮你理清“这个项目到底想解决什么问题”，引导你把模糊想法聚焦成可执行的方向，而不是立刻给方案或写代码。</li>
+            </ul>
+          </article>
+          <article>
+            <span class="m-label">结束标准（DoD）</span>
+            <ul>
+              <li>你能用一两句话说出“我想做一个什么样的东西，大概解决什么问题”。</li>
+              <li>想法已经从“灵感”收敛成“可以进入需求澄清阶段”的状态。</li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="prompt-sheet">
+          <div class="prompt-sheet-head">
+            <span>可直接发给 AI 的 PROMPT</span>
+            <button class="copy-button dark" type="button" data-copy-target="prompt-phase-0">复制 Prompt</button>
+          </div>
+          <pre id="prompt-phase-0">我有一个模糊的想法,还没想清楚细节,请不要直接给方案或写代码。
+先通过提问帮我理清楚:
+1. 这个想法本质上是想解决什么问题
+2. 大概是给谁用的
+3. 现在最核心、最想先做出来的部分是什么
+一步步引导我把这个想法聊清楚,聊完之后帮我总结成一句话定位。</pre>
+        </div>
+
+        <div class="subhead">
+          <span>CASE / 本项目证据</span>
+          <h3>案例补充：为什么要 Coding？</h3>
         </div>
 
         <div class="two-col">
           <article class="context-card">
-            <div class="card-label">原始目标</div>
-            <blockquote>
-              “生成一道有明确区分度的模型评测题，以及与题目严格对应、
-              可以稳定执行的二元评分标准。”
-            </blockquote>
+            <div class="card-label">最初想法（决策日志 01）</div>
+            <blockquote>多模型答案对比评测器——输入问题、标准与多份回答，调用 DeepSeek 评测。</blockquote>
             <ul class="plain-list">
-              <li><span>对象</span>跨领域模型能力评测</li>
-              <li><span>交付</span>1 道题 + 12–18 个二元评分项</li>
-              <li><span>判定</span>每项只允许 0 或 1 分</li>
-              <li><span>约束</span>不依赖隐藏信息与整体印象</li>
+              <li><span>功能方向</span>模型回答裁判器</li>
+              <li><span>目标人群</span>需要批量评测多模型回答的人</li>
+              <li><span>大致形态</span>可在本地运行的网页工具</li>
             </ul>
           </article>
-
           <article class="context-card accent-card">
-            <div class="card-label">发现的核心矛盾</div>
-            <div class="tension">
-              <div><span>规则 A</span><strong>必须有 12–18 项</strong></div>
-              <i>VS</i>
-              <div><span>规则 B</span><strong>不得重复或隐藏要求</strong></div>
-            </div>
+            <div class="card-label">一句话定位</div>
+            <blockquote>把复制粘贴、逐份请求、结构校验、结果复核和排序固化成“可在本地运行的模型回答裁判器”。</blockquote>
             <p>
-              对简单主题而言，可验证的独立要求可能不足 12 个。若强制凑数，
-              模型就可能拆得过细，甚至偷偷加入题目没有要求的偏好。
+              想法来自已验证的手工流程：Step 01–04 手工跑通后，
+              重复劳动（复制粘贴、逐份请求、结果复核）成为产品化的理由——
+              <strong>已验证的手工流程成为产品需求</strong>。
             </p>
           </article>
         </div>
-
-        <div class="subhead">
-          <span>REVIEW FINDINGS</span>
-          <h3>审查不是挑语病，而是寻找会让系统失稳的规则</h3>
-        </div>
-
-        <div class="finding-grid">
-          <article>
-            <b>01</b><h4>评分项数量硬约束</h4>
-            <p>固定 12–18 项会诱发“为了数量而设计”，与原子化、无隐藏要求产生冲突。</p>
-            <span class="tag high">优先修正</span>
-          </article>
-          <article>
-            <b>02</b><h4>重复扣分边界含糊</h4>
-            <p>“同一缺陷不得重复扣分”要求裁判追溯根因，不同 AI 可能得到不同解释。</p>
-            <span class="tag">稳定性风险</span>
-          </article>
-          <article>
-            <b>03</b><h4>设计方式强制组合</h4>
-            <p>要求每道题至少使用两种设计手法，可能迫使窄任务添加不必要的取舍。</p>
-            <span class="tag">形式主义</span>
-          </article>
-          <article>
-            <b>04</b><h4>工具输出不可复现</h4>
-            <p>即使允许联网或运行代码，裁判环境也未必能重现当时版本与结果。</p>
-            <span class="tag">环境漂移</span>
-          </article>
-          <article>
-            <b>05</b><h4>“原样包含”的冲突</h4>
-            <p>规则要求固定文本原样输出，同时又要求替换评分项数量与满分。</p>
-            <span class="tag">指令冲突</span>
-          </article>
-          <article>
-            <b>06</b><h4>输入缺失没有出口</h4>
-            <p>主题为空或过宽时，模型缺少明确的停止条件，容易擅自补全核心任务。</p>
-            <span class="tag">失败路径</span>
-          </article>
-        </div>
-
-        <div class="before-after">
-          <div class="ba-head">
-            <span>关键改造</span>
-            <div class="segmented" role="group" aria-label="切换改造前后">
-              <button class="is-active" type="button" data-view="before">改造前</button>
-              <button type="button" data-view="after">改造后</button>
-            </div>
-          </div>
-          <div class="ba-panel is-active" data-panel="before">
-            <code>“每个关键缺陷只能影响最相关的一个评分项，不得重复扣分。”</code>
-            <p>问题：裁判必须判断多个失败是否来自“同一个根因”，这不是稳定的静态文本判断。</p>
-          </div>
-          <div class="ba-panel" data-panel="after">
-            <code>“不同评分项只要检查的是不同原子结果，就分别根据各自证据判定。”</code>
-            <p>改造：不追溯根因，只检查可观察结果；评分项设计阶段负责避免两个项目检查同一事实。</p>
-          </div>
-        </div>
-
-        <details class="artifact">
-          <summary>
-            <span><small>ARTIFACT 01</small>查看改写后的元提示词结构</span>
-            <i>展开</i>
-          </summary>
-          <div class="artifact-body">
-            <p class="artifact-intro">
-              完整改写版把默认评分环境明确为“只看原始问题、评分标准和待评回答的静态文本判定”，
-              并形成以下八个部分。
-            </p>
-            <ol class="structure-list">
-              <li><b>输入配置</b><span>增加“评分执行环境”，信息不足时只请求最少补充。</span></li>
-              <li><b>内部设计流程</b><span>先建立题目要求与评分项的一一映射，并用边界样例测试。</span></li>
-              <li><b>题目生成要求</b><span>写清工具边界、数据快照、运行环境和静态证据。</span></li>
-              <li><b>二元评分标准</b><span>按难度设置数量范围，不为凑数添加隐藏要求。</span></li>
-              <li><b>评分项固定结构</b><span>加入判定依据、接受的等价形式与归属边界。</span></li>
-              <li><b>红线规则</b><span>最多两条；触发后仍给出全部原始项得分。</span></li>
-              <li><b>计分与裁判规则</b><span>15 条固定规则统一证据、冲突与得分处理。</span></li>
-              <li><b>静默自检与输出格式</b><span>输出前检查映射、数量、容差和满分一致性。</span></li>
-            </ol>
-            <div class="artifact-quote">
-              <span>关键定义</span>
-              <p>
-                “稳定执行”是指：不同裁判仅依据原始问题、评分标准和待评回答，
-                应能按照相同证据与判定步骤得到一致结果。
-              </p>
-            </div>
-          </div>
-        </details>
-
-        <div class="handoff-strip">
-          <span>STEP 01 OUTPUT</span>
-          <strong>可稳定执行的评测题生成模板</strong>
-          <i>成为 Step 02 的完整输入 →</i>
-        </div>
-      </section>
-
-      <section class="section step-section prep-step" id="step-2">
-        <header class="step-header">
-          <div class="step-index"><span>STEP</span><strong>02</strong></div>
-          <div>
-            <span class="eyebrow">TASK GENERATION</span>
-            <h2>准备 02：制造一份测试用例</h2>
-            <p>
-              用模板生成一份小红书文案任务和对应评分标准。
-              它们之后会成为裁判网页里的“问题”和“评分标准”输入。
-            </p>
-          </div>
-        </header>
-
-        <div class="prep-summary">
-          <span>这一阶段只需记住</span>
-          <strong>先有稳定的测试材料，网页才知道应该评什么。</strong>
-          <p>产出：原始问题 + 13 项二元评分标准。</p>
-        </div>
-
-        <div class="config-board">
-          <div class="config-title">INPUT CONFIGURATION</div>
-          <dl>
-            <div><dt>评测领域</dt><dd>写作</dd></div>
-            <div><dt>重点能力</dt><dd>内容网感</dd></div>
-            <div><dt>难度</dt><dd>较难</dd></div>
-            <div><dt>使用场景</dt><dd>小红书营销文案</dd></div>
-            <div><dt>评分环境</dt><dd>静态文本判定</dd></div>
-            <div><dt>额外要求</dt><dd>符合平台内容风格</dd></div>
-          </dl>
-        </div>
-
-        <div class="subhead">
-          <span>DESIGN TRANSLATION</span>
-          <h3>“有网感”很主观，怎样把它变成二元判定？</h3>
-        </div>
-
-        <div class="translation-table" role="table" aria-label="抽象目标到可观察要求的转换">
-          <div class="table-row table-head" role="row">
-            <span>抽象目标</span><span>题目中的可观察信号</span><span>判定方式</span>
-          </div>
-          <div class="table-row" role="row">
-            <span>开头有抓力</span><span>首句以“谁懂”开头，并出现“电梯”</span><span>检索位置与词语</span>
-          </div>
-          <div class="table-row" role="row">
-            <span>具有生活场景</span><span>具体时间点与出门 / 电梯 / 工位同句</span><span>检查格式与共现</span>
-          </div>
-          <div class="table-row" role="row">
-            <span>网络化表达</span><span>使用“不是……，是……”与“救命”</span><span>检查句式和语境</span>
-          </div>
-          <div class="table-row" role="row">
-            <span>可带动互动</span><span>要求评论区回复原样关键词“通勤”</span><span>检查动作与关键词</span>
-          </div>
-          <div class="table-row" role="row">
-            <span>平台风格克制</span><span>禁用五个夸张词，emoji 不超过 3 个</span><span>全文检索与计数</span>
-          </div>
-        </div>
-
-        <article class="task-card">
-          <div class="task-card-top">
-            <span>GENERATED TASK</span>
-            <strong>虚构品牌「晚八点」</strong>
-          </div>
-          <div class="product-lock">
-            <div><small>容量</small><strong>15mL</strong></div>
-            <div><small>香型</small><strong>白茶 / 雪松 / 无花果</strong></div>
-            <div><small>价格</small><strong>39元</strong></div>
-            <div><small>使用方式</small><strong>出门前喷衣领或围巾</strong></div>
-          </div>
-          <p>
-            任务：为早高峰通勤、在电梯或工位前想快速整理状态的人，
-            写一篇严格按“标题 / 正文 / 话题”交付的小红书笔记。
-          </p>
-          <div class="constraint-cloud" aria-label="部分题目约束">
-            <span>标题 14–20 个汉字</span>
-            <span>首句“谁懂”</span>
-            <span>具体时间点</span>
-            <span>评论关键词“通勤”</span>
-            <span>最多 3 个 emoji</span>
-            <span>仅 3 个固定话题</span>
-          </div>
-        </article>
-
-        <div class="subhead">
-          <span>BINARY RUBRIC</span>
-          <h3>13 个评分项构成一张静态验收清单</h3>
-        </div>
-
-        <div class="rubric-map">
-          <article><b>C01</b><span>三段式交付结构</span><small>结构</small></article>
-          <article><b>C02</b><span>标题上班与长度</span><small>标题</small></article>
-          <article><b>C03</b><span>首句场景钩子</span><small>文案</small></article>
-          <article><b>C04</b><span>目标通勤人群</span><small>受众</small></article>
-          <article><b>C05</b><span>时间点具体场景</span><small>场景</small></article>
-          <article><b>C06</b><span>对比句式</span><small>表达</small></article>
-          <article><b>C07</b><span>“救命”的语境</span><small>表达</small></article>
-          <article><b>C08</b><span>产品事实完整</span><small>事实</small></article>
-          <article><b>C09</b><span>评论互动引导</span><small>互动</small></article>
-          <article><b>C10</b><span>出门前喷洒动作</span><small>用法</small></article>
-          <article><b>C11</b><span>禁用营销词规避</span><small>限制</small></article>
-          <article><b>C12</b><span>emoji 数量上限</span><small>格式</small></article>
-          <article><b>C13</b><span>固定三话题</span><small>话题</small></article>
-        </div>
-
-        <details class="artifact">
-          <summary>
-            <span><small>ARTIFACT 02</small>查看题目与评分标准的关键原文</span>
-            <i>展开</i>
-          </summary>
-          <div class="artifact-body">
-            <div class="quote-grid">
-              <blockquote>
-                <span>题目中的边界</span>
-                “不得补充留香时长、功效、成分、安全性、销量、折扣或用户反馈等未提供信息。”
-              </blockquote>
-              <blockquote>
-                <span>评分的证据原则</span>
-                “只有回答中存在满足该项‘1分条件’的明确证据时才能记1分。”
-              </blockquote>
-              <blockquote>
-                <span>冲突处理</span>
-                “同一检查对象出现互相冲突的内容且没有明确最终修正版本时，相关评分项记0分。”
-              </blockquote>
-              <blockquote>
-                <span>等价形式</span>
-                “15 ml”“15ML”可等价于“15mL”；“39 元”可等价于“39元”。
-              </blockquote>
-            </div>
-            <p class="artifact-foot">
-              本题没有设置红线规则。原因是普通漏项、表达问题或单个事实错误，
-              都可以由对应的二元评分项处理，不需要把总分直接归零。
-            </p>
-          </div>
-        </details>
-
-        <aside class="teaching-note">
-          <span>课堂观察</span>
-          <p>
-            这里并没有真正“客观测量审美”。它测量的是一组被预先定义、
-            与平台文案风格相关的可观察行为。<strong>可复现性提高了，但测量范围也被明确收窄了。</strong>
-          </p>
-        </aside>
-
-        <div class="handoff-strip">
-          <span>STEP 02 OUTPUT</span>
-          <strong>完整题目 + 13 项二元评分标准</strong>
-          <i>题目部分成为 Step 03 的输入 →</i>
-        </div>
-      </section>
-
-      <section class="section step-section prep-step" id="step-3">
-        <header class="step-header">
-          <div class="step-index"><span>STEP</span><strong>03</strong></div>
-          <div>
-            <span class="eyebrow">MODEL RESPONSE</span>
-            <h2>准备 03：得到一个待评回答</h2>
-            <p>
-              把原始问题交给模型，得到一份真实回答。
-              至此，裁判流程所需的“问题、标准、回答”三项材料全部准备完成。
-            </p>
-          </div>
-        </header>
-
-        <div class="prep-summary">
-          <span>这一阶段只需记住</span>
-          <strong>网页不是生成回答，而是评测用户粘贴进来的回答。</strong>
-          <p>产出：一份可供重复裁判的静态模型回答。</p>
-        </div>
-
-        <div class="execution-flow">
-          <div>
-            <span>INPUT</span>
-            <strong>Step 02 原始问题</strong>
-            <small>产品事实 + 文案要求 + 禁止项</small>
-          </div>
-          <i>→</i>
-          <div class="model-node">
-            <span>MODEL</span>
-            <strong>生成回答</strong>
-            <small>不联网 · 不调用工具</small>
-          </div>
-          <i>→</i>
-          <div>
-            <span>OUTPUT</span>
-            <strong>待评小红书文案</strong>
-            <small>之后可交给 AI 裁判评分</small>
-          </div>
-        </div>
-
-        <article class="response-card">
-          <div class="response-chrome">
-            <div><i></i><i></i><i></i></div>
-            <span>MODEL RESPONSE / STATIC TEXT</span>
-            <button class="copy-button" type="button" data-copy-target="model-answer">复制回答</button>
-          </div>
-          <div class="response-content" id="model-answer">
-            <div class="response-field">
-              <span>标题</span>
-              <h3>上班前给通勤状态按下整理键呀</h3>
-            </div>
-            <div class="response-field">
-              <span>正文</span>
-              <p>
-                谁懂，8:20出门赶进电梯前，通勤状态乱糟糟真的救命。<br />
-                出门前在衣领喷一下「晚八点」通勤香氛喷雾，15mL，白茶、雪松、无花果三种香型，39元。<br />
-                不是为了多复杂的步骤，是在进工位前，给自己一个快速整理状态的小动作。<br />
-                你通勤时会选哪种香型？评论区回复“通勤”一起聊聊。
-              </p>
-            </div>
-            <div class="response-field">
-              <span>话题</span>
-              <p class="hashtags">#通勤好物　#上班状态　#香氛分享</p>
-            </div>
-          </div>
-        </article>
-
-        <div class="evidence-board">
-          <header>
-            <span>EVIDENCE SPOTLIGHT</span>
-            <h3>回答如何留下可评分的直接证据</h3>
-          </header>
-          <div class="evidence-list">
-            <article>
-              <span class="evidence-token">8:20 + 出门 + 电梯</span>
-              <p>一个句子同时留下时间格式与通勤场景证据。</p>
-            </article>
-            <article>
-              <span class="evidence-token">15mL / 三种香型 / 39元</span>
-              <p>题内允许的产品事实被直接写入交付内容。</p>
-            </article>
-            <article>
-              <span class="evidence-token">不是…，是…</span>
-              <p>模型使用了要求的对比逻辑，但采用单个省略号字符“…”；是否被 C06 接受，应由后续裁判严格按评分标准判定。</p>
-            </article>
-            <article>
-              <span class="evidence-token">评论区回复“通勤”</span>
-              <p>互动动作、位置和指定关键词同时可见。</p>
-            </article>
-          </div>
-        </div>
-
-        <aside class="warning-note">
-          <span>事实边界</span>
-          <p>
-            本页面没有执行正式评分，因此不声称该回答获得多少分。
-            可以确认的是：回答已经成为一个可供下一阶段裁判逐项检查的静态对象。
-            特别是 C06 对省略号形式有精确要求，是否通过不能凭整体观感代替逐项判定。
-          </p>
-        </aside>
-
-        <details class="artifact">
-          <summary>
-            <span><small>ARTIFACT 03</small>查看本步的输入与输出边界</span>
-            <i>展开</i>
-          </summary>
-          <div class="artifact-body">
-            <div class="boundary-grid">
-              <div>
-                <span>模型看到了</span>
-                <ul>
-                  <li>完整产品事实</li>
-                  <li>目标人群与使用场景</li>
-                  <li>标题、正文、话题格式</li>
-                  <li>所有必须项与禁止项</li>
-                </ul>
-              </div>
-              <div>
-                <span>模型没有看到</span>
-                <ul>
-                  <li>13 个评分项的编号</li>
-                  <li>每项的具体判定文字</li>
-                  <li>任何标准答案或参考解法</li>
-                  <li>后续裁判的评分结果</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </details>
-
-        <div class="handoff-strip">
-          <span>STEP 03 OUTPUT</span>
-          <strong>一份可供后续 AI 裁判检查的模型回答</strong>
-          <i>与题目、标准一起进入 Step 04 →</i>
-        </div>
-      </section>
-
-      <section class="section step-section" id="step-4">
-        <header class="step-header">
-          <div class="step-index"><span>STEP</span><strong>04</strong></div>
-          <div>
-            <span class="eyebrow">STABILITY TEST</span>
-            <h2>同一份材料，重复交给裁判</h2>
-            <p>
-              稳定性测试固定三项输入不变：Step 02 的原始问题与 13 项评分标准，
-              以及 Step 03 的模型回答。观察重点不是文案好不好，而是裁判能否重复得出相同结论。
-            </p>
-          </div>
-        </header>
-
-        <div class="execution-flow">
-          <div>
-            <span>FIXED INPUT</span>
-            <strong>问题 + 13 项标准</strong>
-            <small>每轮完全相同</small>
-          </div>
-          <i>+</i>
-          <div>
-            <span>FIXED ANSWER</span>
-            <strong>同一份小红书文案</strong>
-            <small>不做任何修改</small>
-          </div>
-          <i>→</i>
-          <div class="model-node">
-            <span>REPEAT</span>
-            <strong>独立裁判</strong>
-            <small>比较结论与解释漂移</small>
-          </div>
-        </div>
-
-        <div class="subhead">
-          <span>RUN LOG</span>
-          <h3>四轮独立裁判，核心结论完全一致</h3>
-        </div>
-
-        <div class="run-grid" aria-label="稳定性测试轮次">
-          <article class="run-card verified">
-            <div class="run-top"><span>ROUND 01</span><b>已核实</b></div>
-            <strong>12 / 13</strong>
-            <p>C06 = 0；其余 12 项通过；得分率 92%。</p>
-            <small>标题汉字数写为 14</small>
-          </article>
-          <article class="run-card verified">
-            <div class="run-top"><span>ROUND 02</span><b>已核实</b></div>
-            <strong>12 / 13</strong>
-            <p>C06 = 0；其余 12 项通过；得分率 92%。</p>
-            <small>标题汉字数写为 14</small>
-          </article>
-          <article class="run-card verified">
-            <div class="run-top"><span>ROUND 03</span><b>已核实</b></div>
-            <strong>12 / 13</strong>
-            <p>C06 = 0；其余 12 项通过；得分率 92%。</p>
-            <small>标题汉字数写为 15</small>
-          </article>
-          <article class="run-card verified">
-            <div class="run-top"><span>ROUND 04</span><b>已核实</b></div>
-            <strong>12 / 13</strong>
-            <p>C06 = 0；其余 12 项通过；得分率 92%。</p>
-            <small>标题汉字数写为 14</small>
-          </article>
-        </div>
-
-        <article class="consistency-card">
-          <div>
-            <span>稳定的核心结论</span>
-            <strong>4 / 4</strong>
-            <p>四轮在最终分、得分率和唯一失分项上完全一致。</p>
-          </div>
-          <div>
-            <span>出现的局部漂移</span>
-            <strong>14 ↔ 15</strong>
-            <p>第三轮对同一标题的汉字计数与其余三轮不同，但都落在 14–20 的通过区间。</p>
-          </div>
-        </article>
-
-        <div class="cause-focus step4-secondary">
-          <div class="cause-code">C06</div>
-          <div>
-            <span>唯一失分项</span>
-            <h3>逻辑满足，不等于字面格式满足</h3>
-            <p>
-              回答写的是“不是为了多复杂的步骤，是在进工位前……”，
-              语义上形成了对比，但评分标准要求“不是”和“是”之间必须出现“……”或“...”。
-              四轮裁判都按严格字面条件记 0 分。
-            </p>
-          </div>
-        </div>
-
-        <aside class="teaching-note step4-secondary">
-          <span>课堂观察</span>
-          <p>
-            只比较总分，会得到“裁判很稳定”；继续比较每项和理由，才会发现计数表述仍有漂移。
-            <strong>稳定性至少要分三层看：总分、分项结论、证据与理由。</strong>
-          </p>
-        </aside>
-
-        <details class="artifact step4-secondary">
-          <summary>
-            <span><small>ARTIFACT 04</small>查看四轮裁判的共同结论与证据边界</span>
-            <i>展开</i>
-          </summary>
-          <div class="artifact-body">
-            <div class="comparison-list">
-              <div><span>共同总分</span><b>12 / 13，92%</b></div>
-              <div><span>共同失分项</span><b>C06｜“不是……，是……”对比句式</b></div>
-              <div><span>共同直接证据</span><b>“不是为了多复杂的步骤，是在进工位前……”</b></div>
-              <div><span>未触发事项</span><b>无红线规则；没有红线调整</b></div>
-              <div><span>稳定性结论</span><b>四轮的总分、得分率和唯一失分项均一致</b></div>
-            </div>
-          </div>
-        </details>
-
-        <div class="handoff-strip">
-          <span>STEP 04 OUTPUT</span>
-          <strong>一套经过重复手工验证的裁判工作流</strong>
-          <i>成为 Step 05 的产品原型 →</i>
-        </div>
-      </section>
-
-      <section class="section step-section" id="step-5">
-        <header class="step-header">
-          <div class="step-index"><span>STEP</span><strong>05</strong></div>
-          <div>
-            <span class="eyebrow">VIBE CODING</span>
-            <h2>把手工裁判流程做成网页</h2>
-            <p>
-              Vibe Coding 不是“一句话生成整个产品”。这次过程被明确拆成两段：
-              前期先澄清范围并写成文档，后期按 M1–M9 逐个实现、测试和微调。
-            </p>
-          </div>
-        </header>
-
-        <div class="phase-split">
-          <article>
-            <span>PHASE A / BEFORE CODE</span>
-            <h3>先把需求说清楚</h3>
-            <ul>
-              <li>只做裁判器，不做出题器</li>
-              <li>问题、标准、回答由用户手动粘贴</li>
-              <li>支持多个“模型名称 + 回答”</li>
-              <li>纯前端、本地使用、无数据库</li>
-              <li>结构失败时保留原始返回，不自动修复</li>
-            </ul>
-          </article>
-          <article class="phase-code">
-            <span>PHASE B / BUILD &amp; TUNE</span>
-            <h3>再按小任务增量实现</h3>
-            <ul>
-              <li>每次只交付一个可验收模块</li>
-              <li>先静态骨架，再输入、请求、解析、展示</li>
-              <li>根据真实使用反馈调整布局与标签页</li>
-              <li>最后补本地验证和开源安全检查</li>
-            </ul>
-          </article>
-        </div>
-
-        <div class="method-frame">
-          <div>
-            <span>贯穿每个环节的四个问题</span>
-            <h3>不要只问“AI 写完了吗？”</h3>
-          </div>
-          <div class="method-questions">
-            <article><b>01</b><span>产出物是什么？</span></article>
-            <article><b>02</b><span>AI 做什么？</span></article>
-            <article><b>03</b><span>你做什么？</span></article>
-            <article><b>04</b><span>什么算完成？</span></article>
-          </div>
-        </div>
-
-        <div class="subhead">
-          <span>WEB CODING PLAYBOOK</span>
-          <h3>九个环节：从一句想法，到一个你敢交付的版本</h3>
-        </div>
-
-        <div class="coding-playbook">
-          <article>
-            <div class="playbook-index"><b>01</b><span>需求澄清</span></div>
-            <div class="playbook-main">
-              <h4>先确定“做什么”，更要确定“不做什么”</h4>
-              <p>AI 把口语想法整理成结构化需求；你检查它有没有加戏，并确认核心用户与核心场景。</p>
-            </div>
-            <div class="playbook-proof">
-              <span>本项目证据</span>
-              <strong>《需求说明》</strong>
-              <small>只做裁判器；删除出题器、后端、数据库等扩展</small>
-            </div>
-          </article>
-          <article>
-            <div class="playbook-index"><b>02</b><span>技术方案</span></div>
-            <div class="playbook-main">
-              <h4>选择你能理解、能维护的最小方案</h4>
-              <p>AI 解释可行方案与取舍；你判断复杂度是否匹配项目体量，而不是把决定完全交给 AI。</p>
-            </div>
-            <div class="playbook-proof">
-              <span>本项目证据</span>
-              <strong>《技术选型与架构说明》</strong>
-              <small>原生 HTML / CSS / JS；纯前端；无构建、无数据库</small>
-            </div>
-          </article>
-          <article>
-            <div class="playbook-index"><b>03</b><span>任务拆解</span></div>
-            <div class="playbook-main">
-              <h4>把大需求拆成一次对话能验收的小任务</h4>
-              <p>AI 标出依赖和顺序；你检查粒度，确保每项都有明确的输入、输出和验收方式。</p>
-            </div>
-            <div class="playbook-proof">
-              <span>本项目证据</span>
-              <strong>《任务清单》M1–M9</strong>
-              <small>每项可在一次对话 / 一个 commit 内完成</small>
-            </div>
-          </article>
-          <article>
-            <div class="playbook-index"><b>04</b><span>环境与骨架</span></div>
-            <div class="playbook-main">
-              <h4>先让最小骨架在自己的机器上跑起来</h4>
-              <p>AI 搭项目结构；你亲自打开、刷新、查看错误，并理解每个文件承担什么职责。</p>
-            </div>
-            <div class="playbook-proof">
-              <span>本项目证据</span>
-              <strong>M1 基础页面</strong>
-              <small>index.html + styles.css + app.js，可直接本地打开</small>
-            </div>
-          </article>
-          <article>
-            <div class="playbook-index"><b>05</b><span>分模块开发</span></div>
-            <div class="playbook-main">
-              <h4>AI 每次只做一个任务，你每次立刻验证</h4>
-              <p>不要让功能一次性堆满。每轮都要求说明改了什么、怎样验收，再决定是否进入下一项。</p>
-            </div>
-            <div class="playbook-proof">
-              <span>本项目证据</span>
-              <strong>M2 → M8 逐项推进</strong>
-              <small>输入、回答、请求、解析、展示、排序分别交付</small>
-            </div>
-          </article>
-          <article>
-            <div class="playbook-index"><b>06</b><span>自测走查</span></div>
-            <div class="playbook-main">
-              <h4>正常路径能用，只代表测试刚刚开始</h4>
-              <p>AI 列边界与潜在 bug；你亲自试空输入、非法 JSON、异常分数、网络失败等异常路径。</p>
-            </div>
-            <div class="playbook-proof">
-              <span>本项目证据</span>
-              <strong>M5 / M6 验证</strong>
-              <small>真实 API 通过；非 JSON、非法得分、缺失字段会被拒绝</small>
-            </div>
-          </article>
-          <article>
-            <div class="playbook-index"><b>07</b><span>集成联调</span></div>
-            <div class="playbook-main">
-              <h4>模块单独能跑，不代表用户流程能跑通</h4>
-              <p>把输入、请求、解析、结果和排序串起来；你从头走一遍真实核心路径，观察模块之间的接口。</p>
-            </div>
-            <div class="playbook-proof">
-              <span>本项目证据</span>
-              <strong>完整评测路径</strong>
-              <small>粘贴材料 → 多回答 → 发起裁判 → 结果标签 → 排名</small>
-            </div>
-          </article>
-          <article>
-            <div class="playbook-index"><b>08</b><span>测试验收</span></div>
-            <div class="playbook-main">
-              <h4>回到最初需求，一条条核对状态</h4>
-              <p>不要凭“看起来差不多”结束。每项都应是完成、部分完成或明确不做，并记录遗留问题。</p>
-            </div>
-            <div class="playbook-proof">
-              <span>本项目证据</span>
-              <strong>布局与结果微调</strong>
-              <small>样式简化、左右布局、回答标签、结果标签均来自验收反馈</small>
-            </div>
-          </article>
-          <article>
-            <div class="playbook-index"><b>09</b><span>完成确认</span></div>
-            <div class="playbook-main">
-              <h4>最终代码之外，还要留下可恢复的项目状态</h4>
-              <p>AI 整理怎么运行、做了什么、没做什么；你确认说明与真实状态一致，未来能接着维护。</p>
-            </div>
-            <div class="playbook-proof">
-              <span>本项目证据</span>
-              <strong>M9 README + 开源检查</strong>
-              <small>使用说明、边界、验证记录、Key 与 Git 历史风险</small>
-            </div>
-          </article>
-        </div>
-
-        <aside class="pace-principle">
-          <span>贯穿全流程的原则</span>
-          <h3>AI 的交付节奏，必须匹配你的验证节奏</h3>
-          <p>
-            AI 天然倾向一次多做；你需要主动喊停、分批验收。
-            这个项目里“开始 M2 / M3 / … / M9”的推进方式，本质上是在控制风险：
-            <strong>上一块没有看懂、没有验证，就不进入下一块。</strong>
-          </p>
-        </aside>
 
         <div class="subhead">
           <span>DECISION LOG</span>
@@ -906,8 +231,479 @@
             <div><span>失败策略</span><h4>宁可暴露失败，也不伪造正常</h4><p>非 JSON、漏字段或分数算不平时展示原始返回并要求人工复核。</p></div>
           </article>
         </div>
+      </section>
 
-        <div class="document-chain">
+      <!-- ══════════ 环节 1 需求澄清 ══════════ -->
+      <section class="section step-section" id="phase-1">
+        <header class="step-header">
+          <div class="step-index"><span>环节</span><strong>01</strong></div>
+          <div>
+            <span class="eyebrow">PHASE 01 / REQUIREMENTS</span>
+            <h2>环节 01：需求澄清与范围确定</h2>
+            <p>
+              先确定“做什么”，更要确定“不做什么”；
+              AI 把口语想法整理成结构化需求，你检查它有没有加戏。
+            </p>
+          </div>
+        </header>
+
+        <div class="subhead">
+          <span>METHOD / 执行清单</span>
+          <h3>方法：把“要做什么”说清楚，并明确“不做什么”</h3>
+        </div>
+
+        <div class="method-board">
+          <article>
+            <span class="m-label">关键产出物</span>
+            <p>一份「需求说明」文档（哪怕只有几段话）：要做什么、给谁用、核心场景是什么、明确不做什么。</p>
+          </article>
+          <article>
+            <span class="m-label">具体动作</span>
+            <ul>
+              <li><b>你：</b>用自己的话把想法讲清楚，哪怕模糊也先讲；明确“必须有”和“暂时不要”的功能边界。</li>
+              <li><b>AI：</b>把你的口语化描述转成结构化需求（功能点列表 + 边界说明），并主动追问模糊点（而不是自己脑补）。</li>
+            </ul>
+          </article>
+          <article>
+            <span class="m-label">结束标准（DoD）</span>
+            <ul>
+              <li>你能一句话说清“这个项目做完是什么样子”。</li>
+              <li>AI 复述的需求和你脑子里想的一致，没有“AI 自己加戏”的功能。</li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="prompt-sheet">
+          <div class="prompt-sheet-head">
+            <span>可直接发给 AI 的 PROMPT</span>
+            <button class="copy-button dark" type="button" data-copy-target="prompt-phase-1">复制 Prompt</button>
+          </div>
+          <pre id="prompt-phase-1">请帮我把这个想法整理成结构化的需求说明,包括:
+1. 核心功能点(列清单)
+2. 目标用户是谁
+3. 最核心的使用场景是什么
+4. 明确列出"这一版先不做"的部分
+
+将生成的文档存到项目根目录下的 `docs/*****需求文档.md`。
+如果我的描述里有模糊、矛盾或者信息不够的地方,请直接指出来并追问我,
+不要自己脑补细节替我做决定。</pre>
+        </div>
+
+        <div class="subhead">
+          <span>CASE / 本项目证据</span>
+          <h3>案例补充：裁判器的需求说明</h3>
+        </div>
+
+        <div class="prep-summary">
+          <span>项目证据</span>
+          <strong>《需求说明》——只做裁判器；删除出题器、后端、数据库等扩展。</strong>
+          <p>需求清单是后续环节 8 验收的依据（逐条核对“完成 / 部分完成 / 不做”）。</p>
+        </div>
+
+        <div class="two-col">
+          <article class="context-card">
+            <div class="card-label">PHASE A 需求清单（先把需求说清楚）</div>
+            <ul class="plain-list">
+              <li><span>范围</span>只做裁判器，不做出题器</li>
+              <li><span>输入</span>问题、标准、回答由用户手动粘贴</li>
+              <li><span>回答</span>支持多个“模型名称 + 回答”</li>
+              <li><span>形态</span>纯前端、本地使用、无数据库</li>
+              <li><span>失败</span>结构失败时保留原始返回，不自动修复</li>
+            </ul>
+          </article>
+          <article class="context-card">
+            <div class="card-label">决策日志 03（范围纠偏）</div>
+            <blockquote>删除“出题器”扩展——用户明确第一版只做裁判器，项目不再继续扩大。</blockquote>
+            <p>
+              课堂方法提示：先确定“做什么”，更要确定“不做什么”；
+              AI 把口语想法整理成结构化需求，你检查它有没有加戏，
+              并确认核心用户与核心场景。
+            </p>
+          </article>
+        </div>
+
+        <div class="subhead">
+          <span>HAND-MADE PRE 1/3</span>
+          <h3>手工前置 1/3：先把“什么叫做对”定义清楚</h3>
+        </div>
+
+        <div class="prep-summary">
+          <span>STEP 01 准备规则</span>
+          <strong>在写代码前，先把“什么叫做对”定义清楚。</strong>
+          <p>产出：一份边界清楚、能够被下一步直接使用的提示词模板。检查用于生成评测题的提示词，删除冲突、隐藏要求和不稳定判断。</p>
+        </div>
+
+        <div class="two-col">
+          <article class="context-card">
+            <div class="card-label">原始目标（改写前）</div>
+            <blockquote>“生成一道有明确区分度的模型评测题，以及与题目严格对应、可以稳定执行的二元评分标准。”</blockquote>
+            <ul class="plain-list">
+              <li><span>对象</span>跨领域模型能力评测</li>
+              <li><span>交付</span>1 道题 + 12–18 个二元评分项</li>
+              <li><span>判定</span>每项只允许 0 或 1 分</li>
+              <li><span>约束</span>不依赖隐藏信息与整体印象</li>
+            </ul>
+          </article>
+          <article class="context-card accent-card">
+            <div class="card-label">关键定义（“稳定执行”）</div>
+            <blockquote>不同裁判仅依据原始问题、评分标准和待评回答，应能按照相同证据与判定步骤得到一致结果。</blockquote>
+            <p>
+              原始目标正确，但部分规则之间互相拉扯，可能导致 AI 为了满足格式而硬凑内容。
+              改写模板把默认评分环境明确为“只看静态文本判定”。
+            </p>
+          </article>
+        </div>
+
+        <div class="before-after">
+          <div class="ba-head">
+            <span>关键改造：重复扣分规则</span>
+            <div class="segmented" role="group" aria-label="切换改造前后">
+              <button class="is-active" type="button" data-view="before">改造前</button>
+              <button type="button" data-view="after">改造后</button>
+            </div>
+          </div>
+          <div class="ba-panel is-active" data-panel="before">
+            <code>“每个关键缺陷只能影响最相关的一个评分项，不得重复扣分。”</code>
+            <p>问题：裁判必须判断多个失败是否来自“同一个根因”，这不是稳定的静态文本判断。</p>
+          </div>
+          <div class="ba-panel" data-panel="after">
+            <code>“不同评分项只要检查的是不同原子结果，就分别根据各自证据判定。”</code>
+            <p>改造：不追溯根因，只检查可观察结果；评分项设计阶段负责避免两个项目检查同一事实。</p>
+          </div>
+        </div>
+
+        <div class="subhead">
+          <span>HAND-MADE PRE 2/3</span>
+          <h3>手工前置 2/3：制造测试材料</h3>
+        </div>
+
+        <div class="prep-summary">
+          <span>STEP 02 准备测试</span>
+          <strong>这一步的作用不是“写出完美文案”，而是先把可评测的题目和评分标准定清楚。</strong>
+          <p>产出：一份可用于后续裁判的原始问题和 13 项二元评分标准。</p>
+        </div>
+
+        <div class="translation-table" role="table" aria-label="抽象目标到可观察要求的转换">
+          <div class="table-row table-head" role="row">
+            <span>抽象目标</span><span>题目中的可观察信号</span><span>判定方式</span>
+          </div>
+          <div class="table-row" role="row">
+            <span>开头有抓力</span><span>首句以“谁懂”开头，并出现“电梯”</span><span>检索位置与词语</span>
+          </div>
+          <div class="table-row" role="row">
+            <span>具有生活场景</span><span>具体时间点与出门 / 电梯 / 工位同句</span><span>检查格式与共现</span>
+          </div>
+          <div class="table-row" role="row">
+            <span>网络化表达</span><span>使用“不是……，是……”与“救命”</span><span>检查句式和语境</span>
+          </div>
+          <div class="table-row" role="row">
+            <span>可带动互动</span><span>要求评论区回复原样关键词“通勤”</span><span>检查动作与关键词</span>
+          </div>
+          <div class="table-row" role="row">
+            <span>平台风格克制</span><span>禁用五个夸张词，emoji 不超过 3 个</span><span>全文检索与计数</span>
+          </div>
+        </div>
+
+        <details class="artifact">
+          <summary>
+            <span><small>EVIDENCE 01</small>查看生成的小红书任务与 13 项评分标准</span>
+            <i>展开</i>
+          </summary>
+          <div class="artifact-body">
+            <article class="task-card">
+              <div class="task-card-top">
+                <span>GENERATED TASK</span>
+                <strong>虚构品牌「晚八点」</strong>
+              </div>
+              <div class="product-lock">
+                <div><small>容量</small><strong>15mL</strong></div>
+                <div><small>香型</small><strong>白茶 / 雪松 / 无花果</strong></div>
+                <div><small>价格</small><strong>39元</strong></div>
+                <div><small>使用方式</small><strong>出门前喷衣领或围巾</strong></div>
+              </div>
+              <p>
+                任务：为早高峰通勤、在电梯或工位前想快速整理状态的人，
+                写一篇严格按“标题 / 正文 / 话题”交付的小红书笔记。
+              </p>
+              <div class="constraint-cloud" aria-label="部分题目约束">
+                <span>标题 14–20 个汉字</span>
+                <span>首句“谁懂”</span>
+                <span>具体时间点</span>
+                <span>评论关键词“通勤”</span>
+                <span>最多 3 个 emoji</span>
+                <span>仅 3 个固定话题</span>
+              </div>
+            </article>
+            <div class="rubric-map" style="margin-top: 24px" aria-label="13 项二元评分标准">
+              <article><b>C01</b><span>三段式交付结构</span><small>结构</small></article>
+              <article><b>C02</b><span>标题上班与长度</span><small>标题</small></article>
+              <article><b>C03</b><span>首句场景钩子</span><small>文案</small></article>
+              <article><b>C04</b><span>目标通勤人群</span><small>受众</small></article>
+              <article><b>C05</b><span>时间点具体场景</span><small>场景</small></article>
+              <article><b>C06</b><span>对比句式</span><small>表达</small></article>
+              <article><b>C07</b><span>“救命”的语境</span><small>表达</small></article>
+              <article><b>C08</b><span>产品事实完整</span><small>事实</small></article>
+              <article><b>C09</b><span>评论互动引导</span><small>互动</small></article>
+              <article><b>C10</b><span>出门前喷洒动作</span><small>用法</small></article>
+              <article><b>C11</b><span>禁用营销词规避</span><small>限制</small></article>
+              <article><b>C12</b><span>emoji 数量上限</span><small>格式</small></article>
+              <article><b>C13</b><span>固定三话题</span><small>话题</small></article>
+            </div>
+            <p class="artifact-foot">
+              先把抽象目标转成可观察的要求：例如“有网感”不直接评价，
+              而是要求“首句有场景钩子、出现固定对比句式、评论区回复指定关键词、emoji 不超过 3 个”。
+              13 项评分标准的核心是“有没有明确证据”——只看回答里是否出现对应要求，而不是看整体感觉。
+            </p>
+          </div>
+        </details>
+
+        <div class="subhead">
+          <span>HAND-MADE PRE 3/3</span>
+          <h3>手工前置 3/3：得到待评回答</h3>
+        </div>
+
+        <div class="prep-summary">
+          <span>STEP 03 准备回答</span>
+          <strong>网页后面评测的是“用户粘贴进来的回答”，不是自动生成答案。</strong>
+          <p>产出：一份可供后续裁判逐项检查的回答。执行流程：题目 → 模型生成回答 → 得到待评文本。</p>
+        </div>
+
+        <div class="execution-flow" aria-label="Step 03 执行流程">
+          <div>
+            <span>INPUT</span>
+            <strong>Step 02 原始问题</strong>
+            <small>产品事实 + 文案要求 + 禁止项</small>
+          </div>
+          <i>→</i>
+          <div class="model-node">
+            <span>MODEL</span>
+            <strong>生成回答</strong>
+            <small>不联网 · 不调用工具</small>
+          </div>
+          <i>→</i>
+          <div>
+            <span>OUTPUT</span>
+            <strong>待评小红书文案</strong>
+            <small>之后可交给 AI 裁判评分</small>
+          </div>
+        </div>
+
+        <details class="artifact">
+          <summary>
+            <span><small>EVIDENCE 02</small>查看待评回答全文</span>
+            <i>展开</i>
+          </summary>
+          <div class="artifact-body">
+            <div class="response-card" style="margin-top: 0">
+              <div class="response-chrome">
+                <div><i></i><i></i><i></i></div>
+                <span>MODEL RESPONSE / STATIC TEXT</span>
+                <button class="copy-button" type="button" data-copy-target="model-answer">复制回答</button>
+              </div>
+              <div class="response-content" id="model-answer">
+                <div class="response-field">
+                  <span>标题</span>
+                  <h3>上班前给通勤状态按下整理键呀</h3>
+                </div>
+                <div class="response-field">
+                  <span>正文</span>
+                  <p>
+                    谁懂，8:20出门赶进电梯前，通勤状态乱糟糟真的救命。<br />
+                    出门前在衣领喷一下「晚八点」通勤香氛喷雾，15mL，白茶、雪松、无花果三种香型，39元。<br />
+                    不是为了多复杂的步骤，是在进工位前，给自己一个快速整理状态的小动作。<br />
+                    你通勤时会选哪种香型？评论区回复“通勤”一起聊聊。
+                  </p>
+                </div>
+                <div class="response-field">
+                  <span>话题</span>
+                  <p class="hashtags">#通勤好物　#上班状态　#香氛分享</p>
+                </div>
+              </div>
+            </div>
+            <p class="artifact-foot">
+              这一步的意义不是“回答多好”，而是“答案已经稳定成可以被重复裁判的静态材料”。
+              回答会成为后续裁判的输入材料，包含可检查的事实、格式和互动要求。
+            </p>
+          </div>
+        </details>
+
+        <aside class="teaching-note">
+          <span>课堂观察</span>
+          <p>
+            三个手工前置在写代码之前就完成了“定义质量 → 制造测试 → 运行被测对象”。
+            <strong>先确定“什么叫做对”，代码才有依据；这也正是“为什么要 Coding”的答案。</strong>
+          </p>
+        </aside>
+      </section>
+
+      <!-- ══════════ 环节 2 技术方案 ══════════ -->
+      <section class="section step-section" id="phase-2">
+        <header class="step-header">
+          <div class="step-index"><span>环节</span><strong>02</strong></div>
+          <div>
+            <span class="eyebrow">PHASE 02 / TECH DESIGN</span>
+            <h2>环节 02：技术方案设计</h2>
+            <p>
+              选一个足够简单、能落地的实现方案；
+              AI 说明取舍，你审核方案是否匹配你的能力与项目体量。
+            </p>
+          </div>
+        </header>
+
+        <div class="subhead">
+          <span>METHOD / 执行清单</span>
+          <h3>方法：选择你能理解、能维护的最小方案</h3>
+        </div>
+
+        <div class="method-board">
+          <article>
+            <span class="m-label">关键产出物</span>
+            <ul>
+              <li>技术选型说明（用什么语言 / 框架 / 库，为什么）</li>
+              <li>简要架构图或文字描述（模块划分、数据怎么流转）</li>
+              <li>如果涉及数据存储：数据结构 / 表结构草图</li>
+            </ul>
+          </article>
+          <article>
+            <span class="m-label">具体动作</span>
+            <ul>
+              <li><b>AI：</b>给出可行技术方案，说明取舍（不是直接甩一堆代码）。</li>
+              <li><b>你：</b>审核方案是否匹配你的能力（能不能维护）、是否匹配项目体量（别小项目上重架构）。</li>
+            </ul>
+          </article>
+          <article>
+            <span class="m-label">结束标准（DoD）</span>
+            <ul>
+              <li>你能看懂并解释“为什么选这个方案”，而不是“AI 说了算，我不懂”。</li>
+              <li>方案里没有你完全陌生、且 AI 也没解释清楚的黑盒技术。</li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="understanding-note">
+          <span>如果 AI 给的方案你看不懂，怎么办</span>
+          <h3>不要假装懂了直接往下走——这是后面失控的最大源头之一</h3>
+          <ol>
+            <li>直接跟 AI 说：<b>“用大白话 / 打比方跟我解释一遍，不要用专业术语。”</b></li>
+            <li><b>“假设我是完全不懂技术的人，你要怎么跟我讲清楚这个方案在做什么。”</b></li>
+            <li><b>“有没有更简单、但够用的方案？哪怕性能 / 扩展性差一点也没关系。”</b></li>
+            <li><b>“这个技术我以后自己改代码的时候，最容易在哪里踩坑？”</b></li>
+          </ol>
+          <p class="u-rule">
+            判断标准：如果 AI 解释完，你还是没法用自己的话复述一遍“这个方案大概是怎么回事”，
+            说明还没讲清楚，继续追问，别往下走。遇到绕不开的专业名词，
+            让 AI 用你熟悉的东西打比方（生活场景、你已经会的其他工具），
+            而不是用另一个你也不懂的术语解释一个术语。
+          </p>
+        </div>
+
+        <div class="prompt-sheet">
+          <div class="prompt-sheet-head">
+            <span>可直接发给 AI 的 PROMPT</span>
+            <button class="copy-button dark" type="button" data-copy-target="prompt-phase-2">复制 Prompt</button>
+          </div>
+          <pre id="prompt-phase-2">基于以上确定的需求,请给我可行的技术方案。
+
+对每个方案请说明:
+1. 技术选型说明(用什么语言/框架/库,为什么)
+2. 简要架构图或文字描述(模块划分、数据怎么流转)
+3. 如果涉及数据存储:数据结构/表结构草图
+4. 大致用什么技术/工具(不用列太细)
+5. 优缺点和取舍是什么
+6. 用大白话/打比方讲清楚这个方案是在做什么,不要堆专业术语
+
+将生成的文档存到项目根目录下的 `docs/*****技术方案.md`。
+最后请告诉我这个方案里有没有"我以后自己改代码时特别容易踩坑"的地方。</pre>
+        </div>
+
+        <div class="subhead">
+          <span>CASE / 本项目证据</span>
+          <h3>案例补充：技术选型与架构说明</h3>
+        </div>
+
+        <div class="prep-summary">
+          <span>项目证据</span>
+          <strong>《技术选型与架构说明》——原生 HTML / CSS / JS；纯前端；无构建、无数据库。</strong>
+          <p>复杂度匹配项目体量：一个本地评测工具不需要后端、不需要框架、不需要构建步骤。</p>
+        </div>
+
+        <div class="build-track" aria-label="方案三要素">
+          <article><b>选型</b><span>原生三件套</span><small>HTML / CSS / JS，零依赖零构建</small></article>
+          <article><b>架构</b><span>纯前端数据流</span><small>输入 → 构造请求 → 调用 API → 解析 → 渲染</small></article>
+          <article><b>存储</b><span>无数据库</span><small>数据只停留在当前浏览器页面</small></article>
+        </div>
+      </section>
+
+      <!-- ══════════ 环节 3 任务拆解 ══════════ -->
+      <section class="section step-section" id="phase-3">
+        <header class="step-header">
+          <div class="step-index"><span>环节</span><strong>03</strong></div>
+          <div>
+            <span class="eyebrow">PHASE 03 / TASK BREAKDOWN</span>
+            <h2>环节 03：任务拆解与排期</h2>
+            <p>
+              把大需求拆成可验证的小任务；
+              每个任务都能在一次对话、一个 commit 内完成并单独验收。
+            </p>
+          </div>
+        </header>
+
+        <div class="subhead">
+          <span>METHOD / 执行清单</span>
+          <h3>方法：拆成一次对话能验收的小任务</h3>
+        </div>
+
+        <div class="method-board">
+          <article>
+            <span class="m-label">关键产出物</span>
+            <p>一份任务清单（Task List）：按模块 / 功能拆成可独立验收的小任务，每个任务能在一次对话 / 一个 commit 内完成。</p>
+          </article>
+          <article>
+            <span class="m-label">具体动作</span>
+            <ul>
+              <li><b>AI：</b>把大需求拆成小任务，标注任务间的依赖关系（哪个必须先做）。</li>
+              <li><b>你：</b>检查拆分粒度是否合理——太大你就没法中途检查，太碎会失去整体感。</li>
+            </ul>
+          </article>
+          <article>
+            <span class="m-label">结束标准（DoD）</span>
+            <ul>
+              <li>每个任务都有清晰的“验收方式”（比如“这个函数输入 A 输出 B”“这个页面能看到 X”）。</li>
+              <li>你知道接下来要按什么顺序推进，不是走一步看一步。</li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="prompt-sheet">
+          <div class="prompt-sheet-head">
+            <span>可直接发给 AI 的 PROMPT</span>
+            <button class="copy-button dark" type="button" data-copy-target="prompt-phase-3">复制 Prompt</button>
+          </div>
+          <pre id="prompt-phase-3">请把我们确定的方案拆解成一个具体的任务清单。
+
+要求:
+1. 每个任务要足够小,能在一次对话/一次提交里做完
+2. 标注任务之间的先后依赖关系(哪个必须先做完才能做下一个)
+3. 每个任务都附上"怎么算这个任务做完了"的验收标准
+   (要具体到我能亲自操作验证,比如"打开某页面应该看到什么"
+   或"调用某个函数输入什么应该输出什么")
+
+将生成的文档存到项目根目录下的 `docs/*****任务清单.md`。
+请按顺序编号列出。</pre>
+        </div>
+
+        <div class="subhead">
+          <span>CASE / 本项目证据</span>
+          <h3>案例补充：M1–M9 增量交付清单</h3>
+        </div>
+
+        <div class="prep-summary">
+          <span>项目证据</span>
+          <strong>《任务清单》M1–M9——每项可在一次对话 / 一个 commit 内完成。</strong>
+          <p>文档链（需求层层落实）：01 需求说明 → 02 技术与架构 → 03 任务清单。</p>
+        </div>
+
+        <div class="document-chain" aria-label="需求文档链">
           <article><span>01</span><strong>需求说明</strong><small>做什么 / 给谁 / 核心场景 / 不做什么</small></article>
           <i>→</i>
           <article><span>02</span><strong>技术与架构</strong><small>原生 HTML / CSS / JS；纯前端数据流</small></article>
@@ -915,59 +711,196 @@
           <article><span>03</span><strong>任务清单</strong><small>拆成 9 个单次可验收任务</small></article>
         </div>
 
+        <div class="translation-table" role="table" aria-label="M1–M9 增量交付清单">
+          <div class="table-row table-head" role="row">
+            <span>里程碑</span><span>内容</span><span>说明</span>
+          </div>
+          <div class="table-row" role="row"><span>M1</span><span>页面骨架</span><span>输入区 / 结果区 / 空状态</span></div>
+          <div class="table-row" role="row"><span>M2</span><span>问题与标准</span><span>长文本录入与空值校验</span></div>
+          <div class="table-row" role="row"><span>M3</span><span>多份回答</span><span>新增 / 删除 / 标签切换</span></div>
+          <div class="table-row" role="row"><span>M4</span><span>裁判请求</span><span>单回答单请求 + JSON 契约</span></div>
+          <div class="table-row" role="row"><span>M5</span><span>真实 API</span><span>并发 / 超时 / 错误状态</span></div>
+          <div class="table-row" role="row"><span>M6</span><span>严格解析</span><span>拒绝非法与自相矛盾结果</span></div>
+          <div class="table-row" role="row"><span>M7</span><span>逐项结果</span><span>分数 / 理由 / 直接证据</span></div>
+          <div class="table-row" role="row"><span>M8</span><span>排序比较</span><span>前端排名与并列名次</span></div>
+          <div class="table-row" role="row"><span>M9</span><span>验证交付</span><span>README / 脱敏 / 开源检查</span></div>
+        </div>
+
+        <div class="commit-strip">
+          <div>
+            <span>Git 历史边界</span>
+            <strong>M3 → M4 → M5 → M6 → M7 → M7.1 → M8 → M9</strong>
+          </div>
+          <p>
+            当前可见 Git 记录从 M3 开始，因此不能把 M1、M2 说成可独立追溯的提交；
+            这组提交证明后半段确实按模块演进。
+          </p>
+        </div>
+      </section>
+
+      <!-- ══════════ 环节 4 环境搭建 ══════════ -->
+      <section class="section step-section" id="phase-4">
+        <header class="step-header">
+          <div class="step-index"><span>环节</span><strong>04</strong></div>
+          <div>
+            <span class="eyebrow">PHASE 04 / SCAFFOLDING</span>
+            <h2>环节 04：环境搭建与脚手架</h2>
+            <p>
+              先把项目骨架跑起来——AI 搭结构，
+              你亲自打开、刷新、查看错误，并理解每个文件承担什么职责。
+            </p>
+          </div>
+        </header>
+
         <div class="subhead">
-          <span>INCREMENTAL DELIVERY</span>
-          <h3>M1–M9：每一轮都能单独验收</h3>
+          <span>METHOD / 执行清单</span>
+          <h3>方法：先让最小骨架在自己的机器上跑起来</h3>
         </div>
 
-        <div class="build-track">
-          <article><b>M1</b><span>页面骨架</span><small>输入区 / 结果区 / 空状态</small></article>
-          <article><b>M2</b><span>问题与标准</span><small>长文本录入与空值校验</small></article>
-          <article><b>M3</b><span>多份回答</span><small>新增 / 删除 / 标签切换</small></article>
-          <article><b>M4</b><span>裁判请求</span><small>单回答单请求 + JSON 契约</small></article>
-          <article><b>M5</b><span>真实 API</span><small>并发 / 超时 / 错误状态</small></article>
-          <article><b>M6</b><span>严格解析</span><small>拒绝非法与自相矛盾结果</small></article>
-          <article><b>M7</b><span>逐项结果</span><small>分数 / 理由 / 直接证据</small></article>
-          <article><b>M8</b><span>排序比较</span><small>前端排名与并列名次</small></article>
-          <article><b>M9</b><span>验证交付</span><small>README / 脱敏 / 开源检查</small></article>
+        <div class="method-board">
+          <article>
+            <span class="m-label">关键产出物</span>
+            <ul>
+              <li>可运行的项目骨架（能启动、能看到空白页面 / 接口返回 200）</li>
+              <li>目录结构说明</li>
+            </ul>
+          </article>
+          <article>
+            <span class="m-label">具体动作</span>
+            <ul>
+              <li><b>AI：</b>搭建项目结构，配置好基础依赖。</li>
+              <li><b>你：</b>亲自跑一遍启动命令，确认在你自己的机器上真的能跑起来（不是只在 AI 的描述里能跑）。</li>
+            </ul>
+          </article>
+          <article>
+            <span class="m-label">结束标准（DoD）</span>
+            <ul>
+              <li>项目在你本地成功启动，没有报错。</li>
+              <li>你理解目录结构里“哪个文件夹放什么”的基本逻辑。</li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="prompt-sheet">
+          <div class="prompt-sheet-head">
+            <span>可直接发给 AI 的 PROMPT</span>
+            <button class="copy-button dark" type="button" data-copy-target="prompt-phase-4">复制 Prompt</button>
+          </div>
+          <pre id="prompt-phase-4">请帮我搭建这个项目的基础脚手架(目录结构 + 必要依赖),先不用写业务逻辑。
+
+完成后请告诉我:
+1. 目录结构里每个主要文件夹/文件是干嘛的(简单一句话说明)
+2. 我需要在终端里依次敲哪些命令,才能把项目跑起来
+3. 跑起来之后,我应该在浏览器/终端里看到什么,
+   才能确认"搭建成功了"</pre>
         </div>
 
         <div class="subhead">
-          <span>CODE EVIDENCE</span>
-          <h3>对话里的决定，最后落在了哪些文件里？</h3>
+          <span>CASE / 本项目证据</span>
+          <h3>案例补充：M1 基础页面</h3>
         </div>
 
-        <div class="file-map">
+        <div class="prep-summary">
+          <span>项目证据：M1 基础页面</span>
+          <strong>index.html + styles.css + app.js，可直接本地打开（纯静态，无需构建）。</strong>
+          <p>骨架内容：输入区 / 结果区 / 空状态——空状态是页面“名词”与区域的第一版雏形。</p>
+        </div>
+
+        <div class="execution-flow" aria-label="打开方式">
+          <div>
+            <span>方式一</span>
+            <strong>直接打开 index.html</strong>
+            <small>双击即可在浏览器运行</small>
+          </div>
+          <i>或</i>
+          <div>
+            <span>方式二</span>
+            <strong>启动静态文件服务器</strong>
+            <small>在本目录运行任意静态服务器</small>
+          </div>
+          <i>→</i>
+          <div class="model-node">
+            <span>确认</span>
+            <strong>本地成功启动</strong>
+            <small>无报错、能刷新、能看懂文件职责</small>
+          </div>
+        </div>
+
+        <aside class="teaching-note">
+          <span>方法印证</span>
+          <p>
+            先让最小骨架在自己的机器上跑起来——AI 搭结构，
+            你亲自打开、刷新、查看错误，并理解每个文件承担什么职责。
+            <strong>“能在你的机器上跑”，而不是“在 AI 的描述里能跑”。</strong>
+          </p>
+        </aside>
+      </section>
+
+      <!-- ══════════ 环节 5 分模块开发 ══════════ -->
+      <section class="section step-section" id="phase-5">
+        <header class="step-header">
+          <div class="step-index"><span>环节</span><strong>05</strong></div>
+          <div>
+            <span class="eyebrow">PHASE 05 / MODULAR BUILD</span>
+            <h2>环节 05：分模块开发实现</h2>
+            <p>
+              AI 每次只做一个约定好的小任务，
+              你每个小任务做完后立刻验证——不要攒到最后一起看。
+            </p>
+          </div>
+        </header>
+
+        <div class="subhead">
+          <span>METHOD / 执行清单</span>
+          <h3>方法：一次只交付一个任务，每次立刻验证</h3>
+        </div>
+
+        <div class="method-board">
           <article>
-            <div><span>01</span><code>index.html</code></div>
-            <h4>页面结构</h4>
-            <p>左右评测工作区、输入字段、回答标签容器、提交按钮、结果空状态。</p>
-            <small>学生先读：看清页面有哪些“名词”和区域</small>
+            <span class="m-label">关键产出物</span>
+            <p>按环节 3 的任务清单，逐个交付的功能代码（每次一个小任务，而不是一次性甩一大坨）。</p>
           </article>
           <article>
-            <div><span>02</span><code>styles.css</code></div>
-            <h4>视觉与状态</h4>
-            <p>左右布局、窄屏单栏、回答与结果标签、成功/失败状态、评分卡片。</p>
-            <small>学生再读：看同一份 HTML 怎样适配不同状态</small>
-          </article>
-          <article class="file-map-primary">
-            <div><span>03</span><code>app.js</code></div>
-            <h4>完整业务流程</h4>
-            <p>输入状态、校验、动态回答、请求构造、API、解析、结果视图、排序与交互。</p>
-            <small>学生重点读：按数据流分段，不要从第一行硬读到最后</small>
+            <span class="m-label">具体动作</span>
+            <ul>
+              <li><b>AI：</b>每次只做一个约定好的小任务，做完主动说明“改了什么文件、实现了什么逻辑”。</li>
+              <li><b>你：</b>每个小任务做完后立刻验证，不要攒到最后一起看（这是最容易失控的环节）。</li>
+            </ul>
           </article>
           <article>
-            <div><span>04</span><code>config.example.js</code></div>
-            <h4>安全配置模板</h4>
-            <p>仓库只提交空 Key 模板；真实 `config.js` 留在本地并由 `.gitignore` 排除。</p>
-            <small>学生要理解：代码能跑与凭证能公开是两件事</small>
+            <span class="m-label">结束标准（DoD）</span>
+            <ul>
+              <li>当前任务对应的功能，你亲自验证过（跑起来看、点一下按钮、发个请求），确实符合预期。</li>
+              <li>没有“AI 说做完了，但我没看”的任务。</li>
+            </ul>
           </article>
-          <article>
-            <div><span>05</span><code>README.md</code></div>
-            <h4>项目状态说明</h4>
-            <p>怎么配置、怎么运行、做了什么、明确没做什么，以及开源前必须处理的风险。</p>
-            <small>学生最后读：确认文档与真实代码一致</small>
-          </article>
+        </div>
+
+        <div class="prompt-sheet">
+          <div class="prompt-sheet-head">
+            <span>可直接发给 AI 的 PROMPT</span>
+            <button class="copy-button dark" type="button" data-copy-target="prompt-phase-5">复制 Prompt</button>
+          </div>
+          <pre id="prompt-phase-5">现在请只完成任务清单里的【任务X:具体任务名】,不要顺带做其他任务。
+每次执行一个任务并进行验证,待验证通过后提交一个commit后再开始下一个任务,
+不要一次性做完所有任务再验证。
+
+每一步做完之后请告诉我:
+1. 改动了哪些文件(简单列出,不用贴全部代码)
+2. 每处改动实现了什么逻辑(用大白话说)
+3. 需要我验证的告诉我应该怎么操作才能验证这个任务确实做成了
+   (具体到"打开哪个页面/敲哪条命令/点哪个按钮,应该看到什么结果")</pre>
+        </div>
+
+        <div class="subhead">
+          <span>CASE / 本项目证据</span>
+          <h3>案例补充：M2 → M8 逐项推进</h3>
+        </div>
+
+        <div class="prep-summary">
+          <span>项目证据</span>
+          <strong>M2 → M8 逐项推进——输入、回答、请求、解析、展示、排序分别交付。</strong>
+          <p>网页 PHASE B 印证：先静态骨架，再输入、请求、解析、展示；根据真实使用反馈调整布局与标签页；最后补本地验证和开源安全检查。</p>
         </div>
 
         <figure class="ide-shot">
@@ -1048,6 +981,291 @@
           </div>
         </figure>
 
+        <div class="commit-strip">
+          <div>
+            <span>代码要点（M4 / M5 模块）</span>
+            <strong>单回答单请求 + JSON 契约</strong>
+          </div>
+          <p>
+            <code>buildJudgeJobs</code> 为每份回答生成独立请求；
+            <code>response_format: json_object</code> 与 <code>stream: false</code>
+            是 M4“JSON 契约”的具体落地。Git 记录 M3 → M4 → M5 → M6 → M7 → M7.1 → M8 → M9 证明模块演进。
+          </p>
+        </div>
+
+        <aside class="teaching-note">
+          <span>课堂观察</span>
+          <p>
+            不要让功能一次性堆满。每轮都要求说明改了什么、怎样验收，
+            再决定是否进入下一项。<strong>每次只做一个约定好的小任务，做完立刻验证。</strong>
+          </p>
+        </aside>
+      </section>
+
+      <!-- ══════════ 环节 6 自测与走查 ══════════ -->
+      <section class="section step-section" id="phase-6">
+        <header class="step-header">
+          <div class="step-index"><span>环节</span><strong>06</strong></div>
+          <div>
+            <span class="eyebrow">PHASE 06 / SELF-TEST</span>
+            <h2>环节 06：自测与代码走查</h2>
+            <p>
+              正常路径能用，只代表测试刚刚开始——
+              AI 列边界与潜在 bug，你亲自试空输入、异常输入等异常路径。
+            </p>
+          </div>
+        </header>
+
+        <div class="subhead">
+          <span>METHOD / 执行清单</span>
+          <h3>方法：找出边界情况和潜在问题</h3>
+        </div>
+
+        <div class="method-board">
+          <article>
+            <span class="m-label">关键产出物</span>
+            <ul>
+              <li>关键逻辑的测试结果（哪怕是手动测试记录，不一定要写自动化测试）</li>
+              <li>一份“已知问题 / 边界情况”清单</li>
+            </ul>
+          </article>
+          <article>
+            <span class="m-label">具体动作</span>
+            <ul>
+              <li><b>AI：</b>主动列出这段代码没覆盖到的边界情况、可能的 bug 点。</li>
+              <li><b>你：</b>挑几个边界场景（比如空输入、异常输入）亲自试一下，不要只测“正常路径”。</li>
+            </ul>
+          </article>
+          <article>
+            <span class="m-label">结束标准（DoD）</span>
+            <ul>
+              <li>正常场景和至少 1–2 个异常场景都手动验证过。</li>
+              <li>已知的坑（哪怕暂时不修）你是清楚的，而不是“看起来能用就行”。</li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="prompt-sheet">
+          <div class="prompt-sheet-head">
+            <span>可直接发给 AI 的 PROMPT</span>
+            <button class="copy-button dark" type="button" data-copy-target="prompt-phase-6">复制 Prompt</button>
+          </div>
+          <pre id="prompt-phase-6">请针对刚才实现的【具体功能/模块名】,帮我做一次自查:
+
+1. 列出这段代码可能没覆盖到的边界情况和潜在 bug 点
+   (比如空输入、异常输入、极端值、网络失败等)
+2. 针对每一条,给我具体的手动测试步骤,让我可以逐一验证
+   (不需要写自动化测试代码,手动操作步骤就行)
+3. 哪些问题你觉得现在必须修,哪些可以先记下来暂不处理</pre>
+        </div>
+
+        <div class="subhead">
+          <span>HAND-MADE PRE 4/4</span>
+          <h3>手工前置 4/4：重复裁判验证（STEP 04 稳定性测试）</h3>
+        </div>
+
+        <div class="prep-summary">
+          <span>STEP 04 稳定性测试</span>
+          <strong>在编码之前，先用同一份材料手工验证“裁判标准是否稳定”。</strong>
+          <p>固定三项输入不变：Step 02 的原始问题与 13 项评分标准，以及 Step 03 的模型回答。观察重点不是文案好不好，而是裁判能否重复得出相同结论。</p>
+        </div>
+
+        <div class="subhead">
+          <span>RUN LOG</span>
+          <h3>四轮独立裁判，核心结论完全一致</h3>
+        </div>
+
+        <div class="run-grid" aria-label="稳定性测试轮次">
+          <article class="run-card verified">
+            <div class="run-top"><span>ROUND 01</span><b>已核实</b></div>
+            <strong>12 / 13</strong>
+            <p>C06 = 0；其余 12 项通过；得分率 92%。</p>
+            <small>标题汉字数写为 14</small>
+          </article>
+          <article class="run-card verified">
+            <div class="run-top"><span>ROUND 02</span><b>已核实</b></div>
+            <strong>12 / 13</strong>
+            <p>C06 = 0；其余 12 项通过；得分率 92%。</p>
+            <small>标题汉字数写为 14</small>
+          </article>
+          <article class="run-card verified">
+            <div class="run-top"><span>ROUND 03</span><b>已核实</b></div>
+            <strong>12 / 13</strong>
+            <p>C06 = 0；其余 12 项通过；得分率 92%。</p>
+            <small>标题汉字数写为 15</small>
+          </article>
+          <article class="run-card verified">
+            <div class="run-top"><span>ROUND 04</span><b>已核实</b></div>
+            <strong>12 / 13</strong>
+            <p>C06 = 0；其余 12 项通过；得分率 92%。</p>
+            <small>标题汉字数写为 14</small>
+          </article>
+        </div>
+
+        <article class="consistency-card">
+          <div>
+            <span>稳定的核心结论</span>
+            <strong>4 / 4</strong>
+            <p>四轮在最终分（12/13）、得分率（92%）和唯一失分项（C06）上完全一致。</p>
+          </div>
+          <div>
+            <span>出现的局部漂移</span>
+            <strong>14 ↔ 15</strong>
+            <p>第三轮对同一标题的汉字计数与其余三轮不同（15 vs 14），但都落在 14–20 的通过区间。</p>
+          </div>
+        </article>
+
+        <div class="cause-focus">
+          <div class="cause-code">C06</div>
+          <div>
+            <span>唯一失分项</span>
+            <h3>逻辑满足，不等于字面格式满足</h3>
+            <p>
+              回答写的是“不是为了多复杂的步骤，是在进工位前……”，
+              语义上形成了对比，但评分标准要求“不是”和“是”之间必须出现“……”或“...”。
+              四轮裁判都按严格字面条件记 0 分。
+            </p>
+          </div>
+        </div>
+
+        <aside class="teaching-note">
+          <span>课堂观察</span>
+          <p>
+            只比较总分，会得到“裁判很稳定”；继续比较每项和理由，才会发现计数表述仍有漂移。
+            <strong>稳定性至少要分三层看：总分、分项结论、证据与理由。</strong>
+          </p>
+        </aside>
+
+        <details class="artifact">
+          <summary>
+            <span><small>RUN LOG 汇总</small>查看四轮裁判的共同结论与证据边界</span>
+            <i>展开</i>
+          </summary>
+          <div class="artifact-body">
+            <div class="comparison-list">
+              <div><span>共同总分</span><b>12 / 13，92%</b></div>
+              <div><span>共同失分项</span><b>C06｜“不是……，是……”对比句式</b></div>
+              <div><span>共同直接证据</span><b>“不是为了多复杂的步骤，是在进工位前……”</b></div>
+              <div><span>未触发事项</span><b>无红线规则；没有红线调整</b></div>
+              <div><span>稳定性结论</span><b>四轮的总分、得分率和唯一失分项均一致</b></div>
+            </div>
+            <p class="artifact-foot">
+              对项目的意义：四轮稳定性测试负责<strong>证明需求真实存在</strong>；
+              这个已验证的手工裁判流程成为 Step 05 的产品原型。
+            </p>
+          </div>
+        </details>
+
+        <div class="subhead">
+          <span>CODE-LEVEL SELF-TEST</span>
+          <h3>代码层面的自测与走查</h3>
+        </div>
+
+        <div class="prep-summary">
+          <span>项目证据：M5 / M6 验证</span>
+          <strong>真实 API 通过；非 JSON、非法得分、缺失字段会被拒绝。</strong>
+          <p>决策日志 04（失败策略）：宁可暴露失败，也不伪造正常——结构失败时展示原始返回并要求人工复核。</p>
+        </div>
+
+        <div class="iteration-grid" aria-label="验证覆盖的异常路径">
+          <article>
+            <span>异常路径 01</span>
+            <h4>空输入</h4>
+            <p>题目、标准或回答为空时，校验拦截并给出提示。</p>
+          </article>
+          <article>
+            <span>异常路径 02</span>
+            <h4>非法 JSON</h4>
+            <p>返回体无法解析时，保留原始返回，不伪造正常结果。</p>
+          </article>
+          <article>
+            <span>异常路径 03</span>
+            <h4>异常分数</h4>
+            <p>分数不在 0 / 1 范围内时，按失败处理并要求人工复核。</p>
+          </article>
+          <article>
+            <span>异常路径 04</span>
+            <h4>网络失败</h4>
+            <p>超时或错误状态单独呈现，与正常结果隔离。</p>
+          </article>
+        </div>
+
+        <aside class="teaching-note">
+          <span>方法印证</span>
+          <p>
+            正常路径能用，只代表测试刚刚开始——AI 列边界与潜在 bug，
+            你亲自试空输入、非法 JSON、异常分数、网络失败等异常路径。
+            <strong>已知的坑你是清楚的，而不是“看起来能用就行”。</strong>
+          </p>
+        </aside>
+      </section>
+
+      <!-- ══════════ 环节 7 集成联调 ══════════ -->
+      <section class="section step-section" id="phase-7">
+        <header class="step-header">
+          <div class="step-index"><span>环节</span><strong>07</strong></div>
+          <div>
+            <span class="eyebrow">PHASE 07 / INTEGRATION</span>
+            <h2>环节 07：集成联调</h2>
+            <p>
+              把各模块串起来跑通完整流程——
+              模块单独能跑，不代表用户流程能跑通。
+            </p>
+          </div>
+        </header>
+
+        <div class="subhead">
+          <span>METHOD / 执行清单</span>
+          <h3>方法：端到端走通一次核心使用路径</h3>
+        </div>
+
+        <div class="method-board">
+          <article>
+            <span class="m-label">关键产出物</span>
+            <p>各模块拼在一起后，端到端能跑通的一个完整流程（比如“从首页点击到提交成功”全流程）。</p>
+          </article>
+          <article>
+            <span class="m-label">具体动作</span>
+            <ul>
+              <li><b>AI：</b>把之前分开开发的模块接起来，解决接口 / 数据格式不匹配的问题。</li>
+              <li><b>你：</b>走一遍完整用户路径，而不是只看单个模块。</li>
+            </ul>
+          </article>
+          <article>
+            <span class="m-label">结束标准（DoD）</span>
+            <ul>
+              <li>核心使用路径（你在环节 1 定义的核心场景）能从头到尾走通一次。</li>
+              <li>没有“模块 A 单独能跑，模块 B 单独能跑，但连起来就报错”的情况。</li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="prompt-sheet">
+          <div class="prompt-sheet-head">
+            <span>可直接发给 AI 的 PROMPT</span>
+            <button class="copy-button dark" type="button" data-copy-target="prompt-phase-7">复制 Prompt</button>
+          </div>
+          <pre id="prompt-phase-7">现在请帮我把已经完成的各个模块整合起来,
+确保【核心使用路径,比如"从首页到提交成功"】能完整走通。
+
+整合完成后请给我一份端到端的操作步骤清单,
+让我能从头到尾亲自走一遍这个流程来验证。
+
+如果整合过程中发现模块之间接口/数据格式对不上,
+请说明是怎么解决的。</pre>
+        </div>
+
+        <div class="subhead">
+          <span>CASE / 本项目证据</span>
+          <h3>案例补充：完整评测路径与代码数据流</h3>
+        </div>
+
+        <div class="prep-summary">
+          <span>项目证据</span>
+          <strong>完整评测路径：粘贴材料 → 多回答 → 发起裁判 → 结果标签 → 排名。</strong>
+          <p>联调中的输入数据来自环节 1 的手工材料：Step 02 的题目与 13 项标准、Step 03 的回答，正是联调时粘贴进网页的“问题 / 评分标准 / 回答”样例。</p>
+        </div>
+
         <div class="code-flow" aria-label="项目代码数据流">
           <article><span>INPUT</span><strong>表单与回答标签</strong><small>读取并校验用户输入</small></article>
           <i>→</i>
@@ -1063,76 +1281,119 @@
         <aside class="code-reading-note">
           <span>代码阅读方法</span>
           <p>
-            面对 1200 多行的 `app.js`，不要按文件长度产生恐惧。沿着一次用户操作追踪即可：
+            面对 1200 多行的 <code>app.js</code>，不要按文件长度产生恐惧。沿着一次用户操作追踪即可：
             <strong>填写 → 校验 → 构造任务 → 发请求 → 解析 → 排名 → 渲染。</strong>
             每个函数都是前面任务清单中某个小任务的代码化结果。
           </p>
         </aside>
 
-        <div class="commit-strip">
-          <div>
-            <span>当前可见 Git 记录</span>
-            <strong>M3 → M4 → M5 → M6 → M7 → M7.1 → M8 → M9</strong>
-          </div>
+        <aside class="teaching-note">
+          <span>方法印证</span>
           <p>
-            这组提交证明后半段确实按模块演进；当前可见历史从 M3 开始，
-            因此不能把 M1、M2 说成可独立追溯的提交。
+            把输入、请求、解析、结果和排序串起来；
+            你从头走一遍真实核心路径，观察模块之间的接口。
+            <strong>“从首页到提交成功”全流程走通一次，联调才算完成。</strong>
           </p>
+        </aside>
+      </section>
+
+      <!-- ══════════ 环节 8 测试验收 ══════════ -->
+      <section class="section step-section" id="phase-8">
+        <header class="step-header">
+          <div class="step-index"><span>环节</span><strong>08</strong></div>
+          <div>
+            <span class="eyebrow">PHASE 08 / ACCEPTANCE</span>
+            <h2>环节 08：测试与验收</h2>
+            <p>
+              回到最初需求，一条条核对状态——
+              每项都应是完成、部分完成或明确不做，而不是“不确定”。
+            </p>
+          </div>
+        </header>
+
+        <div class="subhead">
+          <span>METHOD / 执行清单</span>
+          <h3>方法：对照环节 1 的需求清单逐条打勾</h3>
+        </div>
+
+        <div class="method-board">
+          <article>
+            <span class="m-label">关键产出物</span>
+            <ul>
+              <li>对照环节 1 的需求清单，逐条打勾的验收结果</li>
+              <li>遗留问题清单（哪些是这一版不修的，明确记下来而不是遗忘）</li>
+            </ul>
+          </article>
+          <article>
+            <span class="m-label">具体动作</span>
+            <ul>
+              <li><b>你：</b>拿着最初的需求清单，一条条核对是否做到。</li>
+              <li><b>AI：</b>协助定位任何“做出来但不符合预期”的问题根因。</li>
+            </ul>
+          </article>
+          <article>
+            <span class="m-label">结束标准（DoD）</span>
+            <ul>
+              <li>需求清单里的每一条，状态是“完成 / 部分完成 / 不做”，而不是“不确定”。</li>
+              <li>你敢把这个版本给别人用，而不是心里没底。</li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="prompt-sheet">
+          <div class="prompt-sheet-head">
+            <span>可直接发给 AI 的 PROMPT</span>
+            <button class="copy-button dark" type="button" data-copy-target="prompt-phase-8">复制 Prompt</button>
+          </div>
+          <pre id="prompt-phase-8">这是我们最初环节1确定的需求清单:
+[把环节1的需求清单粘贴到这里]
+
+请逐条核对当前代码是否满足,并标注每一条的状态:
+完成 / 部分完成 / 未做
+
+对于"部分完成"或"未做"的条目,请说明原因,
+以及不做/没做完会有什么实际影响。</pre>
         </div>
 
         <div class="subhead">
-          <span>FEEDBACK LOOPS</span>
-          <h3>代码完成过程中，界面继续被真实反馈改写</h3>
+          <span>CASE / 本项目证据</span>
+          <h3>案例补充：布局与结果微调 + 最终验收</h3>
         </div>
 
-        <div class="iteration-grid">
+        <div class="iteration-grid" aria-label="反馈循环四条">
           <article>
-            <span>视觉收敛</span>
+            <span>反馈 01 · 视觉收敛</span>
             <h4>“样式太复杂了”</h4>
             <p>页面从装饰性设计改为白底、单栏、弱边框的本地工具风格。</p>
           </article>
           <article>
-            <span>空间重组</span>
+            <span>反馈 02 · 空间重组</span>
             <h4>输入与回答左右布局</h4>
             <p>左侧放问题和标准，右侧放待评回答；窄屏自动回到单栏。</p>
           </article>
           <article>
-            <span>多回答交互</span>
+            <span>反馈 03 · 多回答交互</span>
             <h4>用标签切换回答</h4>
             <p>避免多份长回答同时纵向堆叠，错误时还能自动跳转到对应标签。</p>
           </article>
           <article>
-            <span>结果微调</span>
+            <span>反馈 04 · 结果微调</span>
             <h4>用模型标签切换结果</h4>
             <p>每次只看一个模型的完整结果，同时保留失败结果和键盘导航。</p>
           </article>
         </div>
 
-        <article class="security-lesson">
-          <div class="security-mark">!</div>
-          <div>
-            <span>OPEN SOURCE CHECK</span>
-            <h3>功能完成，不等于可以直接开源</h3>
-            <p>
-              M9 检查确认当前 `config.js` 已被 Git 忽略、待提交文件未发现本地 Key；
-              但历史扫描发现旧提交中的 `app.js` 曾包含真实 Key。
-              因此发布前必须先轮换旧 Key，并清理 Git 历史或从脱敏文件建立全新仓库。
-            </p>
-          </div>
-        </article>
-
         <aside class="teaching-note">
-          <span>课堂观察</span>
+          <span>验收态度</span>
           <p>
-            这次 Vibe Coding 的核心不是“AI 写了多少代码”，而是
-            <strong>人持续负责方向、取舍和验收，AI 负责结构化、实现、解释和暴露风险。</strong>
-            只有双方职责清楚，“会聊天”才会变成“会 Coding”。
+            不要凭“看起来差不多”结束。代码完成过程中，界面被真实反馈改写；
+            每项都应是完成、部分完成或明确不做，并记录遗留问题。
           </p>
         </aside>
 
         <details class="artifact">
           <summary>
-            <span><small>ARTIFACT 05</small>查看最终产品的范围与验证状态</span>
+            <span><small>FINAL ACCEPTANCE</small>查看最终验收结果：对照环节 1 的需求清单</span>
             <i>展开</i>
           </summary>
           <div class="artifact-body">
@@ -1159,24 +1420,327 @@
               </div>
             </div>
             <p class="artifact-foot">
-              已记录的验证包括：M5 真实 API 请求由项目所有者确认通过；M6 解析测试通过；
-              JavaScript 语法、非法得分、非 JSON、缺失字段和并列排名已有本地检查。
+              验收正确性来自环节 1 定义的材料：13 项评分标准（C01–C13）就是验收“裁判结果是否正确”的对照清单，
+              四轮重复裁判结论（环节 6）为验收提供基准值。
             </p>
           </div>
         </details>
+      </section>
+
+      <!-- ══════════ 环节 9 完成确认 ══════════ -->
+      <section class="section step-section" id="phase-9">
+        <header class="step-header">
+          <div class="step-index"><span>环节</span><strong>09</strong></div>
+          <div>
+            <span class="eyebrow">PHASE 09 / WRAP-UP</span>
+            <h2>环节 09：开发完成确认（交付前收尾）</h2>
+            <p>
+              最终代码之外，还要留下可恢复的项目状态——
+              即使过一个月你回来看这份说明，也能知道当时做到了哪一步。
+            </p>
+          </div>
+        </header>
+
+        <div class="subhead">
+          <span>METHOD / 执行清单</span>
+          <h3>方法：留下“怎么运行、做了什么、没做什么”</h3>
+        </div>
+
+        <div class="method-board">
+          <article>
+            <span class="m-label">关键产出物</span>
+            <p>最终代码 + 一份简要说明（怎么运行、有什么已知限制）。</p>
+          </article>
+          <article>
+            <span class="m-label">具体动作</span>
+            <ul>
+              <li><b>AI：</b>整理一份“这个版本做了什么、没做了什么、怎么跑”的总结。</li>
+              <li><b>你：</b>通读一遍，确认这份总结和你的理解一致。</li>
+            </ul>
+          </article>
+          <article>
+            <span class="m-label">结束标准（DoD）</span>
+            <ul>
+              <li>即使过一个月你回来看这份说明，也能知道当时做到了哪一步。</li>
+              <li>项目状态是“我清楚现在的样子”，而不是“AI 说做完了我就信了”。</li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="prompt-sheet">
+          <div class="prompt-sheet-head">
+            <span>可直接发给 AI 的 PROMPT</span>
+            <button class="copy-button dark" type="button" data-copy-target="prompt-phase-9">复制 Prompt</button>
+          </div>
+          <pre id="prompt-phase-9">请帮我整理一份这个版本的总结文档,包括:
+
+1. 这个版本做了哪些功能(简明列出)
+2. 有哪些已知限制或还没做完的部分
+3. 怎么运行这个项目(命令 + 步骤)
+4. 如果我以后要接着改这个项目,有什么需要特别注意的地方
+   (比如容易踩坑的模块、临时方案以后要替换的地方等)</pre>
+        </div>
+
+        <div class="subhead">
+          <span>CASE / 本项目证据</span>
+          <h3>案例补充：M9 README + 开源检查</h3>
+        </div>
+
+        <div class="prep-summary">
+          <span>项目证据：M9</span>
+          <strong>README + 开源检查——使用说明、边界、验证记录、Key 与 Git 历史风险。</strong>
+          <p>已记录的验证状态：M5 真实 API 请求由项目所有者确认通过；M6 解析测试通过；JavaScript 语法、非法得分、非 JSON、缺失字段和并列排名已有本地检查。</p>
+        </div>
+
+        <article class="security-lesson">
+          <div class="security-mark">!</div>
+          <div>
+            <span>OPEN SOURCE CHECK</span>
+            <h3>功能完成，不等于可以直接开源</h3>
+            <p>
+              M9 检查确认当前 <code>config.js</code> 已被 Git 忽略、待提交文件未发现本地 Key；
+              但历史扫描发现旧提交中的 <code>app.js</code> 曾包含真实 Key。
+              因此发布前必须先轮换旧 Key，并清理 Git 历史或从脱敏文件建立全新仓库。
+            </p>
+          </div>
+        </article>
+
+        <aside class="teaching-note">
+          <span>方法印证</span>
+          <p>
+            最终代码之外，还要留下可恢复的项目状态——AI 整理怎么运行、做了什么、没做什么；
+            你确认说明与真实状态一致，未来能接着维护。
+          </p>
+        </aside>
 
         <div class="handoff-strip">
-          <span>STEP 05 OUTPUT</span>
+          <span>环节 09 OUTPUT</span>
           <strong>可在本地运行的模型回答裁判器 + 开源前检查清单</strong>
           <i>从手工流程到可复用工具 ✓</i>
         </div>
       </section>
 
-      <section class="section synthesis" id="synthesis">
+      <!-- ══════════ 贯穿全流程的原则 ══════════ -->
+      <section class="section step-section" id="principle">
+        <header class="step-header">
+          <div class="step-index"><span>原则</span><strong>★</strong></div>
+          <div>
+            <span class="eyebrow">ACROSS THE FLOW</span>
+            <h2>贯穿全流程的一条原则</h2>
+            <p>
+              AI 的交付节奏，必须匹配你的验证节奏——
+              每一轮都留下明确产出，每一个小任务都立刻验证。
+            </p>
+          </div>
+        </header>
+
+        <div class="pace-principle">
+          <span>贯穿全流程的原则</span>
+          <h3>AI 交付节奏 vs 你的验证节奏要匹配</h3>
+          <p>
+            AI 天然倾向于一口气多做，你需要主动“喊停”、分批验证。
+            之前项目不理想，大概率就出在环节 5–6：AI 一次产出太多，
+            你没能逐块验证，问题堆积到后面才爆发。
+            <strong>上一块没有看懂、没有验证，就不进入下一块。</strong>
+          </p>
+        </div>
+
+        <div class="prep-summary" style="margin-top: 44px">
+          <span>本项目证据</span>
+          <strong>网页 Step 05 的推进方式（“开始 M2 / M3 / … / M9”）本质上是在控制风险。</strong>
+          <p>课堂观察（人机分工）：这次 Vibe Coding 的核心不是“AI 写了多少代码”，而是人持续负责方向、取舍和验收，AI 负责结构化、实现、解释和暴露风险。</p>
+        </div>
+
+        <div class="method-frame">
+          <div>
+            <span>网页九环节的四个问题</span>
+            <h3>不要只问“AI 写完了吗？”</h3>
+          </div>
+          <div class="method-questions">
+            <article><b>01</b><span>产出物是什么？</span></article>
+            <article><b>02</b><span>AI 做什么？</span></article>
+            <article><b>03</b><span>你做什么？</span></article>
+            <article><b>04</b><span>什么算完成？</span></article>
+          </div>
+        </div>
+
+        <aside class="teaching-note">
+          <span>课堂观察</span>
+          <p>
+            这次 Vibe Coding 的核心不是“AI 写了多少代码”，而是
+            <strong>人持续负责方向、取舍和验收，AI 负责结构化、实现、解释和暴露风险。</strong>
+            只有双方职责清楚，“会聊天”才会变成“会 Coding”。
+          </p>
+        </aside>
+      </section>
+
+      <!-- ══════════ 第二部分 维护项目 ══════════ -->
+      <section class="section" id="maintain">
+        <header class="section-head">
+          <span class="eyebrow">PART Ⅱ / MAINTENANCE</span>
+          <h2>第二部分：<br />维护项目（文档与交接）</h2>
+          <p>
+            项目开发完成后，如何让文档与代码保持同步、
+            如何让新对话 / 老项目顺利接管。
+          </p>
+        </header>
+
+        <article class="maintain-card">
+          <div class="maintain-card-head">
+            <b>2.1</b>
+            <div>
+              <h3>初始化项目文档</h3>
+              <p>让 AI 完整阅读当前项目，在 docs/ 目录生成六份文档：README、PROJECT_CONTEXT、ARCHITECTURE、ROADMAP、CHANGELOG、TODO。要求根据代码自动分析，无法确定的信息标记「待确认」。</p>
+            </div>
+          </div>
+          <div class="prompt-sheet">
+            <div class="prompt-sheet-head">
+              <span>可发给 AI 的 PROMPT</span>
+              <button class="copy-button dark" type="button" data-copy-target="prompt-maint-1">复制 Prompt</button>
+            </div>
+            <pre id="prompt-maint-1">请先完整阅读当前项目，然后自动整理项目文档。
+
+根据代码、目录结构、配置文件和已有文档，在 docs/ 目录生成（没有则创建）：
+
+- README.md              # 项目介绍、安装、启动方式
+- PROJECT_CONTEXT.md     # 项目背景、技术栈、模块说明、开发约定（最重要）
+- ARCHITECTURE.md        # 项目架构、目录结构、数据流
+- ROADMAP.md             # 已完成、开发中、未来规划
+- CHANGELOG.md           # 当前版本及后续更新记录
+- TODO.md                # 待开发功能、Bug、技术债
+
+要求：
+
+1. 尽量根据代码自动分析，不要凭空猜测。
+2. 无法确定的信息统一标记为「待确认」。
+3. 文档使用 Markdown。
+4. 内容简洁、清晰、方便后续 AI 和开发者阅读。
+5. 最后总结哪些内容需要我人工补充。</pre>
+          </div>
+        </article>
+
+        <article class="maintain-card">
+          <div class="maintain-card-head">
+            <b>2.2</b>
+            <div>
+              <h3>新对话接管项目</h3>
+              <p>新对话开始前，先读 docs/ 下全部文档，总结理解、说明完成度与待开发内容，发现文档与代码不一致时指出；不要立即修改代码，等待下一步需求。</p>
+            </div>
+          </div>
+          <div class="prompt-sheet">
+            <div class="prompt-sheet-head">
+              <span>可发给 AI 的 PROMPT</span>
+              <button class="copy-button dark" type="button" data-copy-target="prompt-maint-2">复制 Prompt</button>
+            </div>
+            <pre id="prompt-maint-2">这是一个已经开发中的项目。
+
+请先阅读 docs 目录下的所有项目文档，包括：
+
+- README.md
+- PROJECT_CONTEXT.md
+- ARCHITECTURE.md
+- ROADMAP.md
+- CHANGELOG.md
+- TODO.md
+
+阅读完成后：
+
+1. 总结你对当前项目的理解。
+2. 说明当前项目已经完成了什么。
+3. 说明还有哪些待开发内容。
+4. 如果发现文档与代码不一致，请指出并给出建议。
+5. 后续所有开发都以最新代码和这些文档为准。
+
+不要立即修改代码，等待我的下一步需求。</pre>
+          </div>
+        </article>
+
+        <article class="maintain-card">
+          <div class="maintain-card-head">
+            <b>2.3</b>
+            <div>
+              <h3>开发完更新</h3>
+              <p>每次开发完成后，让 AI 根据本次代码变更自动更新 CHANGELOG、PROJECT_CONTEXT 和 TODO，保持文档与代码同步；除非必要，不修改其他文档。</p>
+            </div>
+          </div>
+          <div class="prompt-sheet">
+            <div class="prompt-sheet-head">
+              <span>可发给 AI 的 PROMPT</span>
+              <button class="copy-button dark" type="button" data-copy-target="prompt-maint-3">复制 Prompt</button>
+            </div>
+            <pre id="prompt-maint-3">本次开发已完成，请根据本次代码变更自动更新 CHANGELOG.md、PROJECT_CONTEXT.md 和 TODO.md，保持文档与代码同步。除非必要，不修改其他文档。</pre>
+          </div>
+        </article>
+
+        <article class="maintain-card">
+          <div class="maintain-card-head">
+            <b>2.4</b>
+            <div>
+              <h3>老项目构建</h3>
+              <p>面对没有文档的已有项目，让 AI 分析目录结构、核心代码、配置、依赖、README 与 Git 信息，按实际生成 docs/ 六份文档，不凭空编造。</p>
+            </div>
+          </div>
+          <div class="prompt-sheet">
+            <div class="prompt-sheet-head">
+              <span>可发给 AI 的 PROMPT</span>
+              <button class="copy-button dark" type="button" data-copy-target="prompt-maint-4">复制 Prompt</button>
+            </div>
+            <pre id="prompt-maint-4">请分析当前项目，并为这个已有项目补充项目文档。
+
+请阅读：
+
+- 项目目录结构
+- 核心代码
+- 配置文件
+- 依赖文件
+- 已有 README（如果存在）
+- Git 信息（如果可以获取）
+
+根据项目实际情况，在 docs/ 目录生成以下文件：
+
+- README.md
+  项目介绍、功能说明、安装和启动方式
+
+- PROJECT_CONTEXT.md
+  项目背景、技术栈、核心模块、开发规范，作为 AI 后续开发参考
+
+- ARCHITECTURE.md
+  项目架构、模块关系、主要流程
+
+- ROADMAP.md
+  当前完成情况、未来可能规划
+
+- CHANGELOG.md
+  根据代码和 Git 信息整理已有版本变化
+
+- TODO.md
+  当前待优化、待开发、技术债
+
+要求：
+
+1. 不要凭空编造，只根据代码和项目情况分析。
+2. 不确定的信息标记为「待确认」。
+3. 文档保持简洁、清晰，方便后续 AI Coding 使用。
+4. 完成后告诉我：
+   - 你对项目的整体理解
+   - 哪些内容是推测
+   - 哪些地方需要人工补充</pre>
+          </div>
+        </article>
+      </section>
+
+      <!-- ══════════ 第三部分 项目复盘 ══════════ -->
+      <section class="section synthesis" id="review">
         <header class="section-head compact">
-          <span class="eyebrow">SYNTHESIS</span>
+          <span class="eyebrow">PART Ⅲ / SYNTHESIS</span>
           <h2>真正要带走的，<br />是一套可重复的 Coding 方法</h2>
         </header>
+
+        <div class="subhead" style="text-align: left">
+          <span>FIVE-LAYER REVIEW（倒序）</span>
+          <h3>可重复的 Coding 方法</h3>
+        </div>
+
         <div class="stack-diagram">
           <article>
             <span>05</span><div><strong>交付说明与安全收尾</strong><small>知道现在做到哪里</small></div>
@@ -1194,11 +1758,44 @@
             <span>01</span><div><strong>需求澄清与范围边界</strong><small>先决定做什么、不做什么</small></div>
           </article>
         </div>
+
         <p class="synthesis-copy">
           AI 可以快速写代码，但你要控制方向、范围、节奏和验收。
           每一轮都留下明确产出，每一个小任务都立刻验证，
           最终得到的才不是“一堆 AI 生成代码”，而是一个你理解、敢用、能继续维护的项目。
         </p>
+
+        <div class="formula-card">
+          <span>课堂主线</span>
+          <code>定义质量 → 制造测试 → 生成回答 → 验证稳定 → 编码工具</code>
+          <p>
+            四轮稳定性测试负责证明需求真实存在；九环协作清单和 M1–M9 才是本课程的核心方法。
+            课程结束时，你应该会自己推进项目：以 Step 05 为教学主线，复用
+            “需求澄清 → 技术方案 → 任务拆解 → 分模块实现 → 自测 → 联调 → 验收 → 交付”的方法推进下一个 Web Coding 项目。
+          </p>
+          <button class="copy-button light" type="button" data-copy-text="以本课知识点整理（执行清单十个环节 + 维护项目文档与交接 + 项目复盘）为方法主线，复用「需求澄清 → 技术方案 → 任务拆解 → 分模块实现 → 自测 → 联调 → 验收 → 交付」的方法推进下一个 Web Coding 项目。">
+            复制下一项目指令
+          </button>
+        </div>
+
+        <details class="artifact" style="max-width: 840px; margin-left: auto; margin-right: auto">
+          <summary>
+            <span><small>THIS PAGE</small>附：本网页的交互功能（script.js）</span>
+            <i>展开</i>
+          </summary>
+          <div class="artifact-body">
+            <div class="comparison-list">
+              <div><span>章节导航高亮</span><b>滚动时按当前视口位置（scrollY + 视口高度 × 32%）判断当前章节，高亮侧边导航。</b></div>
+              <div><span>阅读进度条</span><b>侧边栏竖向进度条随滚动比例增长。</b></div>
+              <div><span>改造前后切换</span><b>环节 01 的“改造前 / 改造后”分段按钮切换对应面板。</b></div>
+              <div><span>复制按钮</span><b>一键复制模型回答全文（data-copy-target）或预设指令文本（data-copy-text），成功 / 失败均有 Toast 提示。</b></div>
+            </div>
+            <p class="artifact-foot">
+              本网页即是“方法 × 证据 × 复盘”的静态长网页实现：
+              十个环节每一节都回答“产出物是什么 / AI 做什么 / 你做什么 / 什么算完成”。
+            </p>
+          </div>
+        </details>
       </section>
 
       <section class="section next-section" id="handoff">
@@ -1208,14 +1805,15 @@
           <h2>课程结束时，<br />你应该会自己推进项目</h2>
           <p>
             这个案例已经覆盖从模糊想法到本地可运行网页的完整 Coding 路径。
-            四轮稳定性测试负责证明需求真实存在；九环协作清单和 M1–M9 才是本课程的核心方法。
+            十环节协作清单是方法，M1–M9 是证据，项目文档维护让项目可以被长期接管，
+            最终沉淀成一套你理解、敢用、能继续维护的项目。
           </p>
           <div class="handoff-card">
             <div>
-              <span>课堂主线</span>
-              <code>定义质量 → 制造测试 → 生成回答 → 验证稳定 → 编码工具</code>
+              <span>下一项目复用指令</span>
+              <code>需求澄清 → 技术方案 → 任务拆解 → 分模块实现 → 自测 → 联调 → 验收 → 交付</code>
             </div>
-            <button class="copy-button light" type="button" data-copy-text="请以 /Users/tape/Documents/Model Evaluation/process-recap/ 的 Step 05 为教学主线，复用“需求澄清 → 技术方案 → 任务拆解 → 分模块实现 → 自测 → 联调 → 验收 → 交付”的方法推进下一个 Web Coding 项目。">
+            <button class="copy-button light" type="button" data-copy-text="请以本课知识点整理（执行清单十个环节 + 维护项目文档与交接 + 项目复盘）为方法主线，复用「需求澄清 → 技术方案 → 任务拆解 → 分模块实现 → 自测 → 联调 → 验收 → 交付」的方法推进下一个 Web Coding 项目。">
               复制下一项目指令
             </button>
           </div>
@@ -1225,7 +1823,7 @@
 
     <footer class="site-footer">
       <span>WEB CODING × AI COLLABORATION</span>
-      <span>FULL CASE / CODING FIRST</span>
+      <span>METHOD / EVIDENCE / REVIEW</span>
     </footer>
 
     <div class="toast" id="toast" role="status" aria-live="polite">已复制</div>
