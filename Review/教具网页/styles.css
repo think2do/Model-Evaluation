@@ -673,3 +673,274 @@ main { margin-left: var(--rail); padding-top: var(--header); overflow: hidden; }
   .formula-card { padding: 22px; }
   .formula-card code { font-size: 12px; }
 }
+
+/* ============================================================
+   课堂讲义版（知识点整理_PPT）新增组件
+   ============================================================ */
+
+/* 更紧凑的目录（25 个条目） */
+.rail-nav a { min-height: 28px; padding-block: 5px; }
+.rail-nav a span { font-size: 11px; }
+.rail-label { margin-bottom: 24px; }
+
+/* 右上角演讲者注释开关 */
+.notes-toggle {
+  padding: 7px 11px; border: 1px solid var(--ink); background: transparent;
+  cursor: pointer; font-size: 10px; color: var(--ink); white-space: nowrap;
+}
+.notes-toggle:hover { background: var(--acid); }
+
+/* 演讲者注释折叠块 */
+.speaker-note {
+  margin-top: 44px; border: 1px dashed #b8b9ad; background: #f6f5ee;
+}
+.speaker-note summary {
+  list-style: none; display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 18px; cursor: pointer;
+  color: #7a6200; font: 700 11px/1 ui-monospace, monospace;
+}
+.speaker-note summary::-webkit-details-marker { display: none; }
+.speaker-note summary::after { content: "展开"; color: var(--muted); font-size: 10px; }
+.speaker-note[open] summary { border-bottom: 1px dashed #d5d5c9; }
+.speaker-note[open] summary::after { content: "收起"; }
+.speaker-note p { margin: 0; padding: 16px 18px; color: var(--muted); font-size: 13px; line-height: 1.8; }
+.speaker-note code { color: var(--ink); font-size: 12px; }
+
+/* 案例页 / 第二部分页：紧凑头部 */
+.case-step { padding-block: 72px; }
+.case-step .step-header { grid-template-columns: 110px 1fr; margin-bottom: 46px; }
+.case-step .step-index strong { font-size: 56px; }
+.case-step .step-header h2 { margin-block: 12px; font-size: clamp(34px, 4vw, 52px); }
+.case-step .step-header p { font-size: 15px; }
+
+/* 谢谢页：三个带走点 */
+.takeaway-list { margin: 30px 0 0; padding-left: 20px; color: var(--muted); font-size: 15px; line-height: 2.2; }
+.takeaway-list b { color: var(--ink); }
+
+/* 讲义版响应式 */
+@media (max-width: 680px) {
+  .notes-toggle { font-size: 9px; padding: 6px 8px; }
+  .speaker-note p { font-size: 12px; }
+}
+
+/* ============================================================
+   翻页模式（deck）：一屏一页的演示稿
+   ============================================================ */
+body.deck { overflow: hidden; }
+
+.deck main {
+  position: fixed;
+  left: var(--rail); right: 0;
+  top: var(--header); bottom: 0;
+  margin: 0; padding: 0;
+  overflow: hidden;
+}
+
+.deck .section {
+  position: absolute; inset: 0;
+  margin: 0; width: 100%; max-width: none;
+  padding: 52px 6vw 92px;
+  overflow-y: auto;
+  scroll-margin-top: 0;
+  scrollbar-width: thin;
+  pointer-events: none; opacity: 0;
+  transform: translateY(10px);
+  transition: opacity .3s ease, transform .3s ease;
+}
+.deck .section.is-current { opacity: 1; transform: none; pointer-events: auto; }
+.deck .section + .section { border-top: 0; }
+
+/* 封面页：垂直居中 */
+.deck .hero {
+  min-height: 0; height: 100%;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 40px 6vw 64px;
+}
+.deck .scroll-cue { display: none; }
+
+/* 底部翻页控制条 */
+.deck-bar {
+  position: fixed; left: var(--rail); right: 0; bottom: 0; z-index: 40;
+  height: 46px; display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 0 18px; background: var(--ink); color: white;
+  font: 700 11px/1 ui-monospace, monospace;
+}
+.deck-bar button {
+  border: 1px solid #4d4f48; background: transparent; color: white;
+  padding: 8px 14px; cursor: pointer; font-size: 11px;
+}
+.deck-bar button:hover { background: var(--acid); color: var(--ink); border-color: var(--acid); }
+.deck-bar button:disabled { opacity: .35; cursor: default; }
+.deck-bar button:disabled:hover { background: transparent; color: white; border-color: #4d4f48; }
+.deck-counter { color: var(--acid); letter-spacing: .06em; white-space: nowrap; }
+.deck-counter em { font-style: normal; color: #9b9d94; margin-left: 10px; }
+
+.deck .site-footer { display: none; }
+.deck .rail-progress { display: none; }
+
+@media (max-width: 680px) {
+  .deck-bar { left: 0; padding: 0 10px; }
+  .deck-counter em { display: none; }
+  .deck-bar button { padding: 8px 10px; }
+}
+
+/* ============================================================
+   演示稿化 v2：每页一屏，精简排版（38 页）
+   ============================================================ */
+.deck .section {
+  padding: 42px clamp(28px, 5vw, 64px) 74px;
+  scrollbar-width: none;
+}
+.deck .section::-webkit-scrollbar { display: none; }
+.deck .section > * { max-width: var(--max); margin-left: auto; margin-right: auto; }
+
+/* 页头收敛 */
+.deck .step-header { margin-bottom: 28px; }
+.deck .step-header h2 { margin: 10px 0 12px; font-size: clamp(32px, 4.2vw, 56px); line-height: 1.02; }
+.deck .step-header p { font-size: 15px; line-height: 1.7; max-width: 680px; }
+.deck .section-head { gap: 18px; }
+.deck .section-head h2 { font-size: clamp(32px, 4.4vw, 58px); line-height: 1.02; }
+.deck .section-head > p { font-size: 15px; line-height: 1.7; margin-top: 6px; max-width: 620px; }
+
+/* 间距压缩 */
+.deck .subhead { margin: 26px 0 16px; }
+.deck .subhead h3 { font-size: clamp(22px, 3vw, 32px); }
+.deck .teaching-note, .deck .warning-note { margin-top: 24px; padding: 18px 22px; }
+.deck .artifact { margin-top: 20px; }
+.deck .prompt-sheet { margin-top: 10px; }
+.deck .handoff-strip { margin-top: 24px; padding: 14px 18px; }
+.deck .commit-strip { margin-top: 16px; padding: 18px; }
+.deck .iteration-grid article { padding: 16px 18px; }
+.deck .context-card { padding: 20px 22px; }
+.deck .context-card blockquote { margin-bottom: 20px; font-size: 20px; }
+.deck .method-board article { min-height: 0; padding: 18px 20px; }
+.deck .method-board p, .deck .method-board ul { margin-top: 12px; font-size: 12.5px; line-height: 1.65; }
+.deck .prep-summary { padding: 14px 18px; }
+.deck .prep-summary strong { font-size: 15px; }
+.deck .prep-summary p { font-size: 12px; }
+.deck .two-col { gap: 12px; }
+.deck .understanding-note { margin-top: 24px; padding: 20px 22px; }
+.deck .understanding-note h3 { font-size: 22px; }
+.deck .phase-overview-grid { margin-top: 22px; }
+.deck .phase-overview-grid article { min-height: 0; padding: 13px; }
+.deck .phase-overview-grid span { margin: 10px 0 5px; }
+.deck .phase-overview-grid small { font-size: 9.5px; }
+.deck .table-row { min-height: 42px; }
+.deck .table-row span { padding: 10px 14px; font-size: 11.5px; }
+.deck .run-card { min-height: 168px; padding: 16px; }
+.deck .run-card > strong { margin-top: 22px; font-size: 36px; }
+.deck .run-card > p { margin: 12px 0; font-size: 12px; }
+.deck .consistency-card { margin-top: 14px; }
+.deck .consistency-card > div { padding: 20px 22px; }
+.deck .cause-focus { margin-top: 26px; padding: 26px; }
+.deck .build-track article { min-height: 0; padding: 14px 16px; }
+.deck .build-track span { margin: 12px 0 6px; font-size: 13px; }
+.deck .build-track small { font-size: 10.5px; }
+.deck .stack-diagram article { height: 68px; padding: 14px 22px; }
+.deck .stack-diagram strong { font-size: 14px; }
+.deck .synthesis-copy { margin-top: 30px; font-size: 17px; }
+.deck .code-flow article { min-height: 96px; padding: 13px; }
+.deck .code-flow strong { font-size: 11px; }
+.deck .document-chain { margin-top: 30px; }
+.deck .document-chain article { padding: 16px 18px; }
+.deck .document-chain strong { margin: 14px 0 6px; }
+.deck .maintain-card-head { gap: 14px; }
+.deck .maintain-card-head > b { font-size: 32px; }
+.deck .maintain-card-head h3 { font-size: 19px; }
+.deck .boundary-grid { gap: 18px; }
+.deck .boundary-grid > div { padding: 16px 18px; }
+.deck .boundary-grid ul { line-height: 1.75; }
+.deck .security-lesson { margin-top: 24px; padding: 24px; }
+.deck .security-lesson h3 { font-size: 26px; }
+.deck .method-frame { margin-top: 26px; padding: 26px; }
+.deck .method-frame h3 { font-size: 24px; }
+.deck .method-questions article { min-height: 48px; padding: 11px 13px; }
+.deck .takeaway-list { margin-top: 22px; font-size: 14px; line-height: 2; }
+.deck .ba-panel { padding: 22px; }
+.deck .ba-panel code { padding: 16px; font-size: 12.5px; }
+
+/* Prompt 专用页：居中大字 */
+.prompt-page { display: flex; flex-direction: column; justify-content: center; }
+.prompt-page .prompt-kicker { color: var(--blue); font: 750 10px/1 ui-monospace, monospace; letter-spacing: .16em; text-align: center; margin-bottom: 12px; }
+.prompt-page h2 { text-align: center; font-size: clamp(30px, 3.8vw, 50px); margin: 0 0 22px; letter-spacing: -.05em; }
+.prompt-page .prompt-sheet { max-width: 900px; width: 100%; }
+.prompt-page .prompt-sheet pre { font-size: clamp(12.5px, 1.3vw, 15.5px); line-height: 1.85; }
+.prompt-page .prompt-hint { max-width: 900px; margin: 16px auto 0; color: var(--muted); font-size: 13px; line-height: 1.7; text-align: center; }
+.prompt-page .speaker-note { max-width: 900px; }
+
+/* 目录分组标签 */
+.rail-group { margin: 14px 0 6px; padding-top: 10px; border-top: 1px solid var(--line); color: var(--muted); font: 700 8px/1 ui-monospace, monospace; letter-spacing: .14em; }
+.rail-group:first-child { border-top: 0; margin-top: 0; padding-top: 0; }
+
+/* 底部控制条细化 */
+.deck-bar { height: 40px; background: rgba(16,17,14,.94); }
+.deck-bar button { padding: 6px 12px; border-radius: 4px; }
+.deck-counter { font-size: 11px; }
+
+/* 收尾页（谢谢）grid 微调 */
+.deck .next-section { align-items: center; }
+.deck .next-content h2 { font-size: clamp(34px, 4.4vw, 58px); }
+
+/* ===== 一屏适配微调（消除剩余溢出页） ===== */
+.prompt-page .prompt-sheet pre { font-size: clamp(12px, 1.15vw, 13.5px); line-height: 1.65; }
+.prompt-page .prompt-sheet-head { padding: 11px 16px; }
+.prompt-page .prompt-hint { margin-top: 12px; font-size: 12.5px; }
+.deck .ba-head { padding: 12px 16px; }
+.deck .ba-panel { padding: 16px 18px; }
+.deck .ba-panel code { padding: 14px; font-size: 12px; }
+.deck .method-frame { padding: 22px; }
+.deck .method-questions article { min-height: 44px; padding: 10px 12px; }
+.deck .method-questions span { font-size: 12px; }
+.deck .iteration-grid { gap: 8px; }
+.deck .iteration-grid article { padding: 14px 16px; }
+.deck .iteration-grid h4 { margin: 12px 0 7px; font-size: 16px; }
+.deck .teaching-note { margin-top: 18px; padding: 14px 18px; }
+.deck .artifact summary { padding: 16px 20px; }
+.deck .ide-shot { margin-top: 0; }
+.deck .ide-body { min-height: 300px; }
+.deck .ide-code { font-size: 10px; line-height: 1.5; }
+.deck .ide-terminal pre { font-size: 9.5px; line-height: 1.45; }
+.deck .security-lesson { grid-template-columns: 100px 1fr; padding: 20px; }
+.deck .security-mark { min-height: 90px; font-size: 48px; }
+
+/* ===== 一屏适配微调 2 ===== */
+.prompt-page .prompt-sheet pre { font-size: clamp(11.5px, 1.05vw, 12.5px); line-height: 1.6; }
+.deck .build-track article { padding: 12px 14px; }
+.deck .build-track span { margin: 10px 0 5px; font-size: 12.5px; }
+.deck .build-track small { font-size: 10px; line-height: 1.5; }
+.deck .ide-code { font-size: 9.5px; line-height: 1.4; }
+.deck .ide-terminal pre { font-size: 9px; line-height: 1.35; }
+.deck .artifact-foot { margin-top: 16px; padding-top: 16px; }
+.deck .artifact-body { padding: 24px; }
+.deck .speaker-note { margin-top: 26px; }
+.deck .speaker-note p { padding: 12px 16px; font-size: 12.5px; line-height: 1.7; }
+.deck .speaker-note summary { padding: 11px 16px; }
+
+/* ===== 一屏适配微调 3：案例/第二部分页头更紧凑 ===== */
+.deck .case-step .step-header { grid-template-columns: 88px 1fr; margin-bottom: 20px; }
+.deck .case-step .step-index strong { font-size: 40px; }
+.deck .case-step .step-header h2 { margin-block: 8px; font-size: clamp(24px, 2.8vw, 34px); }
+.deck .case-step .step-header p { font-size: 13.5px; line-height: 1.6; }
+
+/* ===== 长内容页专属压缩 ===== */
+.deck .ide-code code > span { min-height: 14px; }
+.deck .ide-code { padding-bottom: 12px; }
+.deck .ide-shot figcaption { padding: 10px 16px; }
+.deck .ide-terminal pre { padding: 6px 16px 10px; line-height: 1.3; }
+
+.long-prompt { padding-top: 34px !important; padding-bottom: 58px !important; }
+.long-prompt .prompt-sheet pre { font-size: 11px; line-height: 1.5; }
+.long-prompt .prompt-hint { margin-top: 10px; }
+
+/* ===== 最后一屏微调 ===== */
+.long-prompt { padding-top: 28px !important; padding-bottom: 50px !important; }
+.long-prompt .prompt-sheet pre { font-size: 11px; line-height: 1.42; }
+.long-prompt h2 { margin-bottom: 14px; }
+.long-prompt .prompt-sheet-head { padding: 9px 14px; }
+.deck .case-step .step-header { margin-bottom: 14px; }
+.deck .ide-activity { padding-top: 8px; }
+.deck .ide-code { padding-top: 4px; }
+
+/* maintain-4b 再压 2 行 */
+.long-prompt .prompt-sheet pre { line-height: 1.36; }
+.long-prompt { padding-top: 24px !important; }
